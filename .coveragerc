@@ -1,0 +1,39 @@
+[paths]
+source =
+    src
+    */site-packages
+
+[run]
+branch = true
+source = time_split
+
+[report]
+omit =
+
+fail_under = 90
+
+exclude_lines =
+    @overload
+    @_t.overload
+    pragma: no cover
+    def __repr__
+    if self.debug
+    if settings.DEBUG:
+    raise AssertionError
+    raise NotImplementedError
+    raise TypeError
+    if 0:
+    if __name__ == __main__:
+    LOGGER.isEnabledFor
+    logger.isEnabledFor
+    if not isinstance\(other
+    if TYPE_CHECKING
+    if VERBOSE
+    if __name__ == "__main__"
+    except ModuleNotFoundError
+    \(Protocol
+
+show_missing = true
+
+[html]
+directory = htmlcov
