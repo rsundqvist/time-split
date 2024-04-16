@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+* Link to relevant examples on the
+  [Before and after arguments](https://time-split.readthedocs.io/en/latest/guide/spans.html)-page.
+* Expose more internals in the `time_split.support` module (unstable API).
+* Rename parts of the internal (unstable) API.
+
+### Fixed
+* Fix project description.
+* Various other documentation issues.
+
 ## [0.1.0] - 2024-04-14
 
 * Branch from [rics@v4.0.1](https://github.com/rsundqvist/rics/blob/v4.0.1/CHANGELOG.md).

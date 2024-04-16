@@ -1,4 +1,4 @@
-"""Create temporal k-folds for cross-validation with heterogeneous data."""
+"""Time-based k-fold validation splits for heterogeneous data."""
 
 import logging as _logging
 

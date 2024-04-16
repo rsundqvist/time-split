@@ -3,6 +3,8 @@ User guide
 High-level overview of relevant concepts. Click a topic on the left for details, or continue reading for a high-level
 overview.
 
+.. seealso:: The :doc:`../auto_examples/index` page.
+
 Types
 -----
 .. currentmodule:: time_split

@@ -1,5 +1,5 @@
 # Time Split  <!-- omit in toc -->
-Flexible k-fold validation splits for heterogeneous data.
+Time-based k-fold validation splits for heterogeneous data.
 
 -----------------
 [![PyPI - Version](https://img.shields.io/pypi/v/time-split.svg)](https://pypi.python.org/pypi/time-split)
@@ -15,12 +15,12 @@ Flexible k-fold validation splits for heterogeneous data.
   src="https://raw.githubusercontent.com/rsundqvist/time-split/master/docs/2x2-examples.jpg"><br>
 </div>
 
-Plotted folds on a two-by-two grid. See the
+Folds plotted on a two-by-two grid. See the
 [examples](https://time-split.readthedocs.io/en/stable/auto_examples/index.html) page for more.
 
 ## What is it?
-A library for creating cross-validation splits of _heterogeneous_ data, such as raw transaction data with strong
-non-stationary characteristics.
+A library for creating time-based cross-validation splits of _heterogeneous_ data, such as raw transaction data with 
+strong non-stationary characteristics.
 
 ## Highlighted Features
 - [Splitting schedules](https://time-split.readthedocs.io/en/stable/guide/schedules.html) based on a fixed interval, 

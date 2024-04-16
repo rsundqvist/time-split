@@ -18,3 +18,5 @@ interpreted as a bounded schedule. Unbounded schedules are either `cron` express
   >>> offset_alias_schedule = "5d"  # Every 5 days
 
 Bounded schedules are sometimes referred to as explicit schedules.
+
+.. seealso:: The :doc:`../auto_examples/index` page.

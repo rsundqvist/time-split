@@ -32,3 +32,5 @@ Data :attr:`~types.Flex` allows bounds inferred from and `available` data argume
 
        For example, passing ``flex="d<1h"`` will snap limits to the nearest date, but will not expand limits by more
        than one hour in either direction.
+
+.. seealso:: The :doc:`../auto_examples/index` page.

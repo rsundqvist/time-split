@@ -1,6 +1,6 @@
 Time Split
 ==========
-Create temporal k-folds for cross-validation with heterogeneous data.
+Time-based k-fold validation splits for heterogeneous data.
 
 .. toctree::
    :hidden:
