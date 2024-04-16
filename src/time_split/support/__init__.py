@@ -11,11 +11,13 @@ This module may change without notice. Stick to the top-level :mod:`time_split`-
 dependencies if you need to use the ``support`` module.
 """
 
-from .._backend import expand_limits
+from .._backend import DatetimeIndexSplitter, expand_limits, process_available
 from .._frontend import fold_weight, to_string
 
 __all__ = [
+    "DatetimeIndexSplitter",
     "expand_limits",
+    "process_available",
     "fold_weight",
     "to_string",
 ]

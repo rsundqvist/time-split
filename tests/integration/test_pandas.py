@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 import pytest
 from time_split import split
-from time_split._backend._available import process_available
+from time_split._backend._process_available import process_available
 from time_split.integration.pandas import split_pandas
 
 

@@ -49,8 +49,8 @@ class DatetimeSplitCounts(_t.NamedTuple):
 class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     """Keyword arguments for creating a ``DatetimeIndexSplitter``.
 
-    The ``DatetimeIndexSplitter`` is the backing type for all splitting logic. It is not exposed directly to users. See
-    :func:`.split` or one of the related functions for user-facing APIs.
+    The :class:`time_split.support.DatetimeIndexSplitter` is the backend implementation for the splitting logic. In most
+    cases, it should not be used directly. See func:`.split` or one of the related functions for user-facing APIs.
     """
 
     schedule: _t.Required[Schedule]

@@ -8,15 +8,15 @@ from ._datetime_index_like import DatetimeIndexLike
 from ._limits import LimitsTuple, expand_limits
 
 
-class AvailableMetadata(NamedTuple):
-    """Output of :func:`process_available`."""
+class ProcessAvailableResult(NamedTuple):
+    """Output of :func:`.process_available`."""
 
     available_as_index: DatetimeIndexLike | None
     limits: LimitsTuple
     expanded_limits: LimitsTuple
 
 
-def process_available(available: DatetimeIterable, *, flex: Flex) -> AvailableMetadata:
+def process_available(available: DatetimeIterable, *, flex: Flex) -> ProcessAvailableResult:
     """Process a user-given `available` argument.
 
     Args:
@@ -50,7 +50,7 @@ def process_available(available: DatetimeIterable, *, flex: Flex) -> AvailableMe
         limits = Timestamp(min_dt), Timestamp(max_dt)
 
     expanded_limits = expand_limits(limits, flex=flex)
-    return AvailableMetadata(available_retval, limits=limits, expanded_limits=expanded_limits)
+    return ProcessAvailableResult(available_retval, limits=limits, expanded_limits=expanded_limits)
 
 
 def _compute_data_limits(available: DatetimeIndexLike) -> LimitsTuple:

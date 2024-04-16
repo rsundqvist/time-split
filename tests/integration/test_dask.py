@@ -1,7 +1,7 @@
 import pytest
 from dask.datasets import timeseries
 from time_split import plot, split
-from time_split._backend._available import process_available
+from time_split._backend._process_available import process_available
 
 
 @pytest.mark.parametrize("kind", ["index", "series"])

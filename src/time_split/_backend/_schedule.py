@@ -3,8 +3,8 @@ from typing import NamedTuple, cast, get_args
 from pandas import DatetimeIndex, NaT, Timedelta, Timestamp, date_range
 
 from ..types import DatetimeIterable, Flex, Schedule, TimedeltaTypes
-from ._available import AvailableMetadata, process_available
 from ._limits import LimitsTuple
+from ._process_available import ProcessAvailableResult, process_available
 
 NO_LIMITS = cast(LimitsTuple, (NaT, NaT))
 
@@ -13,7 +13,7 @@ class MaterializedSchedule(NamedTuple):
     """An explicit schedule."""
 
     schedule: DatetimeIndex
-    available_metadata: AvailableMetadata
+    available_metadata: ProcessAvailableResult
 
 
 def materialize_schedule(
@@ -24,7 +24,7 @@ def materialize_schedule(
         try:
             return MaterializedSchedule(
                 DatetimeIndex(schedule),
-                available_metadata=AvailableMetadata(None, NO_LIMITS, NO_LIMITS),
+                available_metadata=ProcessAvailableResult(None, NO_LIMITS, NO_LIMITS),
             )
         except TypeError as e:
             raise ValueError("Schedule must be explicit when not bounded by an available range.") from e

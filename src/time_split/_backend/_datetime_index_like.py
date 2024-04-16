@@ -8,7 +8,7 @@ from ..types import DatetimeTypes
 
 @runtime_checkable
 class DatetimeIndexLike(Protocol, Iterable[DatetimeTypes]):
-    """A type that behaves (sort of) like a pandas DatetimeIndex."""
+    """A type that behaves (sort of) like a :class:`pandas.DatetimeIndex`."""
 
     def __iter__(self) -> Iterator[DatetimeTypes]: ...
 
