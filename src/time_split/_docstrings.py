@@ -21,7 +21,7 @@ _SPAN = (
     f"or `'all'` (requires `available` data)."
 )
 _DOCSTRINGS = {
-    "schedule": f"A collection of timestamps, a {_OFFSET}, or a cron expression.",
+    "schedule": f"A :attr:`~time_split.types.DatetimeIterable`, {_OFFSET}, or `cron <https://pypi.org/project/croniter/>`_ expression.",
     "before": _SPAN.format(arg="before"),
     "after": _SPAN.format(arg="after"),
     "step": "Select a subset of folds, preferring folds later in the schedule.",
