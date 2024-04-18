@@ -96,8 +96,8 @@ def random_density_timestamps() -> tuple[pd.Timestamp, ...]:
 @pytest.mark.parametrize(
     "step, n_splits, expected",
     [
-        (2, None, "1,,2,,3,,4"),
-        (-2, None, "1,,2,,3,,4"),
+        (2, 0, "1,,2,,3,,4"),
+        (-2, 0, "1,,2,,3,,4"),
         (2, 3, ",,1,,2,,3"),
     ],
 )
