@@ -10,7 +10,7 @@ def split(
     before: Span = "7d",
     after: Span = 1,
     step: int = 1,
-    n_splits: int | None = None,
+    n_splits: int = 0,
     available: DatetimeIterable | None = None,
     flex: Flex = "auto",
 ) -> DatetimeSplits:

@@ -57,7 +57,7 @@ class ScikitLearnSplitter(BaseCrossValidator):  # type: ignore[misc]
         *,
         before: Span = "7d",
         after: Span = 1,
-        n_splits: int | None = None,
+        n_splits: int = 0,
         flex: Flex = "auto",
         step: int = 1,
         log_progress: LogProgressArg = False,

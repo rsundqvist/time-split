@@ -101,8 +101,8 @@ class TestStep:
         )
 
     def test_positive_and_negative(self, step, expected):
-        assert [f.mid for f in self.split(step, n_splits=None)] == [pd.Timestamp(e) for e in expected]
-        assert [f.mid for f in self.split(-step, n_splits=None)] == [pd.Timestamp(e) for e in reversed(expected)]
+        assert [f.mid for f in self.split(step, n_splits=0)] == [pd.Timestamp(e) for e in expected]
+        assert [f.mid for f in self.split(-step, n_splits=0)] == [pd.Timestamp(e) for e in reversed(expected)]
 
     @pytest.mark.parametrize("n_splits", [2, 3])
     def test_n_split(self, n_splits, step, expected):

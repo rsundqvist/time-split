@@ -57,5 +57,5 @@ class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     before: Span
     after: Span
     step: int
-    n_splits: int | None
+    n_splits: int
     flex: Flex

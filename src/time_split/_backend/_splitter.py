@@ -32,7 +32,7 @@ class DatetimeIndexSplitter:
     before: Span
     after: Span
     step: int
-    n_splits: int | None
+    n_splits: int
     flex: Flex
 
     def get_splits(self, available: DatetimeIterable | None = None) -> DatetimeSplits:
@@ -115,7 +115,7 @@ class DatetimeIndexSplitter:
             splits = [s for i, s in enumerate(reversed(splits)) if i % step == 0]
             splits.reverse()
 
-        if self.n_splits:
+        if self.n_splits > 0:
             splits = splits[-self.n_splits :]
 
         if self.step < 0:
@@ -147,8 +147,8 @@ class DatetimeIndexSplitter:
 
     def __post_init__(self) -> None:
         # Verify n_splits
-        if self.n_splits is not None and self.n_splits < 1:
-            raise ValueError(f"Expected n_splits >= 1, but got n_splits={self.n_splits!r}.")
+        if self.n_splits < 0:
+            raise ValueError(f"Expected n_splits >= 0, but got n_splits={self.n_splits!r}.")
 
         # Verify before/after
         to_strict_span(self.before, name="before")

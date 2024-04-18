@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from typing import TYPE_CHECKING, Any, Literal
 
 import pandas as pd
@@ -62,7 +62,7 @@ def plot(
     before: Span = "7d",
     after: Span = 1,
     step: int = 1,
-    n_splits: int | None = None,
+    n_splits: int = 0,
     available: DatetimeIterable | None = None,
     flex: Flex = "auto",
     # Split plot args
@@ -283,10 +283,7 @@ def _get_plot_data(
 
     if show_removed:
         kept_splits = set(splits)
-        kwargs = asdict(splitter)  # Can't use dataclasses.replace: 3.10+ only
-        kwargs["n_splits"] = None
-        kwargs["step"] = 1
-        splits = DatetimeIndexSplitter(**kwargs).get_plot_data(available)[0]
+        splits = replace(splitter, n_splits=0, step=1).get_plot_data(available)[0]
         if splitter.step < 0:
             splits.reverse()
         removed = set(splits) - set(kept_splits)
