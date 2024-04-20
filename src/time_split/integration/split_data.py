@@ -6,14 +6,18 @@ Users may implement splitting of any data type by implementing suitable ``as_ava
 import typing as _t
 from datetime import datetime as _datetime
 
-from .. import _frontend, types
+from .. import _frontend
+from .. import types as _tst
 from .._docstrings import docs as _docs
 from . import _log_progress
+
+if _t.TYPE_CHECKING:
+    import pandas
 
 DataT = _t.TypeVar("DataT")
 """Type of data to split."""
 
-DataAsAvailableFn = _t.Callable[[DataT], types.DatetimeIterable]
+DataAsAvailableFn = _t.Callable[[DataT], _tst.DatetimeIterable]
 """A callable ``(data: DataT) -> DatetimeIterable``."""
 DataSelectFn = _t.Callable[[DataT, _datetime, _datetime], DataT]
 """A callable ``(data: DataT, left_inclusive: datetime, end_exclusive: datetime) -> DataT)``."""
@@ -23,11 +27,22 @@ class DatetimeSplit(_t.NamedTuple, _t.Generic[DataT]):
     """Time-based split of a generic data type."""
 
     data: DataT
-    """Data before ``bounds.mid``."""
+    """Data before the simulated :attr:`training_date`.
+
+    Bounded by `bounds.start <= time(future_data) < bounds.mid`.
+    """
     future_data: DataT
-    """Data after ``bounds.mid``."""
-    bounds: types.DatetimeSplitBounds
+    """Data after the simulated :attr:`training_date`.
+
+    Bounded by `bounds.mid <= time(future_data) < bounds.end`.
+    """
+    bounds: _tst.DatetimeSplitBounds
     """The underlying bounds that produced this split."""
+
+    @property
+    def training_date(self) -> "pandas.Timestamp":
+        """Returns the simulated training date (alias of :attr:`self.bounds.mid <.DatetimeSplitBounds.mid>`)."""
+        return self.bounds.mid
 
 
 @_docs
@@ -37,7 +52,7 @@ def split_data(
     log_progress: _log_progress.LogProgressArg = False,
     as_available: DataAsAvailableFn[DataT],
     select: DataSelectFn[DataT],
-    **kwargs: _t.Unpack[types.DatetimeIndexSplitterKwargs],
+    **kwargs: _t.Unpack[_tst.DatetimeIndexSplitterKwargs],
 ) -> _t.Iterable[DatetimeSplit[DataT]]:
     """Base implementation for splitting integrated `data` types.
 

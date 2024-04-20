@@ -2,6 +2,8 @@ Time Split
 ==========
 Time-based k-fold validation splits for heterogeneous data.
 
+.. include:: guide/parameters.rst
+
 .. toctree::
    :hidden:
 
@@ -9,7 +11,6 @@ Time-based k-fold validation splits for heterogeneous data.
    auto_examples/index
    guide/index
    development
-   License <LICENSE>
    changelog/index
 
 Shortcuts

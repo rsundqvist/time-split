@@ -1,7 +1,7 @@
 User guide
 ==========
 High-level overview of relevant concepts. Click a topic on the left for details, or continue reading for a high-level
-overview.
+overview. For a summary of all :func:`time_split.split`-parameters, see the `overview <parameters.rst>`_ page.
 
 .. seealso:: The :doc:`../auto_examples/index` page.
 
@@ -9,8 +9,8 @@ Types
 -----
 .. currentmodule:: time_split
 
-A single fold is a 3-tuple of `bounds` ``(start, mid, end)``, see :attr:`~types.DatetimeSplitBounds`. A list thereof
-are called `'splits'`, and have type :attr:`~types.DatetimeSplits`.
+A single fold is a 3-tuple of `bounds` ``(start, mid, end)`` (type :attr:`~types.DatetimeSplitBounds`). A list thereof
+are called `'splits'` (type :attr:`~types.DatetimeSplits`).
 
 Conventions
 -----------
@@ -22,9 +22,8 @@ Guarantees
 -----------
 * Splits are strictly increasing: For all indices ``i``,  ``splits[i].mid < splits[i+1].mid`` holds.
 * Timestamps within a fold are strictly increasing: ``start[i] < mid[i] < end[i]``.
-* If `available` data is given **and** ``flex=False``, no part of any fold will lie outside the available range.
-
-By default, the bounds derived from `available` data is flexible. See :ref:`Available data `flex`` for details.
+* If `available` data is given **and** ``flex=False`` [#flex]_, no part of any fold will lie outside the available range.
+* Later folds are always preferred (see the `skip` and `n_folds`-arguments).
 
 Limitations
 -----------
@@ -37,3 +36,7 @@ Limitations
    :hidden:
 
    *
+
+.. rubric:: Footnotes
+
+.. [#flex] By default, bounds derived from `available` data is flexible. See :ref:`Available data `flex`` for details.

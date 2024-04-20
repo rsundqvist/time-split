@@ -26,7 +26,7 @@ LOGGER = logging.getLogger("time_split")
 
 @dataclass(frozen=True)
 class DatetimeIndexSplitter:
-    """Backend interface for splitting user data."""
+    """Backend interface for splitting user data. See the :ref:`Parameter overview` page."""
 
     schedule: Schedule
     before: Span
@@ -118,7 +118,7 @@ class DatetimeIndexSplitter:
         if self.n_splits > 0:
             splits = splits[-self.n_splits :]
 
-        if self.step < 0:
+        if self.step < 0:  # Poorly documented - might not work as expected?
             splits.reverse()
 
         return splits
