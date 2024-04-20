@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+* [Parameter overview](https://time-split.readthedocs.io/en/latest/guide/parameters.html) table to docs.
+
 ### Changed
 * Link to relevant examples on the
   [Before and after arguments](https://time-split.readthedocs.io/en/latest/guide/spans.html)-page.

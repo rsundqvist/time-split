@@ -30,6 +30,9 @@ class DatetimeSplitBounds(_t.NamedTuple):
     """Schedule timestamp.
 
     Right (exclusive) limit of the `data` range, left (inclusive) limit of the `future_data` range.
+
+    When using :mod:`.integration` functions, These are available as :attr:`.DatetimeSplit.data` and
+    :attr:`.DatetimeSplit.future_data`, respectively.
     """
     end: _pd.Timestamp
     """Right (exclusive) limit of the `future_data` range."""
