@@ -24,12 +24,12 @@ def split_pandas(
 ) -> Iterable[DatetimeSplit[PandasT]]:
     """Split a pandas type.
 
-    This function splits indexed data (i.e. ``Series`` and ``DataFrame``, not the index itself. Use
-    :func:`time_split.split <time_split.split>` for pandas ``Index`` types, setting ``available=data.index``.
+    This function splits indexed data (i.e. ``Series`` and ``DataFrame``), not the index itself. Use
+    :func:`time_split.split` for pandas ``Index`` types, setting ``available=data.index``.
 
     Args:
         data: A pandas data container type to split; either ``Series`` or a ``DataFrame``.
-        time_column: A column in `data` to split on. Use ``data`.index`` if ``None``.
+        time_column: A column in `data` to split on. Use ``data.index`` if ``None``.
         log_progress: {log_progress}
         **kwargs: {DatetimeIndexSplitterKwargs}
 
@@ -39,7 +39,7 @@ def split_pandas(
         Tuples ``(data, future_data, bounds)``.
 
     Raises:
-        TypeError: If `time_column` does not denote a datetime index-like field.
+        TypeError: If `time_column` is not datetime-like.
 
     """
     indexer = _Indexer(time_column)

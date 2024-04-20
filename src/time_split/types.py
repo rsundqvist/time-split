@@ -27,7 +27,7 @@ class DatetimeSplitBounds(_t.NamedTuple):
     start: _pd.Timestamp
     """Left (inclusive) limit of the `data` range."""
     mid: _pd.Timestamp
-    """Schedule timestamp.
+    """Schedule timestamp; simulated :attr:`~.DatetimeSplit.training_date`.
 
     Right (exclusive) limit of the `data` range, left (inclusive) limit of the `future_data` range.
 
@@ -50,10 +50,10 @@ class DatetimeSplitCounts(_t.NamedTuple):
 
 
 class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
-    """Keyword arguments for creating a ``DatetimeIndexSplitter``.
+    """Keyword arguments for :class:`~time_split.support.DatetimeIndexSplitter`.
 
-    The :class:`time_split.support.DatetimeIndexSplitter` is the backend implementation for the splitting logic. In most
-    cases, it should not be used directly. See func:`.split` or one of the related functions for user-facing APIs.
+    The ``DatetimeIndexSplitter`` is a backend implementation. In most cases, it should not be used directly. See
+    :func:`time_split.split` or one of the related functions for user-facing APIs.
     """
 
     schedule: _t.Required[Schedule]

@@ -21,7 +21,7 @@ def expand_limits(limits: LimitsTuple, *, flex: Flex | LevelTuple | Iterable[Lev
     """Derive the `"real"` bounds of `limits`.
 
     Args:
-        limits: A tuple ``(lo, hi)`` of timestamps.
+        limits: A tuple ``(min, max)`` of timestamps.
         flex: Flex arguments as described in the :ref:`User guide`. Also supports level-tuples
             ``[(start_at, round_to, tolerance)...]``. Passing ``flex=[settings.auto_flex.day, settings.auto_flex.hour]``
             is equivalent to ``flex='auto'``.

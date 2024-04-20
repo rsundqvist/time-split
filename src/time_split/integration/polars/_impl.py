@@ -33,7 +33,7 @@ def split_polars(
         Tuples ``(data, future_data, bounds)``.
 
     Raises:
-        TypeError: If `time_column` does not denote a datetime index-like field.
+        TypeError: If `time_column` is not datetime-like.
 
     """
     indexer = _Indexer(time_column)

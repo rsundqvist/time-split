@@ -8,7 +8,7 @@ from . import types as _tst
 class auto_flex:  # noqa: N801
     """Configuration for the `'auto'` :attr:`~time_split.types.Flex` logic.
 
-    This class determines how ``(lo, hi)``-tuples are expanded when flexible bounds are enabled.
+    This class determines how ``(min, max)``-tuples are expanded when flexible bounds are enabled.
     """
 
     SANITY_CHECK: bool = True

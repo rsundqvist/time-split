@@ -203,7 +203,7 @@ html_context = {
         ),
         dict(
             title="Integrations",
-            text="Convenience functions for common libraries.",
+            text="Convenience functions for libraries such as <i>pandas</i> and <i>scikit-learn</i>.",
             url="generated/time_split.integration.html",
             img="_static/toolbox.png",
         ),
