@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "time-split"
-version = "0.2.0"
+version = "0.2.0.dev1"
 description = "Time-based k-fold validation splits for heterogeneous data."
 authors = ["Richard Sundqvist <richard.sundqvist@live.se>"]
 
