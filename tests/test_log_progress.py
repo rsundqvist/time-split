@@ -36,7 +36,7 @@ def test_metrics(caplog):
     }
     expected_in_message = {
         "2022-01-08": "mean.training          83.5\nmean.future           179.5\nperf.fit         20190511.0",
-        "2022-01-09": "mean.training    107.5\nmean.future      203.5",
+        "2022-01-09": "mean     107.5   203.5",
     }
     assert len(metrics) == len(expected_in_message)
 
@@ -45,10 +45,6 @@ def test_metrics(caplog):
         get_metrics=lambda key: metrics[key.date().isoformat()],
     ):
         pass
-
-    print()
-    for message in caplog.messages:
-        print(message)
 
     for record in caplog.records:
         if not hasattr(record, "seconds"):

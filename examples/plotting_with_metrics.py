@@ -7,7 +7,7 @@ Using an unbounded timedelta-schedule, with custom bar labels.
 import pandas
 from numpy.random import default_rng
 from rics import configure_stuff
-from time_split import plot, split
+from time_split import log_split_progress, plot, split
 
 configure_stuff(datefmt="")
 
@@ -21,7 +21,16 @@ config = dict(schedule="7d", before="14d", after=1, available=data)
 
 metrics = {}
 random = default_rng(2019_05_11).random
-for fold in split(**config):
+
+# %%
+# Adding a `get_metrics` callback to :func:`time_split.log_split_progress` will add formatted metric output to the
+# :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>` emitted at the end of each iteration.
+
+
+for fold in log_split_progress(
+    split(**config),
+    get_metrics=lambda k: metrics[k.date()],
+):
     metrics[fold.mid.date()] = {
         "before": {"rmse": 2 * random(), "mae": random(), "r2": -random()},
         "after": {"rmse": 3 * random(), "mae": 1.5 * random()},

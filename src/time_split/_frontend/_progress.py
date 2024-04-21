@@ -13,56 +13,6 @@ from ..types import DatetimeSplitBounds, FormatMetrics, GetMetrics, LoggerArg, M
 from ._to_string import _PrettyTimestamp
 
 
-def default_metrics_formatter(end_message: str, metrics: dict[Any, Any] | pd.Series | pd.DataFrame | str | Any) -> str:
-    """Default formatting implementation.
-
-    Format using an appropriate pandas ``to_string()``-method if `metrics` is a ``dict`` or a pandas type. Nested
-    dictionaries are flattened using :func:`~rics.collections.dicts.flatten_dict` if `metrics` is a dict-of-dicts.
-
-    If `metrics` is a ``str``, it is appended as-is to the `end_message`. This allows `get_metrics` callbacks to return
-    pre-formatted metrics.
-
-    If any other types are given, fall back to
-    ``f"{end_message} Metrics: {metrics}"``.
-
-    Examples:
-        Formatting a nested dict.
-
-        >>> metrics = {"rmse": {"train": 0.11, "test": 0.5, "future": 20.19}}
-        >>> print(default_metrics_formatter("End message.", metrics))
-        End message. Fold metrics:
-        rmse.train     0.11
-        rmse.test      0.50
-        rmse.future   20.19
-
-        Formatting a :class:`pandas.DataFrame`.
-
-        >>> metrics = {"me": [0.1, 0.2, 0.3], "rmse": [0.11, 0.5, 20.19]}
-        >>> df = pd.DataFrame(metrics, index=["train", "test", "future"])
-        >>> print(default_metrics_formatter("End message.", df))
-        End message. Fold metrics:
-                 me   rmse
-        train   0.1   0.11
-        test    0.2   0.50
-        future  0.3  20.19
-
-        The index is only included if it is _not_ a :class:`pandas.RangeIndex`.
-    """
-    if isinstance(metrics, dict):
-        metrics = _convert_dict(metrics)
-
-    if isinstance(metrics, (pd.Series, pd.DataFrame)):
-        if isinstance(metrics, pd.DataFrame):
-            with_index = not isinstance(metrics, pd.RangeIndex)
-        else:
-            with_index = True
-        return f"{end_message} Fold metrics:\n{metrics.to_string(index=with_index)}"
-    elif isinstance(metrics, str):
-        return f"{end_message} {metrics}"
-    else:
-        return f"{end_message} Metrics: {metrics}"
-
-
 def log_split_progress(
     splits: Sequence[DatetimeSplitBounds],
     *,
@@ -210,6 +160,55 @@ class _ProgressTracker(Generic[MetricsType]):
             self.logger.log(self.end_level, msg, extra=extra)
 
 
+def default_metrics_formatter(end_message: str, metrics: dict[Any, Any] | pd.Series | pd.DataFrame | str | Any) -> str:
+    """Default formatting implementation.
+
+    Format using an appropriate pandas ``to_string()``-method if `metrics` is a ``dict`` or a pandas type. Nested
+    dictionaries are flattened using :func:`~rics.collections.dicts.flatten_dict` if `metrics` is a dict-of-dicts.
+
+    Metrics of type ``str`` are assumed to be preformatted, and are appended to `end_message` as-is.
+
+    If any other types are given, fall back to
+    ``f"{end_message} Metrics: {metrics}"``.
+
+    Examples:
+        Formatting a nested dict.
+
+        >>> metrics = {"rmse": {"train": 0.11, "test": 0.5, "future": 20.19}}
+
+        >>> print(default_metrics_formatter("End message.", metrics))
+        End message. Fold metrics:
+              train  test  future
+        rmse   0.11   0.5   20.19
+
+        Formatting a :class:`pandas.DataFrame`.
+
+        >>> metrics = {"me": [0.1, 0.2, 0.3], "rmse": [0.11, 0.5, 20.19]}
+        >>> df = pd.DataFrame(metrics, index=["train", "test", "future"])
+        >>> print(default_metrics_formatter("End message.", df))
+        End message. Fold metrics:
+                 me   rmse
+        train   0.1   0.11
+        test    0.2   0.50
+        future  0.3  20.19
+
+        The index printed  unless` it is a :class:`pandas.RangeIndex`.
+    """
+    if isinstance(metrics, dict):
+        metrics = _convert_dict(metrics)
+
+    if isinstance(metrics, (pd.Series, pd.DataFrame)):
+        if isinstance(metrics, pd.DataFrame):
+            with_index = not isinstance(metrics, pd.RangeIndex)
+        else:
+            with_index = True
+        return f"{end_message} Fold metrics:\n{metrics.round(3).to_string(index=with_index)}"
+    elif isinstance(metrics, str):
+        return f"{end_message} {metrics}"
+    else:
+        return f"{end_message} Metrics: {metrics}"
+
+
 class _MergingLoggerAdapter(logging.LoggerAdapter[Any]):
     # TODO(3.13): Use merge_extra=True init arg
     def process(self, msg: Any, kwargs: MutableMapping[str, Any]) -> tuple[Any, MutableMapping[str, Any]]:
@@ -221,12 +220,25 @@ class _MergingLoggerAdapter(logging.LoggerAdapter[Any]):
 def _convert_dict(metrics: dict[Any, Any]) -> dict[Any, Any] | pd.DataFrame | pd.Series:
     original = metrics
 
+    scalar_leaves: bool = False
+
     if all(isinstance(v, dict) for v in metrics.values()):
         flat = flatten_dict(metrics)
-        if all(pd.api.types.is_scalar(v) for v in flat.values()):
+
+        # A single dot usually indicates nesting one level deep; can be formatted as a DataFrame.
+        if any(k.count(".") != 1 for k in flat) and all(pd.api.types.is_scalar(v) for v in flat.values()):
             metrics = flat
+    elif all(pd.api.types.is_scalar(v) for v in original.values()):
+        scalar_leaves = True
 
     try:
-        return pd.Series(metrics) if all(pd.api.types.is_scalar(v) for v in metrics.values()) else pd.DataFrame(metrics)
+        if scalar_leaves:
+            return pd.Series(metrics)
+
+        df = pd.DataFrame(metrics)
     except Exception:
         return original
+
+    if len(df) > len(df.columns):
+        df = df.T  # Prefer wider horizontal output
+    return df
