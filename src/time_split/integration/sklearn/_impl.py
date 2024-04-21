@@ -11,6 +11,7 @@ from ...types import (
     DatetimeSplits,
     DatetimeTypes,
     Flex,
+    MetricsType,
     Schedule,
     Span,
 )
@@ -60,7 +61,7 @@ class ScikitLearnSplitter(BaseCrossValidator):  # type: ignore[misc]
         n_splits: int = 0,
         flex: Flex = "auto",
         step: int = 1,
-        log_progress: LogProgressArg = False,
+        log_progress: LogProgressArg[MetricsType] = False,
         verify_xy: bool = True,
     ) -> None:
         super().__init__()

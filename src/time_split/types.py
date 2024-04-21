@@ -1,6 +1,7 @@
 """Types related to splitting data."""
 
 import datetime as _dt
+import logging as _logging
 import typing as _t
 
 import numpy as _np
@@ -62,3 +63,41 @@ class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     step: int
     n_splits: int
     flex: Flex
+
+
+LoggerArg = _logging.Logger | _logging.LoggerAdapter[_t.Any] | str
+
+
+MetricsType = _t.TypeVar("MetricsType")
+"""Metrics argument type."""
+GetMetrics = _t.Callable[[_pd.Timestamp], MetricsType]
+"""A callable ``(Timestamp) -> MetricsType``."""
+FormatMetrics = _t.Callable[[str, MetricsType], str]
+"""A callable ``(end_message, metrics) -> str``."""
+
+
+class LogSplitProgressKwargs(_t.TypedDict, _t.Generic[MetricsType], total=False):
+    """Keyword arguments for by :func:`.log_split_progress`."""
+
+    logger: LoggerArg
+    start_level: int
+    end_level: int
+    extra: dict[str, _t.Any] | None
+    get_metrics: GetMetrics[MetricsType]
+
+
+class SplitProgressExtras(_t.TypedDict):
+    """Named `extras` used for messages logged by :func:`.log_split_progress`."""
+
+    n: int
+    """Current split number (starting at 1)."""
+    n_splits: int
+    """Total split count."""
+    start: str
+    """An :meth:`ISO-formatted <pandas.Timestamp.isoformat>` timestamp (see :attr:`.DatetimeSplitBounds.start`)."""
+    mid: str
+    """An :meth:`ISO-formatted <pandas.Timestamp.isoformat>` timestamp (see :attr:`.DatetimeSplitBounds.mid`)."""
+    end: str
+    """An :meth:`ISO-formatted <pandas.Timestamp.isoformat>` timestamp (see :attr:`.DatetimeSplitBounds.end`)."""
+    seconds: _t.NotRequired[float]
+    """User time for the fold. Available only for the :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>`."""

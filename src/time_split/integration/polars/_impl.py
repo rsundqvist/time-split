@@ -6,7 +6,7 @@ from polars import DataFrame, Series
 from rics.misc import tname
 
 from ..._docstrings import docs
-from ...types import DatetimeIndexSplitterKwargs
+from ...types import DatetimeIndexSplitterKwargs, MetricsType
 from .._log_progress import LogProgressArg
 from ..split_data import DatetimeSplit, split_data
 
@@ -16,7 +16,7 @@ def split_polars(
     data: DataFrame,
     time_column: str,
     *,
-    log_progress: LogProgressArg = False,
+    log_progress: LogProgressArg[MetricsType] = False,
     **kwargs: Unpack[DatetimeIndexSplitterKwargs],
 ) -> Iterable[DatetimeSplit[DataFrame]]:
     """Split a polars frame.

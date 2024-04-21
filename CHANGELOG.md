@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- The `log_split_progress()`-function now accepts and optional _get_metrics_ callback method. Metrics returned are 
+  formatted based on type (if using the new `default_metrics_formatter()`), then added to the fold-end log message.
+- New property `settings.log_split_progress.FORMAT_METRICS`; formats _get_metrics_ output.
+- Added several new `time_split.types` members, all related to `log_split_progress()`.
+
+### Removed
+- The `settings.log_split_progress.SECONDS_FORMATTER` setting no longer accepts `str` arguments.
+- The `log_split_progress(extra)`-argument is no longer mutable.
+
 ## [0.2.1] - 2024-04-20
+
+### Fixed
+- Various documentation issues; broken links, naming/formatting conformity.
 
 ## [0.2.0] - 2024-04-20
 

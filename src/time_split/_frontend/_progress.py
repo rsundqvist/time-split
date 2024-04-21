@@ -2,15 +2,65 @@ import logging
 from collections.abc import Callable, Iterable, MutableMapping, Sequence
 from dataclasses import dataclass
 from time import perf_counter
-from typing import Any, Union
+from typing import Any, Generic
 
-from rics.misc import get_by_full_name
+import pandas as pd
+from rics.collections.dicts import flatten_dict
+from rics.performance import format_seconds
 
 from ..settings import log_split_progress as settings
-from ..types import DatetimeSplitBounds
+from ..types import DatetimeSplitBounds, FormatMetrics, GetMetrics, LoggerArg, MetricsType, SplitProgressExtras
 from ._to_string import _PrettyTimestamp
 
-LoggerArg = Union[logging.Logger, logging.LoggerAdapter, str]  # type: ignore[type-arg]
+
+def default_metrics_formatter(end_message: str, metrics: dict[Any, Any] | pd.Series | pd.DataFrame | str | Any) -> str:
+    """Default formatting implementation.
+
+    Format using an appropriate pandas ``to_string()``-method if `metrics` is a ``dict`` or a pandas type. Nested
+    dictionaries are flattened using :func:`~rics.collections.dicts.flatten_dict` if `metrics` is a dict-of-dicts.
+
+    If `metrics` is a ``str``, it is appended as-is to the `end_message`. This allows `get_metrics` callbacks to return
+    pre-formatted metrics.
+
+    If any other types are given, fall back to
+    ``f"{end_message} Metrics: {metrics}"``.
+
+    Examples:
+        Formatting a nested dict.
+
+        >>> metrics = {"rmse": {"train": 0.11, "test": 0.5, "future": 20.19}}
+        >>> print(default_metrics_formatter("End message.", metrics))
+        End message. Fold metrics:
+        rmse.train     0.11
+        rmse.test      0.50
+        rmse.future   20.19
+
+        Formatting a :class:`pandas.DataFrame`.
+
+        >>> metrics = {"me": [0.1, 0.2, 0.3], "rmse": [0.11, 0.5, 20.19]}
+        >>> df = pd.DataFrame(metrics, index=["train", "test", "future"])
+        >>> print(default_metrics_formatter("End message.", df))
+        End message. Fold metrics:
+                 me   rmse
+        train   0.1   0.11
+        test    0.2   0.50
+        future  0.3  20.19
+
+        The index is only included if it is _not_ a :class:`pandas.RangeIndex`.
+    """
+    if isinstance(metrics, dict):
+        metrics = _convert_dict(metrics)
+
+    if isinstance(metrics, (pd.Series, pd.DataFrame)):
+        if isinstance(metrics, pd.DataFrame):
+            with_index = not isinstance(metrics, pd.RangeIndex)
+        else:
+            with_index = True
+        return f"{end_message} Fold metrics:\n{metrics.to_string(index=with_index)}"
+    elif isinstance(metrics, str):
+        return f"{end_message} {metrics}"
+    else:
+        return f"{end_message} Metrics: {metrics}"
 
 
 def log_split_progress(
@@ -20,34 +70,68 @@ def log_split_progress(
     start_level: int = logging.INFO,
     end_level: int = logging.INFO,
     extra: dict[str, Any] | None = None,
+    get_metrics: GetMetrics[MetricsType] | None = None,
 ) -> Iterable[DatetimeSplitBounds]:
-    """Log iteration progress over `splits` using `logger`.
+    """Log iteration progress.
 
     Args:
         splits: Splits to iterate over.
         logger: Logger or logger name to use.
         start_level: Log level to use for the :attr:`fold-begin message <.settings.log_split_progress.START_MESSAGE>`.
         end_level: Log level to use for the :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>`.
-        extra: User-defined `extra`-arguments to use when logging, merged with progress-related extras. Will be
-            available to all messages as well as the ``fold`` key. This argument is mutable; changes made to `extra`
-            will be reflected in logged records.
+        extra: Immutable, user-defined `extra`-arguments to use when logging, merged with progress-related extras (see
+            :class:`~time_split.types.SplitProgressExtras`).
+        get_metrics: A callable ``(training_date) -> fold_metrics | str`` (see :attr:`~.DatetimeSplit.training_date`).
+            If given, metrics are added to the :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>`. The
+            message is formatted using the :func:`default formatter <.support.default_metrics_formatter>` unless
+            :attr:`~.settings.log_split_progress.FORMAT_METRICS` is set. If this callback returns a ``str`` argument,
+            the :func:`default formatter <.support.default_metrics_formatter>` will assume that the metrics are
+            pre-formatted, simply appending the formatted metrics to the
+            :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>` as-is.
 
     Returns:
         An iterable over `splits`.
 
     Examples:
-        Basic usage.
+        Configuring the `logger` name and
+        :attr:`fold-begin message <.settings.log_split_progress.START_MESSAGE>` log level.
 
         >>> from time_split import split, log_split_progress
-        >>> splits = split("36h", available=("2023-08-10", "2023-08-19"))
+        >>> schedule = ["2023-08-16", "2023-08-17 12", "2023-08-19"]
         >>> tracked_splits = log_split_progress(
-        ...     splits, logger="progress", start_level=logging.DEBUG
+        ...     split(schedule),
+        ...     logger="progress",
+        ...     start_level=logging.DEBUG,
+        ... )
+        >>> list(splits)  # doctest: +SKIP
+        [progress:DEBUG] Begin fold 1/2: '2023-08-09' <= [schedule: '2023-08-16' (Wednesday)] < '2023-08-17 12:00:00'.
+        [progress:INFO] Finished fold 1/2 [schedule: '2023-08-16' (Wednesday)] after 5m 18s.
+        [progress:DEBUG] Begin fold 2/2: '2023-08-10 12:00:00' <= [schedule: '2023-08-17 12:00:00' (Thursday)] < '2023-08-19'.
+        [progress:INFO] Finished fold 2/2 [schedule: '2023-08-17 12:00:00' (Thursday)] after 4m 3s.
+
+        Using the `get_metrics` callback argument.
+
+        >>> metrics = {
+        ...     "2023-08-16 00:00:00": {"rmse": {"train": 0.11, "test": 0.5}},
+        ...     "2023-08-17 12:00:00": {"rmse": {"test": 0.5, "future": 20.19}},
+        ... }
+        >>> tracked_splits = log_split_progress(
+        ...     split(schedule),
+        ...     get_metrics=lambda key: metrics[str(key)],
         ... )
         >>> list(tracked_splits)  # doctest: +SKIP
-        [progress:DEBUG] Begin fold 1/2: ('2023-08-11' <= [schedule: '2023-08-16' (Wednesday)] < '2023-08-17 12:00:00').
-        [progress:INFO] Finished fold 1/2 [schedule: '2023-08-16' (Wednesday)] after 5m 18s.
-        [progress:DEBUG] Begin fold 2/2: ('2023-08-12 12:00:00' <= [schedule: '2023-08-17 12:00:00' (Thursday)] < '2023-08-19').
-        [progress:INFO] Finished fold 2/2 [schedule: '2023-08-17 12:00:00' (Thursday)] after 4m 3s.
+        [time_split:INFO] Begin fold 1/2: '2023-08-09' <= [schedule: '2023-08-16' (Wednesday)] < '2023-08-17 12:00:00'.
+        [time_split:INFO] Finished fold 1/2 [schedule: '2023-08-16' (Wednesday)] after 5m 18s. Fold metrics:
+        rmse.train   0.11
+        rmse.test     0.5
+        [time_split:INFO] Begin fold 2/2: '2023-08-10 12:00:00' <= [schedule: '2023-08-17 12:00:00' (Thursday)] < '2023-08-19'.
+        [time_split:INFO] Finished fold 2/2 [schedule: '2023-08-17 12:00:00' (Thursday)] after 4m 3s. Fold metrics:
+        rmse.test       0.5
+        rmse.future   20.19
+
+        Formatting was done using the :func:`default formatter <.support.default_metrics_formatter>`, since the
+        :attr:`~.settings.log_split_progress.FORMAT_METRICS` setting is ``None``.
+
     """
     logger = logging.getLogger(logger) if isinstance(logger, str) else logger
 
@@ -62,16 +146,16 @@ def log_split_progress(
         start_message=settings.START_MESSAGE,
         end_level=end_level,
         end_message=settings.END_MESSAGE,
-        seconds_formatter=settings.SECONDS_FORMATTER
-        if callable(settings.SECONDS_FORMATTER)
-        else get_by_full_name(settings.SECONDS_FORMATTER),
-        user_extra=extra or {},
+        seconds_formatter=settings.SECONDS_FORMATTER or format_seconds,
+        user_extra={} if extra is None else extra.copy(),  # Not actually immutable; deepcopy can be very expensive.
+        get_metrics=get_metrics,
+        format_metrics=settings.FORMAT_METRICS or default_metrics_formatter,
     )
     return track(splits)
 
 
 @dataclass(frozen=True)
-class _ProgressTracker:
+class _ProgressTracker(Generic[MetricsType]):
     logger: logging.Logger | logging.LoggerAdapter  # type: ignore[type-arg]
     fold_format: str
     start_level: int
@@ -80,19 +164,21 @@ class _ProgressTracker:
     end_message: str
     seconds_formatter: Callable[[float], str]
     user_extra: dict[str, Any]
+    get_metrics: GetMetrics[MetricsType] | None
+    format_metrics: FormatMetrics[MetricsType]
 
     def __call__(self, splits: Sequence[DatetimeSplitBounds]) -> Iterable[DatetimeSplitBounds]:
         n_splits = len(splits)
 
         for n, split in enumerate(splits, start=1):
-            extra: dict[str, str | float | int | bool] = dict(
+            default_extras = SplitProgressExtras(
                 n=n,
                 n_splits=n_splits,
                 start=split.start.isoformat(),
                 mid=split.mid.isoformat(),
                 end=split.end.isoformat(),
-                **self.user_extra,
             )
+            extra = {**self.user_extra, **default_extras}
             kwargs: dict[str, Any] = dict(
                 n=n,
                 n_splits=n_splits,
@@ -114,12 +200,33 @@ class _ProgressTracker:
                 seconds=seconds,
                 formatted_seconds=self.seconds_formatter(seconds),
             )
+            msg = self.end_message.format(**kwargs)
+
+            if self.get_metrics is not None:
+                extra["metrics"] = self.get_metrics(split.mid)
+                msg = self.format_metrics(msg, extra["metrics"])
+
             extra.update(seconds=seconds)
-            self.logger.log(self.end_level, self.end_message.format(**kwargs), extra=extra)
+            self.logger.log(self.end_level, msg, extra=extra)
 
 
-class _MergingLoggerAdapter(logging.LoggerAdapter):  # type: ignore[type-arg]
+class _MergingLoggerAdapter(logging.LoggerAdapter[Any]):
+    # TODO(3.13): Use merge_extra=True init arg
     def process(self, msg: Any, kwargs: MutableMapping[str, Any]) -> tuple[Any, MutableMapping[str, Any]]:
         """See https://github.com/python/cpython/pull/107292."""
         kwargs["extra"] = {**self.extra, **kwargs["extra"]} if "extra" in kwargs and self.extra else self.extra
         return msg, kwargs
+
+
+def _convert_dict(metrics: dict[Any, Any]) -> dict[Any, Any] | pd.DataFrame | pd.Series:
+    original = metrics
+
+    if all(isinstance(v, dict) for v in metrics.values()):
+        flat = flatten_dict(metrics)
+        if all(pd.api.types.is_scalar(v) for v in flat.values()):
+            metrics = flat
+
+    try:
+        return pd.Series(metrics) if all(pd.api.types.is_scalar(v) for v in metrics.values()) else pd.DataFrame(metrics)
+    except Exception:
+        return original
