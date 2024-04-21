@@ -8,7 +8,7 @@ from rics.misc import tname
 from ..._docstrings import docs
 from ...types import DatetimeIndexSplitterKwargs, MetricsType
 from .._log_progress import LogProgressArg
-from ..split_data import DatetimeSplit, split_data
+from ..base import DatetimeSplit, split_data
 
 
 @docs

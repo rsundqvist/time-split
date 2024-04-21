@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New property `settings.log_split_progress.FORMAT_METRICS`; formats _get_metrics_ output.
 - Added several new `time_split.types` members, all related to `log_split_progress()`.
 
+### Changed
+- Module `integration.split_data` is now `integration.base` to better reflect intent. Member names are unchanged.
+
 ### Removed
 - The `settings.log_split_progress.SECONDS_FORMATTER` setting no longer accepts `str` arguments.
 - The `log_split_progress(extra)`-argument is no longer mutable.
