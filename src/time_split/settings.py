@@ -113,11 +113,10 @@ class log_split_progress:  # noqa: N801
        '2021-12-30' <= [schedule: '2022-01-04' (Tuesday)] < '2022-01-04 18:00:00'
     """
 
-    SECONDS_FORMATTER: str | _t.Callable[[float], str] = "rics.performance.format_seconds"
-    """A callable ``(seconds) -> formatted_seconds``.
+    SECONDS_FORMATTER: _t.Callable[[float], str] | None = None
+    """A callable ``(seconds) -> formatted_seconds``. Use :func:`rics.performance.format_seconds` if ``None``.
 
-    Both ``seconds`` and ``formatted_seconds`` will be available to the :attr:`END_MESSAGE` message. If a string is
-    given, the actual callable will be resolved using :func:`rics.misc.get_by_full_name`.
+    Both ``seconds`` and ``formatted_seconds`` will be available to the :attr:`END_MESSAGE` message.
     """
 
     START_MESSAGE: str = "Begin fold {n}/{n_splits}: {fold}."
@@ -155,6 +154,9 @@ class log_split_progress:  # noqa: N801
     """Short-form timestamp format_spec used by ``<key>.auto``."""
     AUTO_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
     """Long-form timestamp format_spec used by ``<key>.auto``."""
+
+    FORMAT_METRICS: _tst.FormatMetrics[_t.Any] | None = None
+    """A callable ``(end_message, metrics) -> str``. Use the :func:`default formatter <.support.default_metrics_formatter>` if ``None``."""
 
 
 class misc:  # noqa: N801

@@ -49,7 +49,7 @@ class DatetimeSplit(_t.NamedTuple, _t.Generic[DataT]):
 def split_data(
     data: DataT,
     *,
-    log_progress: _log_progress.LogProgressArg = False,
+    log_progress: _log_progress.LogProgressArg[_tst.MetricsType] = False,
     as_available: DataAsAvailableFn[DataT],
     select: DataSelectFn[DataT],
     **kwargs: _t.Unpack[_tst.DatetimeIndexSplitterKwargs],

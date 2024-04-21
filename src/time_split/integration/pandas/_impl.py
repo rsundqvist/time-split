@@ -6,7 +6,7 @@ from pandas import DataFrame, DatetimeIndex, Series, Timestamp
 from rics.misc import tname
 
 from ..._docstrings import docs
-from ...types import DatetimeIndexSplitterKwargs
+from ...types import DatetimeIndexSplitterKwargs, MetricsType
 from .._log_progress import LogProgressArg
 from ..split_data import DatetimeSplit, split_data
 
@@ -19,7 +19,7 @@ def split_pandas(
     data: PandasT,
     time_column: Hashable = None,
     *,
-    log_progress: LogProgressArg = False,
+    log_progress: LogProgressArg[MetricsType] = False,
     **kwargs: Unpack[DatetimeIndexSplitterKwargs],
 ) -> Iterable[DatetimeSplit[PandasT]]:
     """Split a pandas type.
