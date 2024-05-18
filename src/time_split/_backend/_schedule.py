@@ -17,7 +17,7 @@ class MaterializedSchedule(NamedTuple):
 
 
 def materialize_schedule(
-    schedule: Schedule, flex: Flex, *, available: DatetimeIterable | None = None
+    schedule: Schedule, expand_limits: Flex, *, available: DatetimeIterable | None = None
 ) -> MaterializedSchedule:
     """Materialize user schedule based on available data."""
     if available is None:
@@ -29,7 +29,7 @@ def materialize_schedule(
         except TypeError as e:
             raise ValueError("Schedule must be explicit when not bounded by an available range.") from e
 
-    available_metadata = process_available(available, flex=flex)
+    available_metadata = process_available(available, expand_limits=expand_limits)
     min_dt, max_dt = available_metadata.expanded_limits
 
     if isinstance(schedule, str) and _cron_like(schedule):

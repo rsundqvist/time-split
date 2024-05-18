@@ -87,7 +87,7 @@ DATA_CASES = (
             ],
         ),
         (
-            dict(schedule="3d", before=2, after="all", flex=False),
+            dict(schedule="3d", before=2, after="all", expand_limits=False),
             [
                 (_sdata_start, "2022-01-07", _s_data_stop),
                 ("2022-01-04", "2022-01-10", _s_data_stop),

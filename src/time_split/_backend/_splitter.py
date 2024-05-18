@@ -33,7 +33,7 @@ class DatetimeIndexSplitter:
     after: Span
     step: int
     n_splits: int
-    flex: Flex
+    expand_limits: Flex
 
     def get_splits(self, available: DatetimeIterable | None = None) -> DatetimeSplits:
         """Compute a split of given user data."""
@@ -48,7 +48,7 @@ class DatetimeIndexSplitter:
         return splits, ms
 
     def _materialize_schedule(self, available: DatetimeIterable | None = None) -> MaterializedSchedule:
-        ms = materialize_schedule(self.schedule, self.flex, available=available)
+        ms = materialize_schedule(self.schedule, self.expand_limits, available=available)
         if not ms.schedule.sort_values().equals(ms.schedule):
             raise ValueError(f"schedule must be sorted in ascending order; schedule={self.schedule!r} is not valid.")
 
@@ -140,7 +140,7 @@ class DatetimeIndexSplitter:
             return retval + f"{_PrettyTimestamp(new).auto} ({'+' if diff > 0 else '-'}{format_seconds(abs(diff))})"
 
         LOGGER.info(
-            f"Available data limits have been expanded (since flex={self.flex!r}):\n"
+            f"Available data limits have been expanded (since expand_limits={self.expand_limits!r}):\n"
             f"  start: {stringify(original[0], new=expanded[0])}\n"
             f"    end: {stringify(original[1], new=expanded[1])}"
         )

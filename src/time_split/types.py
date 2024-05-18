@@ -62,7 +62,7 @@ class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     after: Span
     step: int
     n_splits: int
-    flex: Flex
+    expand_limits: Flex
 
 
 LoggerArg = _logging.Logger | _logging.LoggerAdapter[_t.Any] | str

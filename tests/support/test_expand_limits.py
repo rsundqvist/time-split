@@ -1,12 +1,12 @@
 import pandas as pd
 import pytest
 from pandas import Timestamp
-from time_split.settings import auto_flex as settings
+from time_split.settings import auto_expand_limits as settings
 from time_split.support import expand_limits
 
 
-def _run(expected, flex, limits):
-    actual = expand_limits(limits, flex=flex)
+def _run(expected, expand_limits, limits):
+    actual = expand_limits(limits, expand_limits=expand_limits)
     assert actual == tuple(Timestamp(s) for s in expected.split(","))
 
 
@@ -33,27 +33,27 @@ def test_auto(actual, expected):
 
 
 @pytest.mark.parametrize(
-    "flex, expected",
+    "expand_limits, expected",
     [
         ("d", "2019-05-11, 2019-05-12"),
         ("h", "2019-05-11, 2019-05-11 23"),
     ],
 )
-def test_basic(flex, expected):
+def test_basic(expand_limits, expected):
     limits = Timestamp("2019-05-11 00:15"), Timestamp("2019-05-11 22:35")
-    _run(expected, flex, limits)
+    _run(expected, expand_limits, limits)
 
 
 @pytest.mark.parametrize(
-    "flex, expected",
+    "expand_limits, expected",
     [
         ("d<1h", "2019-05-11, 2019-05-12"),
         ("d < 10 minutes", "2019-05-11 00:15, 2019-05-11 23:35"),
     ],
 )
-def test_tolerance(flex, expected):
+def test_tolerance(expand_limits, expected):
     limits = Timestamp("2019-05-11 00:15"), Timestamp("2019-05-11 23:35")
-    _run(expected, flex, limits)
+    _run(expected, expand_limits, limits)
 
 
 @pytest.mark.parametrize(
@@ -82,14 +82,14 @@ class TestErrors:
     )
     def test_bad_limits(self, start, stop):
         limits = pd.Timestamp(start), pd.Timestamp(stop)
-        flex = ("this", "shouldn't", "matter")
+        expand_limits = ("this", "shouldn't", "matter")
         with pytest.raises(ValueError):
-            expand_limits(limits, flex=flex)
+            expand_limits(limits, expand_limits=expand_limits)
 
     @pytest.mark.parametrize("round_to", ["1d", "2d", "-d"])
     def test_invalid_round_to_frequency(self, round_to):
         with pytest.raises(ValueError, match="not a valid frequency"):
-            expand_limits(self.limits, flex=("2d", round_to, "3h"))
+            expand_limits(self.limits, expand_limits=("2d", round_to, "3h"))
 
     @pytest.mark.parametrize(
         "start_at, tolerance",
@@ -100,7 +100,7 @@ class TestErrors:
     )
     def test_negative(self, start_at, tolerance):
         with pytest.raises(ValueError, match="non-negative"):
-            expand_limits(self.limits, flex=(start_at, "d", tolerance))
+            expand_limits(self.limits, expand_limits=(start_at, "d", tolerance))
 
     @pytest.mark.parametrize(
         "order, start_at, round_to, tolerance",
@@ -112,7 +112,7 @@ class TestErrors:
     def test_bad_inequality(self, start_at, round_to, tolerance, order):
         left, right = order.split(",")
         with pytest.raises(ValueError, match=f"{left}=.* < {right}="):
-            expand_limits(self.limits, flex=(start_at, round_to, tolerance))
+            expand_limits(self.limits, expand_limits=(start_at, round_to, tolerance))
 
     def test_bad_level(self):
         with pytest.raises(AttributeError, match="Bad level='unknown'"):
@@ -120,10 +120,10 @@ class TestErrors:
 
     def test_bad_hour_setting(self, monkeypatch):
         monkeypatch.setattr(settings, "hour", ("2 days", "day", "15 min"))
-        with pytest.raises(ValueError, match="Invalid settings: auto_flex.hour="):
-            expand_limits(self.limits, flex=True)
+        with pytest.raises(ValueError, match="Invalid settings: auto_expand_limits.hour="):
+            expand_limits(self.limits, expand_limits=True)
 
     def test_bad_day_setting(self, monkeypatch):
         monkeypatch.setattr(settings, "day", ("2 hour", "hour", "1 hour"))
-        with pytest.raises(ValueError, match="Invalid settings: auto_flex.day="):
-            expand_limits(self.limits, flex=True)
+        with pytest.raises(ValueError, match="Invalid settings: auto_expand_limits.day="):
+            expand_limits(self.limits, expand_limits=True)

@@ -65,12 +65,12 @@ def test_inclusive_equality():
 def test_index_is_preserved():
     available = pd.date_range("2023-05-01", "2023-06-01", periods=100)
 
-    actual = process_available(available, flex=False).available_as_index
+    actual = process_available(available, expand_limits=False).available_as_index
     assert id(available) == id(actual)
 
 
 def test_series_is_preserved():
     available = pd.date_range("2023-05-01", "2023-06-01", periods=100).to_series()
 
-    actual = process_available(available, flex=False).available_as_index
+    actual = process_available(available, expand_limits=False).available_as_index
     assert isinstance(actual, pd.Series)

@@ -12,7 +12,7 @@ def split(
     step: int = 1,
     n_splits: int = 0,
     available: DatetimeIterable | None = None,
-    flex: Flex = "auto",
+    expand_limits: Flex = "auto",
 ) -> DatetimeSplits:
     """Create time-based cross-validation splits.
 
@@ -25,7 +25,7 @@ def split(
         step: {step}
         n_splits: {n_splits}
         available: {available} Passing a tuple ``(min, max)`` is enough.
-        flex: {flex}
+        expand_limits: {expand_limits}
 
     {USER_GUIDE}
 
@@ -41,5 +41,5 @@ def split(
         after=after,
         step=step,
         n_splits=n_splits,
-        flex=flex,
+        expand_limits=expand_limits,
     ).get_splits(available)

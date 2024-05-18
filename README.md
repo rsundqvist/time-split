@@ -27,7 +27,7 @@ strong non-stationary characteristics.
   a CRON-expression, or a pre-defined list.
 - [Data selection](https://time-split.readthedocs.io/en/stable/guide/spans.html) based on a timedelta, or the splitting 
   schedule itself.
-- Automatically extract and [normalize](https://time-split.readthedocs.io/en/stable/guide/flex.html) data limits for 
+- Automatically extract and [normalize](https://time-split.readthedocs.io/en/stable/guide/expand_limits.html) data limits for 
   supported data types.
 - [Plotting function](https://time-split.readthedocs.io/en/stable/generated/time_split.html#time_split.plot) for
   visualization of folds. Display fold sizes (hour/row count), or 

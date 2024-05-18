@@ -27,9 +27,9 @@ _DOCSTRINGS = {
     "step": "Select a subset of folds, preferring folds later in the schedule.",
     "n_splits": "Maximum number of folds, preferring folds later in the schedule.",
     "available": "Binds `schedule` to a range.",
-    "flex": f'A {_OFFSET} used to expand `available` data to its likely `"true"` limits. Pass ``False`` to disable.',
+    "expand_limits": f'A {_OFFSET} used to expand `available` data to its likely `"true"` limits. Pass ``False`` to disable.',
     "USER_GUIDE": (
-        "For more information about the `schedule`, `before/after` and `flex`-arguments" ", see the :ref:`User guide`."
+        "For more information about the `schedule`, `before/after` and `expand_limits`-arguments" ", see the :ref:`User guide`."
     ),
     "OFFSET": _OFFSET,
     "DatetimeIndexSplitterKwargs": "See :func:`~time_split.split`. The `available` keyword is managed by the integration.",

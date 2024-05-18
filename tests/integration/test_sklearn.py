@@ -28,7 +28,7 @@ def test_sklearn(caplog):
 
 
 def test_bad_args():
-    splitter = ScikitLearnSplitter("1d", flex=False)
+    splitter = ScikitLearnSplitter("1d", expand_limits=False)
     array = pd.date_range("2022", "2022-1-10", freq="h").array
 
     with pytest.raises(ValueError, match="are not equal."):

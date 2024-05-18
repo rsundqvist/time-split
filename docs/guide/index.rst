@@ -22,7 +22,7 @@ Guarantees
 -----------
 * Splits are strictly increasing: For all indices ``i``,  ``splits[i].mid < splits[i+1].mid`` holds.
 * Timestamps within a fold are strictly increasing: ``start[i] < mid[i] < end[i]``.
-* If `available` data is given **and** ``flex=False`` [#flex]_, no part of any fold will lie outside the available range.
+* If `available` data is given **and** ``expand_limits=False`` [#expand_limits]_, no part of any fold will lie outside the available range.
 * Later folds are always preferred (see the `skip` and `n_folds`-arguments).
 
 Limitations
@@ -39,4 +39,4 @@ Limitations
 
 .. rubric:: Footnotes
 
-.. [#flex] By default, bounds derived from `available` data is flexible. See :ref:`Available data `flex`` for details.
+.. [#expand_limits] By default, bounds derived from `available` data is expand_limitsible. See :ref:`Available data `expand_limits`` for details.
