@@ -19,7 +19,7 @@ Schedule: _t.TypeAlias = _pd.DatetimeIndex | DatetimeIterable | TimedeltaTypes
 Span = int | _t.Literal["all"] | TimedeltaTypes
 """User span type. Used to determine limits from the timestamps given by a :attr:`Schedule`."""
 ExpandLimits = bool | _t.Literal["auto"] | str
-"""Fl exibility frequency string for ``floor/ceil``. Pass ``False`` to disable."""
+"""Limits flexibility spec for ``floor/ceil``. Pass ``False`` to disable."""
 
 
 class DatetimeSplitBounds(_t.NamedTuple):
