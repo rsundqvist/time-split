@@ -7,7 +7,7 @@ Overview of parameters used by :func:`time_split.split` and :func:`plot`. Integr
 otherwise stated.
 
 .. list-table::
-   :widths: 5 10 10 75
+   :widths: 5 9 12 75
    :header-rows: 1
 
    * - Name
@@ -61,16 +61,24 @@ otherwise stated.
 
    * - ``flex``
      - = `'auto'`
-     - :attr:`~types.Flex`
-     - Expand `available` data to its likely `"true"` limits. **Example**: ``flex='d<3h'`` expands the
-       ``(min, max)``-tuple derived from `available` to the nearest day, at most 3 hours from the original limit.
+     - Valid :attr:`~types.Flex` types:
 
-       See :func:`.expand_limits` for examples or to experiment with flex behavior.
+       * Literal `'auto'` [#]_
+       * ``bool``
+       * `'round_to[<tolerance]'`
+     - Expand `available` data outward to its likely `"true"` limits. Disabled if ``False``, ``True == 'auto'``. The
+       `tolerance` argument is optional; ``flex='d'`` performs regular :attr:`floor(min) <pandas.Timestamp.floor>` /
+       :attr:`ceil(max) <pandas.Timestamp.ceil>` rounding of the limits.
+
+       **Example**: Passing ``flex='d<3h'`` expands ``(min, max)`` -limits (derived from `available`) to the nearest
+       day, at most 3 hours from the original limit.
 
 Later folds are always [#]_ preferred. For more information about the `schedule`, `before/after` and `flex`-arguments,
 see the :ref:`User guide`. See the :doc:`../auto_examples/index` page for plots using the various parameter options.
 
 .. rubric:: Footnotes
 
+.. [#] Auto-flex levels are :class:`configurable <time_split.settings.auto_flex>`. Use :func:`.expand_limits` to
+       experiment with `flex` arguments.
 .. [#] This is :attr:`configurable <time_split.settings.misc.snap_to_end>` when `schedule` and `after` are both
        :attr:`timedelta <time_split.types.TimedeltaTypes>` types.
