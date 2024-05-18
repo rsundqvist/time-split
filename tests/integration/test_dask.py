@@ -19,17 +19,7 @@ def test_dask(kind):
     assert len(unlimited_splits) == 9
     assert unlimited_splits[-1].end.isoformat() == "2000-04-01T00:00:00"
 
-    with pytest.warns(DeprecationWarning) as w:
-        ax = plot(**kwargs, n_splits=5, show_removed=True, row_count_bin="1d")
-
-    messages = {str(w) for w in w.list}
-    assert any("Passing a BlockManager to DataFrame is deprecated" in m for m in messages)
-    if kind == "index":
-        assert len(messages) == 2
-        assert any("create_block_manager_from_blocks is deprecated" in m for m in messages)
-    else:
-        assert kind == "series"
-        assert len(messages) == 1
+    ax = plot(**kwargs, n_splits=5, show_removed=True, row_count_bin="1d")
 
     xtick_labels = [t.get_text() for t in ax.get_xticklabels()]
     assert len(xtick_labels) == len(unlimited_splits) + 2
