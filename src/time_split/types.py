@@ -18,8 +18,8 @@ Schedule: _t.TypeAlias = _pd.DatetimeIndex | DatetimeIterable | TimedeltaTypes
 """User schedule type."""
 Span = int | _t.Literal["all"] | TimedeltaTypes
 """User span type. Used to determine limits from the timestamps given by a :attr:`Schedule`."""
-Flex = bool | _t.Literal["auto"] | str
-"""Flexibility frequency string for ``floor/ceil``. Pass ``False`` to disable."""
+ExpandLimits = bool | _t.Literal["auto"] | str
+"""Fl exibility frequency string for ``floor/ceil``. Pass ``False`` to disable."""
 
 
 class DatetimeSplitBounds(_t.NamedTuple):
@@ -62,7 +62,7 @@ class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     after: Span
     step: int
     n_splits: int
-    expand_limits: Flex
+    expand_limits: ExpandLimits
 
 
 LoggerArg = _logging.Logger | _logging.LoggerAdapter[_t.Any] | str

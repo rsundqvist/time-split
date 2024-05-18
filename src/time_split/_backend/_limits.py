@@ -5,7 +5,7 @@ from typing import NamedTuple
 from pandas import Timedelta, Timestamp
 
 from ..settings import auto_expand_limits
-from ..types import Flex, TimedeltaTypes
+from ..types import ExpandLimits, TimedeltaTypes
 
 LimitsTuple = tuple[Timestamp, Timestamp]
 LevelTuple = tuple[TimedeltaTypes, TimedeltaTypes, TimedeltaTypes]
@@ -17,12 +17,12 @@ class _TimedeltaTuple(NamedTuple):
     tolerance: Timedelta
 
 
-def expand_limits(limits: LimitsTuple, *, expand_limits: Flex | LevelTuple | Iterable[LevelTuple] = "auto") -> LimitsTuple:
+def expand_limits(limits: LimitsTuple, *, expand_limits: ExpandLimits | LevelTuple | Iterable[LevelTuple] = "auto") -> LimitsTuple:
     """Derive the `"real"` bounds of `limits`.
 
     Args:
         limits: A tuple ``(min, max)`` of timestamps.
-        expand_limits: Flex arguments as described in the :ref:`User guide`. Also supports level-tuples
+        expand_limits: ExpandLimits arguments as described in the :ref:`User guide`. Also supports level-tuples
             ``[(start_at, round_to, tolerance)...]``. Passing ``expand_limits=[settings.auto_expand_limits.day, settings.auto_expand_limits.hour]``
             is equivalent to ``expand_limits='auto'``.
 

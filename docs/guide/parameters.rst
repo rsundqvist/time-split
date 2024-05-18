@@ -61,7 +61,7 @@ otherwise stated.
 
    * - ``expand_limits``
      - = `'auto'`
-     - Valid :attr:`~types.Flex` types:
+     - Valid :attr:`~types.ExpandLimits` types:
 
        * Literal `'auto'` [#]_
        * ``bool``

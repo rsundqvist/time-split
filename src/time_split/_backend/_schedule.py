@@ -2,7 +2,7 @@ from typing import NamedTuple, cast, get_args
 
 from pandas import DatetimeIndex, NaT, Timedelta, Timestamp, date_range
 
-from ..types import DatetimeIterable, Flex, Schedule, TimedeltaTypes
+from ..types import DatetimeIterable, ExpandLimits, Schedule, TimedeltaTypes
 from ._limits import LimitsTuple
 from ._process_available import ProcessAvailableResult, process_available
 
@@ -17,7 +17,7 @@ class MaterializedSchedule(NamedTuple):
 
 
 def materialize_schedule(
-    schedule: Schedule, expand_limits: Flex, *, available: DatetimeIterable | None = None
+    schedule: Schedule, expand_limits: ExpandLimits, *, available: DatetimeIterable | None = None
 ) -> MaterializedSchedule:
     """Materialize user schedule based on available data."""
     if available is None:

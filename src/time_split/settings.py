@@ -6,7 +6,7 @@ from . import types as _tst
 
 
 class auto_expand_limits:  # noqa: N801
-    """Configuration for the `'auto'` :attr:`~time_split.types.Flex` logic.
+    """Configuration for the `'auto'` :attr:`~time_split.types.ExpandLimits` logic.
 
     This class determines how ``(min, max)``-tuples are expanded when expand_limitsible bounds are enabled.
     """

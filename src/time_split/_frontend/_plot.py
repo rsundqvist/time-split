@@ -16,7 +16,7 @@ from ..types import (
     DatetimeIterable,
     DatetimeSplitBounds,
     DatetimeSplits,
-    Flex,
+    ExpandLimits,
     Schedule,
     Span,
 )
@@ -64,7 +64,7 @@ def plot(
     step: int = 1,
     n_splits: int = 0,
     available: DatetimeIterable | None = None,
-    expand_limits: Flex = "auto",
+    expand_limits: ExpandLimits = "auto",
     # Split plot args
     bar_labels: str | Rows | list[tuple[str, str]] | bool = True,
     show_removed: bool = False,

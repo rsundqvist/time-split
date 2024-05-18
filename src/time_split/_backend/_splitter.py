@@ -12,7 +12,7 @@ from ..types import (
     DatetimeIterable,
     DatetimeSplitBounds,
     DatetimeSplits,
-    Flex,
+    ExpandLimits,
     Schedule,
     Span,
     TimedeltaTypes,
@@ -33,7 +33,7 @@ class DatetimeIndexSplitter:
     after: Span
     step: int
     n_splits: int
-    expand_limits: Flex
+    expand_limits: ExpandLimits
 
     def get_splits(self, available: DatetimeIterable | None = None) -> DatetimeSplits:
         """Compute a split of given user data."""

@@ -3,7 +3,7 @@ from typing import NamedTuple
 from pandas import DatetimeIndex, Timestamp, isna
 
 from .._support import handle_dask
-from ..types import DatetimeIterable, Flex
+from ..types import DatetimeIterable, ExpandLimits
 from ._datetime_index_like import DatetimeIndexLike
 from ._limits import LimitsTuple, expand_limits
 
@@ -16,12 +16,12 @@ class ProcessAvailableResult(NamedTuple):
     expanded_limits: LimitsTuple
 
 
-def process_available(available: DatetimeIterable, *, expand_limits: Flex) -> ProcessAvailableResult:
+def process_available(available: DatetimeIterable, *, expand_limits: ExpandLimits) -> ProcessAvailableResult:
     """Process a user-given `available` argument.
 
     Args:
         available: Available data from user. May be ``None``
-        expand_limits: Flex-argument. Determines how much (if at all) to expand limits.
+        expand_limits: ExpandLimits-argument. Determines how much (if at all) to expand limits.
 
     Returns:
         A tuple ``(available, limits)``. Note that `available` will be ``None``, it has not been iterated over. This

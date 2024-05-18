@@ -2,14 +2,14 @@ Data limits
 ===========
 .. currentmodule:: time_split
 
-Data :attr:`~types.Flex` allows bounds inferred from and `available` data argument to stretch
+Data :attr:`~types.ExpandLimits` allows bounds inferred from and `available` data argument to stretch
 **outward** slightly, toward the likely "real" limits of the data.
 
 .. hint::
 
     See :func:`.support.expand_limits` for examples and manual experimentation.
 
-.. list-table:: Flex options.
+.. list-table:: ExpandLimits options.
    :header-rows: 1
    :widths: 20 80
 
