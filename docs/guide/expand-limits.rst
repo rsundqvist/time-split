@@ -1,15 +1,28 @@
-Data limits
-===========
+Data limits expansion
+=====================
 .. currentmodule:: time_split
 
-Data :attr:`~types.ExpandLimits` allows bounds inferred from and `available` data argument to stretch
+Data limits expansion allows bounds inferred from and `available` data argument to stretch
 **outward** slightly, toward the likely "real" limits of the data.
 
-.. hint::
 
-    See :func:`.support.expand_limits` for examples and manual experimentation.
+.. code-block:: python
 
-.. list-table:: ExpandLimits options.
+   from pandas import Timestamp
+   from time_split.support import expand_limits
+
+   limits = Timestamp("2019-05-11"), Timestamp("2019-05-11 22:05:30")
+
+   expanded = expand_limits(limits, "d")
+   assert expanded == (
+       Timestamp('2019-05-11 00:00:00'),
+       Timestamp('2019-05-12 00:00:00'),
+   )
+
+
+See :func:`.support.expand_limits` for more examples and manual experimentation.
+
+.. list-table:: :attr:`~types.ExpandLimits` specification options.
    :header-rows: 1
    :widths: 20 80
 
@@ -33,4 +46,5 @@ Data :attr:`~types.ExpandLimits` allows bounds inferred from and `available` dat
        For example, passing ``expand_limits="d<1h"`` will snap limits to the nearest date, but will not expand limits by more
        than one hour in either direction.
 
-.. seealso:: The :doc:`../auto_examples/index` page.
+The :func:`~.support.expand_limits` function uses level tuples on the form ``(start_at, round_to, tolerance)`` internally.
+These may be passed directly to ``expand_limits()``, but **not** to any other functions. Use the types above instead.

@@ -17,17 +17,21 @@ class _TimedeltaTuple(NamedTuple):
     tolerance: Timedelta
 
 
-def expand_limits(limits: LimitsTuple, *, expand_limits: ExpandLimits | LevelTuple | Iterable[LevelTuple] = "auto") -> LimitsTuple:
+def expand_limits(
+    limits: LimitsTuple,
+    spec: ExpandLimits | LevelTuple | Iterable[LevelTuple] = "auto",
+) -> LimitsTuple:
     """Derive the `"real"` bounds of `limits`.
 
     Args:
         limits: A tuple ``(min, max)`` of timestamps.
-        expand_limits: ExpandLimits arguments as described in the :ref:`User guide`. Also supports level-tuples
-            ``[(start_at, round_to, tolerance)...]``. Passing ``expand_limits=[settings.auto_expand_limits.day, settings.auto_expand_limits.hour]``
+        spec: Expansion spec as described in the :ref:`User guide`. Also supports level-tuples
+            ``[(start_at, round_to, tolerance)...]``. Passing
+            ``expand_limits=[settings.auto_expand_limits.day, settings.auto_expand_limits.hour]``
             is equivalent to ``expand_limits='auto'``.
 
     Returns:
-        Limits rounded according to the `expand_limits`-argument.
+        Limits rounded according to the given specification.
 
     Raises:
         ValueError: For invalid limits.
@@ -38,23 +42,23 @@ def expand_limits(limits: LimitsTuple, *, expand_limits: ExpandLimits | LevelTup
 
         Basic usage.
 
-        >>> expand_limits(limits, expand_limits="d")
+        >>> expand_limits(limits, "d")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-12 00:00:00'))
 
         You may specify a maximum "distance" that limits may be expanded.
 
-        >>> expand_limits(limits, expand_limits="d<1h")
+        >>> expand_limits(limits, "d<1h")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-11 22:05:30'))
 
         Limits will never be rounded in the "wrong" direction...
 
         >>> limits = Timestamp("2019-05-11"), Timestamp("2019-05-11 11:05:30")
-        >>> expand_limits(limits, expand_limits="d")
+        >>> expand_limits(limits, "d")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-11 11:05:30'))
 
         ...even if you make the tolerance large enough.
 
-        >>> expand_limits(limits, expand_limits="d<14h")
+        >>> expand_limits(limits, "d<14h")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-11 11:05:30'))
 
     """
@@ -62,20 +66,20 @@ def expand_limits(limits: LimitsTuple, *, expand_limits: ExpandLimits | LevelTup
         msg = f"Bad limits. Expected limits[1] > limits[0], but got {limits=}."
         raise ValueError(msg)
 
-    if expand_limits is False:
+    if spec is False:
         return limits
 
-    if expand_limits is True or expand_limits == "auto":
+    if spec is True or spec == "auto":
         return _from_levels(limits)
 
-    if isinstance(expand_limits, str):
-        round_to, _, tolerance = expand_limits.partition("<")
+    if isinstance(spec, str):
+        round_to, _, tolerance = spec.partition("<")
         level = _make_level(None, round_to=round_to.strip(), tolerance=tolerance.strip())
         return _apply(limits, level=level)
-    if isinstance(expand_limits, tuple):
-        return _from_levels(limits, levels=[_make_level(*expand_limits)])
+    if isinstance(spec, tuple):
+        return _from_levels(limits, levels=[_make_level(*spec)])
 
-    return _from_levels(limits, levels=starmap(_make_level, expand_limits))
+    return _from_levels(limits, levels=starmap(_make_level, spec))
 
 
 def _from_levels(limits: LimitsTuple, *, levels: Iterable[_TimedeltaTuple] | None = None) -> LimitsTuple:

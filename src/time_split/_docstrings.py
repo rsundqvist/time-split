@@ -29,7 +29,8 @@ _DOCSTRINGS = {
     "available": "Binds `schedule` to a range.",
     "expand_limits": f'A {_OFFSET} used to expand `available` data to its likely `"true"` limits. Pass ``False`` to disable.',
     "USER_GUIDE": (
-        "For more information about the `schedule`, `before/after` and `expand_limits`-arguments" ", see the :ref:`User guide`."
+        "For more information about the `schedule`, `before/after` and `expand_limits`-arguments"
+        ", see the :ref:`User guide`."
     ),
     "OFFSET": _OFFSET,
     "DatetimeIndexSplitterKwargs": "See :func:`~time_split.split`. The `available` keyword is managed by the integration.",

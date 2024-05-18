@@ -39,4 +39,4 @@ Limitations
 
 .. rubric:: Footnotes
 
-.. [#expand_limits] By default, bounds derived from `available` data is expand_limitsible. See :ref:`Available data `expand_limits`` for details.
+.. [#expand_limits] By default, bounds derived from `available` data is flexible. See :ref:`Data limits expansion` for details.

@@ -5,7 +5,8 @@ from pandas import DatetimeIndex, Timestamp, isna
 from .._support import handle_dask
 from ..types import DatetimeIterable, ExpandLimits
 from ._datetime_index_like import DatetimeIndexLike
-from ._limits import LimitsTuple, expand_limits
+from ._limits import LimitsTuple
+from ._limits import expand_limits as expand
 
 
 class ProcessAvailableResult(NamedTuple):
@@ -21,7 +22,8 @@ def process_available(available: DatetimeIterable, *, expand_limits: ExpandLimit
 
     Args:
         available: Available data from user. May be ``None``
-        expand_limits: ExpandLimits-argument. Determines how much (if at all) to expand limits.
+        expand_limits: Expansion spec as described in the :ref:`User guide`. Determines how much (if at all) to expand
+            limits.
 
     Returns:
         A tuple ``(available, limits)``. Note that `available` will be ``None``, it has not been iterated over. This
@@ -49,7 +51,7 @@ def process_available(available: DatetimeIterable, *, expand_limits: ExpandLimit
         # (croniter 1.4.1 + numpy 1.25.2): croniter cannot handle numpy.datetime64
         limits = Timestamp(min_dt), Timestamp(max_dt)
 
-    expanded_limits = expand_limits(limits, expand_limits=expand_limits)
+    expanded_limits = expand(limits, spec=expand_limits)
     return ProcessAvailableResult(available_retval, limits=limits, expanded_limits=expanded_limits)
 
 
