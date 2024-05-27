@@ -3129,13 +3129,13 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "rics"
-version = "4.0.1"
+version = "4.1.0"
 description = "My personal little ML engineering library."
 optional = false
 python-versions = ">=3.11"
 files = [
-    {file = "rics-4.0.1-py3-none-any.whl", hash = "sha256:64079cf89f3a3bbcc4fb49a3039650fcde8fec17133b6fdc7d7bbc9d123d5d1f"},
-    {file = "rics-4.0.1.tar.gz", hash = "sha256:8fdaadebcaba577707139f8253560907eaa9a547567a49e51b3cc007f532445f"},
+    {file = "rics-4.1.0-py3-none-any.whl", hash = "sha256:7eb96bc7ff929f129971f0a3c7deb8e687981344d00fe73ea801441d7cde950a"},
+    {file = "rics-4.1.0.tar.gz", hash = "sha256:8d49d0eee6b529714b7bc6c36a72334a52a4b198136e2e0e3128e81ef0224ea9"},
 ]
 
 [package.dependencies]
