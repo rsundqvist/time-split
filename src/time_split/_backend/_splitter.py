@@ -4,7 +4,8 @@ from typing import cast, get_args
 
 from pandas import Timedelta, Timestamp
 from rics.misc import format_kwargs
-from rics.performance import format_seconds
+
+from time_split._compat import fmt_sec
 
 from ..settings import misc
 from ..types import (
@@ -137,7 +138,7 @@ class DatetimeIndexSplitter:
             if old == new:
                 return retval + "<no change>"
             diff = (new - old).total_seconds()
-            return retval + f"{_PrettyTimestamp(new).auto} ({'+' if diff > 0 else '-'}{format_seconds(abs(diff))})"
+            return retval + f"{_PrettyTimestamp(new).auto} ({'+' if diff > 0 else '-'}{fmt_sec(abs(diff))})"
 
         LOGGER.info(
             f"Available data limits have been expanded (since expand_limits={self.expand_limits!r}):\n"

@@ -6,7 +6,8 @@ from typing import Any, Generic
 
 import pandas as pd
 from rics.collections.dicts import flatten_dict
-from rics.performance import format_seconds
+
+from time_split._compat import fmt_sec
 
 from ..settings import log_split_progress as settings
 from ..types import DatetimeSplitBounds, FormatMetrics, GetMetrics, LoggerArg, MetricsType, SplitProgressExtras
@@ -96,7 +97,7 @@ def log_split_progress(
         start_message=settings.START_MESSAGE,
         end_level=end_level,
         end_message=settings.END_MESSAGE,
-        seconds_formatter=settings.SECONDS_FORMATTER or format_seconds,
+        seconds_formatter=settings.SECONDS_FORMATTER or fmt_sec,
         user_extra={} if extra is None else extra.copy(),  # Not actually immutable; deepcopy can be very expensive.
         get_metrics=get_metrics,
         format_metrics=settings.FORMAT_METRICS or default_metrics_formatter,

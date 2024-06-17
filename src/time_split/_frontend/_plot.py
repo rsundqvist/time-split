@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Any, Literal
 import pandas as pd
 from pandas import Timestamp
 from rics.misc import format_kwargs, get_public_module
-from rics.performance import format_seconds
+
+from time_split._compat import fmt_sec
 
 from .._backend import DatetimeIndexSplitter
 from .._backend._datetime_index_like import DatetimeIndexLike
@@ -207,10 +208,10 @@ def _plot_row_counts(ax: "Axes", row_count_bin: str | pd.Series, row_counts: pd.
         from numpy import diff, timedelta64
 
         row_counts = row_count_bin.sort_index()
-        pretty = format_seconds(diff(row_counts.index).min() / timedelta64(1, "s"))
+        pretty = fmt_sec(diff(row_counts.index).min() / timedelta64(1, "s"))
     else:
         row_counts = row_counts.sort_index()
-        pretty = format_seconds(pd.Timedelta(row_count_bin).total_seconds())
+        pretty = fmt_sec(pd.Timedelta(row_count_bin).total_seconds())
 
     row_counts = row_counts * (max(ax.get_yticks()) / row_counts.max())  # Normalize to fold number yaxis
     ax.fill_between(

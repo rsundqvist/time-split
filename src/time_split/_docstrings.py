@@ -1,6 +1,9 @@
-from typing import TypeVar
+from typing import Callable, ParamSpec, TypeVar
 
-FuncType = TypeVar("FuncType")  # No proper way to type this?
+from time_split._compat import deprecated_params
+
+P = ParamSpec("P")
+T = TypeVar("T")
 
 
 def add_docstrings(**kwargs: str) -> None:
@@ -8,11 +11,17 @@ def add_docstrings(**kwargs: str) -> None:
     _DOCSTRINGS.update(kwargs)
 
 
-def docs(function: FuncType) -> FuncType:
+def docs(__func: Callable[P, T], /) -> Callable[P, T]:
     """Add info the docstring of a function."""
-    assert function.__doc__ is not None  # noqa: S101
-    function.__doc__ = function.__doc__.format(**_DOCSTRINGS)
-    return function
+    assert __func.__doc__ is not None  # noqa: S101
+    __func.__doc__ = __func.__doc__.format(**_DOCSTRINGS)
+
+    if isinstance(__func, type):
+        __func.__init__ = deprecated_params(__func.__init__)
+    else:
+        __func = deprecated_params(__func)
+
+    return __func
 
 
 _OFFSET = "pandas :ref:`offset alias <pandas:timeseries.offset_aliases>`"

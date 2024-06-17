@@ -114,7 +114,7 @@ class log_split_progress:  # noqa: N801
     """
 
     SECONDS_FORMATTER: _t.Callable[[float], str] | None = None
-    """A callable ``(seconds) -> formatted_seconds``. Use :func:`rics.performance.format_seconds` if ``None``.
+    """A callable ``(seconds) -> formatted_seconds``. Use :func:`rics.strings.format_seconds` if ``None``.
 
     Both ``seconds`` and ``formatted_seconds`` will be available to the :attr:`END_MESSAGE` message.
     """
