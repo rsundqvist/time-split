@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deprecated
+- The `flex` argument is now called `expand_limits` in all user-facing functions. The support function with the same 
+  name now uses `spec` for the equivalent argument.
+
+### Fixed
+- Remove uses of deprecated functions.
+
 ## [0.3.0] - 2024-05-18
 
 ### Added

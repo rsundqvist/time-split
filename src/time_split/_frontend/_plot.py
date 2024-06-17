@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Any, Literal
 import pandas as pd
 from pandas import Timestamp
 from rics.misc import format_kwargs, get_public_module
-from rics.performance import format_seconds
+
+from time_split._compat import fmt_sec
 
 from .._backend import DatetimeIndexSplitter
 from .._backend._datetime_index_like import DatetimeIndexLike
@@ -16,7 +17,7 @@ from ..types import (
     DatetimeIterable,
     DatetimeSplitBounds,
     DatetimeSplits,
-    Flex,
+    ExpandLimits,
     Schedule,
     Span,
 )
@@ -64,7 +65,7 @@ def plot(
     step: int = 1,
     n_splits: int = 0,
     available: DatetimeIterable | None = None,
-    flex: Flex = "auto",
+    expand_limits: ExpandLimits = "auto",
     # Split plot args
     bar_labels: str | Rows | list[tuple[str, str]] | bool = True,
     show_removed: bool = False,
@@ -84,7 +85,7 @@ def plot(
         n_splits: {n_splits}
         available: {available} If `bar_labels` is given but is not a ``list``,
             this data will be used to compute fold sizes.
-        flex: {flex}
+        expand_limits: {expand_limits}
         bar_labels: Labels to draw on the bars. If you pass a string, it will be interpreted as a time unit (see
             :ref:`pandas:timeseries.offset_aliases` for valid frequency strings). Bars will show the number of units
             contained. Pass `'rows'` to simply count the numbers of elements in `data` (if given). To write custom
@@ -114,7 +115,7 @@ def plot(
         after=after,
         step=step,
         n_splits=n_splits,
-        flex=flex,
+        expand_limits=expand_limits,
     )
     plot_data = _get_plot_data(available, splitter, row_count_bin=row_count_bin, show_removed=show_removed)
 
@@ -207,10 +208,10 @@ def _plot_row_counts(ax: "Axes", row_count_bin: str | pd.Series, row_counts: pd.
         from numpy import diff, timedelta64
 
         row_counts = row_count_bin.sort_index()
-        pretty = format_seconds(diff(row_counts.index).min() / timedelta64(1, "s"))
+        pretty = fmt_sec(diff(row_counts.index).min() / timedelta64(1, "s"))
     else:
         row_counts = row_counts.sort_index()
-        pretty = format_seconds(pd.Timedelta(row_count_bin).total_seconds())
+        pretty = fmt_sec(pd.Timedelta(row_count_bin).total_seconds())
 
     row_counts = row_counts * (max(ax.get_yticks()) / row_counts.max())  # Normalize to fold number yaxis
     ax.fill_between(

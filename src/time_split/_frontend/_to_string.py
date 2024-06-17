@@ -29,7 +29,7 @@ def to_string(
 
 
 def to_string(
-    bounds: (DatetimeTypes | DatetimeSplitBounds | tuple[DatetimeTypes, DatetimeTypes, DatetimeTypes]),
+    bounds: DatetimeTypes | DatetimeSplitBounds | tuple[DatetimeTypes, DatetimeTypes, DatetimeTypes],
     mid: DatetimeTypes | None = None,
     end: DatetimeTypes | None = None,
     /,

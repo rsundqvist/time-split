@@ -4,8 +4,8 @@ from typing import NamedTuple
 
 from pandas import Timedelta, Timestamp
 
-from ..settings import auto_flex
-from ..types import Flex, TimedeltaTypes
+from ..settings import auto_expand_limits
+from ..types import ExpandLimits, TimedeltaTypes
 
 LimitsTuple = tuple[Timestamp, Timestamp]
 LevelTuple = tuple[TimedeltaTypes, TimedeltaTypes, TimedeltaTypes]
@@ -17,17 +17,21 @@ class _TimedeltaTuple(NamedTuple):
     tolerance: Timedelta
 
 
-def expand_limits(limits: LimitsTuple, *, flex: Flex | LevelTuple | Iterable[LevelTuple] = "auto") -> LimitsTuple:
+def expand_limits(
+    limits: LimitsTuple,
+    spec: ExpandLimits | LevelTuple | Iterable[LevelTuple] = "auto",
+) -> LimitsTuple:
     """Derive the `"real"` bounds of `limits`.
 
     Args:
         limits: A tuple ``(min, max)`` of timestamps.
-        flex: Flex arguments as described in the :ref:`User guide`. Also supports level-tuples
-            ``[(start_at, round_to, tolerance)...]``. Passing ``flex=[settings.auto_flex.day, settings.auto_flex.hour]``
-            is equivalent to ``flex='auto'``.
+        spec: Expansion spec as described in the :ref:`User guide`. Also supports level-tuples
+            ``[(start_at, round_to, tolerance)...]``. Passing
+            ``expand_limits=[settings.auto_expand_limits.day, settings.auto_expand_limits.hour]``
+            is equivalent to ``expand_limits='auto'``.
 
     Returns:
-        Limits rounded according to the `flex`-argument.
+        Limits rounded according to the given specification.
 
     Raises:
         ValueError: For invalid limits.
@@ -38,23 +42,23 @@ def expand_limits(limits: LimitsTuple, *, flex: Flex | LevelTuple | Iterable[Lev
 
         Basic usage.
 
-        >>> expand_limits(limits, flex="d")
+        >>> expand_limits(limits, "d")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-12 00:00:00'))
 
         You may specify a maximum "distance" that limits may be expanded.
 
-        >>> expand_limits(limits, flex="d<1h")
+        >>> expand_limits(limits, "d<1h")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-11 22:05:30'))
 
         Limits will never be rounded in the "wrong" direction...
 
         >>> limits = Timestamp("2019-05-11"), Timestamp("2019-05-11 11:05:30")
-        >>> expand_limits(limits, flex="d")
+        >>> expand_limits(limits, "d")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-11 11:05:30'))
 
         ...even if you make the tolerance large enough.
 
-        >>> expand_limits(limits, flex="d<14h")
+        >>> expand_limits(limits, "d<14h")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-11 11:05:30'))
 
     """
@@ -62,20 +66,20 @@ def expand_limits(limits: LimitsTuple, *, flex: Flex | LevelTuple | Iterable[Lev
         msg = f"Bad limits. Expected limits[1] > limits[0], but got {limits=}."
         raise ValueError(msg)
 
-    if flex is False:
+    if spec is False:
         return limits
 
-    if flex is True or flex == "auto":
+    if spec is True or spec == "auto":
         return _from_levels(limits)
 
-    if isinstance(flex, str):
-        round_to, _, tolerance = flex.partition("<")
+    if isinstance(spec, str):
+        round_to, _, tolerance = spec.partition("<")
         level = _make_level(None, round_to=round_to.strip(), tolerance=tolerance.strip())
         return _apply(limits, level=level)
-    if isinstance(flex, tuple):
-        return _from_levels(limits, levels=[_make_level(*flex)])
+    if isinstance(spec, tuple):
+        return _from_levels(limits, levels=[_make_level(*spec)])
 
-    return _from_levels(limits, levels=starmap(_make_level, flex))
+    return _from_levels(limits, levels=starmap(_make_level, spec))
 
 
 def _from_levels(limits: LimitsTuple, *, levels: Iterable[_TimedeltaTuple] | None = None) -> LimitsTuple:
@@ -106,7 +110,7 @@ def _apply(limits: LimitsTuple, *, level: _TimedeltaTuple) -> LimitsTuple:
     if abs(hi_ceil - hi) > level.tolerance:
         return limits
 
-    if auto_flex.SANITY_CHECK:
+    if auto_expand_limits.SANITY_CHECK:
         if lo.round(level.round_to) != lo_floor:
             return limits
         if hi.round(level.round_to) != hi_ceil:
@@ -116,12 +120,12 @@ def _apply(limits: LimitsTuple, *, level: _TimedeltaTuple) -> LimitsTuple:
 
 
 def _levels_from_settings() -> list[_TimedeltaTuple]:
-    day, hour = _make_level(*auto_flex.day), _make_level(*auto_flex.hour)
+    day, hour = _make_level(*auto_expand_limits.day), _make_level(*auto_expand_limits.hour)
     if day.round_to != Timedelta(days=1):
-        msg = f"Invalid settings: {auto_flex.day=} must have round_to=1 day."
+        msg = f"Invalid settings: {auto_expand_limits.day=} must have round_to=1 day."
         raise ValueError(msg)
     if hour.round_to != Timedelta(hours=1):
-        msg = f"Invalid settings: {auto_flex.hour=} must have round_to=1 hour."
+        msg = f"Invalid settings: {auto_expand_limits.hour=} must have round_to=1 hour."
         raise ValueError(msg)
     return [day, hour]
 

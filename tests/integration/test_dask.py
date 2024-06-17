@@ -1,7 +1,7 @@
 import pytest
 from dask.datasets import timeseries
 from time_split import plot, split
-from time_split._backend._process_available import process_available
+from time_split.support import process_available
 
 
 @pytest.mark.parametrize("kind", ["index", "series"])
@@ -38,7 +38,7 @@ def test_dask(kind):
 def test_index_is_preserved():
     available = timeseries(freq="10 min").index
 
-    actual = process_available(available, flex=False).available_as_index
+    actual = process_available(available, expand_limits=False).available_as_index
     assert id(available) == id(actual)
 
 
@@ -47,5 +47,5 @@ def test_series_is_preserved():
 
     available = timeseries(freq="10 min").index
 
-    actual = process_available(available, flex=False).available_as_index
+    actual = process_available(available, expand_limits=False).available_as_index
     assert isinstance(actual, Series)

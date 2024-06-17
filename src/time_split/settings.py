@@ -5,14 +5,14 @@ import typing as _t
 from . import types as _tst
 
 
-class auto_flex:  # noqa: N801
-    """Configuration for the `'auto'` :attr:`~time_split.types.Flex` logic.
+class auto_expand_limits:  # noqa: N801
+    """Configuration for the `'auto'` :attr:`~time_split.types.ExpandLimits` logic.
 
-    This class determines how ``(min, max)``-tuples are expanded when flexible bounds are enabled.
+    This class determines how ``(min, max)``-tuples are expanded when expand_limitsible bounds are enabled.
     """
 
     SANITY_CHECK: bool = True
-    """If ``True``, use original limits if flexed limits do not pass sanity checks."""
+    """If ``True``, use original limits if expand_limitsed limits do not pass sanity checks."""
 
     @classmethod
     def set_level(
@@ -23,7 +23,7 @@ class auto_flex:  # noqa: N801
         round_to: _tst.TimedeltaTypes,
         tolerance: _tst.TimedeltaTypes,
     ) -> None:
-        """Set a :class:`Level` used by the auto-flex logic.
+        """Set a :class:`Level` used by the auto-expand_limits logic.
 
         Inputs are not verified until an actual split is made.
 
@@ -43,7 +43,7 @@ class auto_flex:  # noqa: N801
         setattr(cls, level, level_tuple)
 
     class Level(_t.NamedTuple):
-        """Level type used by :attr:`auto_flex`."""
+        """Level type used by :attr:`auto_expand_limits`."""
 
         start_at: _tst.TimedeltaTypes
         """Span size at which this level starts."""
@@ -114,7 +114,7 @@ class log_split_progress:  # noqa: N801
     """
 
     SECONDS_FORMATTER: _t.Callable[[float], str] | None = None
-    """A callable ``(seconds) -> formatted_seconds``. Use :func:`rics.performance.format_seconds` if ``None``.
+    """A callable ``(seconds) -> formatted_seconds``. Use :func:`rics.strings.format_seconds` if ``None``.
 
     Both ``seconds`` and ``formatted_seconds`` will be available to the :attr:`END_MESSAGE` message.
     """

@@ -10,7 +10,7 @@ from ...types import (
     DatetimeIterable,
     DatetimeSplits,
     DatetimeTypes,
-    Flex,
+    ExpandLimits,
     MetricsType,
     Schedule,
     Span,
@@ -44,7 +44,7 @@ class ScikitLearnSplitter(BaseCrossValidator):  # type: ignore[misc]
         after: {after}
         step: {step}
         n_splits: {n_splits}
-        flex: {flex}
+        expand_limits: {expand_limits}
         log_progress: {log_progress}
         verify_xy: If ``True``, split X and y independently and verify that they are equal.
 
@@ -59,7 +59,7 @@ class ScikitLearnSplitter(BaseCrossValidator):  # type: ignore[misc]
         before: Span = "7d",
         after: Span = 1,
         n_splits: int = 0,
-        flex: Flex = "auto",
+        expand_limits: ExpandLimits = "auto",
         step: int = 1,
         log_progress: LogProgressArg[MetricsType] = False,
         verify_xy: bool = True,
@@ -71,7 +71,7 @@ class ScikitLearnSplitter(BaseCrossValidator):  # type: ignore[misc]
             after=after,
             step=step,
             n_splits=n_splits,
-            flex=flex,
+            expand_limits=expand_limits,
         )
         self.log_progress = log_progress
         self.verify_xy = verify_xy
