@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2024-06-17
+
 ### Deprecated
 - The `flex` argument is now called `expand_limits` in all user-facing functions. The support function with the same 
   name now uses `spec` for the equivalent argument.
@@ -59,7 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed a few documentation and examples issues.
 
-[Unreleased]: https://github.com/rsundqvist/time-split/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/rsundqvist/time-split/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/rsundqvist/time-split/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/rsundqvist/time-split/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/rsundqvist/time-split/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/rsundqvist/time-split/compare/v0.1.0...v0.2.0
