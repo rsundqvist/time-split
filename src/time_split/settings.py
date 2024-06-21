@@ -8,11 +8,11 @@ from . import types as _tst
 class auto_expand_limits:  # noqa: N801
     """Configuration for the `'auto'` :attr:`~time_split.types.ExpandLimits` logic.
 
-    This class determines how ``(min, max)``-tuples are expanded when expand_limitsible bounds are enabled.
+    This class determines how ``(min, max)``-tuples are expanded when expanded limits are enabled.
     """
 
     SANITY_CHECK: bool = True
-    """If ``True``, use original limits if expand_limitsed limits do not pass sanity checks."""
+    """If ``True``, use original limits if expanded limits do not pass sanity checks."""
 
     @classmethod
     def set_level(
