@@ -7,7 +7,7 @@ from rics.misc import format_kwargs
 
 from time_split._compat import fmt_sec
 
-from ..settings import misc
+from ..settings import misc as settings
 from ..types import (
     DatetimeIndexSplitterKwargs,
     DatetimeIterable,
@@ -55,7 +55,7 @@ class DatetimeIndexSplitter:
 
         types = get_args(TimedeltaTypes)
         if (
-            misc.snap_to_end
+            settings.snap_to_end
             and self.after != "all"
             and isinstance(self.schedule, types)
             and isinstance(self.after, types)
@@ -88,10 +88,16 @@ class DatetimeIndexSplitter:
         retval = []
         for i, mid in enumerate(ms.schedule):
             start, end = get_start(i), get_end(i)
-            if start is None or start < min_start or start >= mid:
+
+            if start is None or end is None:
                 continue
-            if end is None or end > max_end or end <= mid:
+
+            if start < min_start or start >= mid:
                 continue
+
+            if end > max_end or end <= mid:
+                continue
+
             retval.append(DatetimeSplitBounds(start, mid, end))
 
         if not retval:
@@ -122,7 +128,10 @@ class DatetimeIndexSplitter:
         if self.step < 0:  # Poorly documented - might not work as expected?
             splits.reverse()
 
-        return splits
+        if settings.filter is None:
+            return splits
+        print(len(splits), len([s for s in splits if settings.filter(*s)]))
+        return [s for s in splits if settings.filter(*s)]
 
     def _log_expansion(self, original: LimitsTuple, *, expanded: LimitsTuple) -> None:
         if original == expanded:

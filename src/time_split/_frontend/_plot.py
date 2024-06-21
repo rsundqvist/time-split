@@ -12,7 +12,7 @@ from .._backend._datetime_index_like import DatetimeIndexLike
 from .._backend._limits import LimitsTuple
 from .._docstrings import docs
 from .._support import handle_dask
-from ..settings import plot as settings
+from ..settings import plot as settings, misc as misc_settings
 from ..types import (
     DatetimeIterable,
     DatetimeSplitBounds,
@@ -284,7 +284,14 @@ def _get_plot_data(
 
     if show_removed:
         kept_splits = set(splits)
-        splits = replace(splitter, n_splits=0, step=1).get_plot_data(available)[0]
+
+        original_filter = misc_settings.filter
+        misc_settings.filter = None
+        try:
+            splits = replace(splitter, n_splits=0, step=1).get_plot_data(available)[0]
+        finally:
+            misc_settings.filter = original_filter
+
         if splitter.step < 0:
             splits.reverse()
         removed = set(splits) - set(kept_splits)
