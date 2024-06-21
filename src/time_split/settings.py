@@ -1,7 +1,9 @@
 """Global settings for the splitting logic."""
 
 import typing as _t
+
 import pandas as _pd
+
 from . import types as _tst
 
 
@@ -84,8 +86,8 @@ class plot:  # noqa: N801
     FUTURE_DATA_LABEL: str = "Future data"
     """Label of the red bar; data in the the [:attr:`~.DatetimeSplitBounds.mid`, :attr:`~.types.DatetimeSplitBounds.end`)-range."""
 
-    DEFAULT_TIME_UNIT: str = "h"
-    """Time unit to use by default when ``bar_labels=True`` and ``available=None``."""
+    DEFAULT_TIME_UNIT: str = "day"
+    """Time unit to use by default when ``bar_labels=True`` and ``available`` is ``None`` or a range tuple."""
 
     REMOVED_FOLD_STYLE: _t.ClassVar[dict[str, _t.Any]] = {
         "alpha": 0.35,
