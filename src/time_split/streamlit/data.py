@@ -1,13 +1,24 @@
-from datetime import date
-
 import pandas as pd
 import streamlit as st
 
 
-def sample_data() -> pd.DataFrame:
+def sample_data(
+    *,
+    repeat: int = 2,
+    start: str | None = None,
+    end: str | None = "2019-05-11 20:30",
+    freq: str = "h",
+) -> pd.DataFrame:
     from pathlib import Path
 
-    return pd.read_csv(Path(__file__).parent / "sample.csv").rename(columns=str.title)
+    timeseries = pd.read_csv(Path(__file__).parent / "timeseries.csv", header=None)
+    reverse_timeseries = timeseries.iloc[::-1]
+
+    df = pd.concat([timeseries, reverse_timeseries] * repeat, ignore_index=True)
+    df.columns = [f"Column {i}" for i in df]
+    df["timestamp"] = pd.date_range(start, end, freq=freq, periods=len(df))
+
+    return df
 
 
 def load() -> pd.DataFrame:
@@ -29,12 +40,12 @@ def select_index(df: pd.DataFrame) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd
         try:
             index = lower.get_loc(s)
             break
-        except ValueError:
+        except KeyError:
             pass
 
     selection = st.selectbox("Choose index", options=df.columns, index=index)
 
-    df[selection] = df[selection].map(date.fromisoformat)
+    # df[selection] = df[selection].map(date.fromisoformat)
     # TypeError: Cannot compare Timestamp with datetime.date. Use ts == pd.Timestamp(date) or ts.date() == date instead.
     df[selection] = df[selection].map(pd.Timestamp)
 
