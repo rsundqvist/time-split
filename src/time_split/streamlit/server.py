@@ -1,10 +1,11 @@
+import logging
 import time
 
 import numpy as np
 import pandas as pd
 import streamlit as st
-from rics import configure_stuff
 from rics.misc import format_kwargs
+from rics.plotting import configure
 
 from time_split import plot, split
 from time_split.integration.pandas import split_pandas
@@ -12,7 +13,18 @@ from time_split.streamlit import data
 from time_split.support import to_string
 from time_split.types import DatetimeIndexSplitterKwargs, LogSplitProgressKwargs
 
-configure_stuff()
+LOGGER = logging.getLogger("my-logger")
+
+
+class Handler(logging.Handler):
+    def emit(self, record):
+        st.code(record.levelname + ": " + record.getMessage())
+
+
+LOGGER.setLevel(logging.INFO)
+LOGGER.handlers = [Handler()]
+
+configure()
 
 with st.sidebar:
     with st.form("data"):
@@ -38,7 +50,11 @@ with st.sidebar:
         st.form_submit_button("Show folds", use_container_width=True)
 
 
-progress_kwargs = LogSplitProgressKwargs(logger="my-logger")
+def get_metrics(f):
+    return {"foo": 1}
+
+
+progress_kwargs = LogSplitProgressKwargs(logger=LOGGER, get_metrics=get_metrics)
 
 n_splits = len(split(**split_kwargs, available=limits))
 percent_complete = 0.0
@@ -46,20 +62,21 @@ pbar = st.progress(percent_complete, f"Iterating over {n_splits} folds.")
 
 keys = np.array_split(list(split_kwargs), 2)
 rows = "\n".join(f"  {format_kwargs({k:split_kwargs[k] for k in kk})}," for kk in keys)
-code = f"time_split.split(\n{rows}\n  available={tuple(map(str, limits))}\n)"
+code = f"time_split.split(\n{rows}\n  available={tuple(map(str, limits))},\n)"
 st.code(code, language="python")
 
 ax = plot(**split_kwargs, available=limits, show_removed=True)
 st.pyplot(ax.figure, clear_figure=True)
 
 for data, future_data, bounds in split_pandas(df, **split_kwargs, log_progress=progress_kwargs):
-    pbar.progress(percent_complete, text=to_string(bounds))
+    pretty = to_string(bounds)
+    pbar.progress(percent_complete, text=pretty)
 
-    msg = f"{to_string(bounds)}:\n - {len(data)=}\n - {len(future_data)=}"
+    msg = f"{pretty}:\n - {len(data)=}\n - {len(future_data)=}"
     st.write(msg)
     st.write(str(bounds))
 
-    time.sleep(3)
+    time.sleep(1)
 
     percent_complete += 1 / n_splits
     pbar.progress(percent_complete)
