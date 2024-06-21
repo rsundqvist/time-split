@@ -23,6 +23,7 @@ from ..types import (
     Span,
 )
 from ._split import split
+from ._to_string import _PrettyTimestamp
 from ._weight import fold_weight
 
 if TYPE_CHECKING:
@@ -121,7 +122,9 @@ def plot(
     plot_data = _get_plot_data(available, splitter, row_count_bin=row_count_bin, show_removed=show_removed)
 
     if bar_labels is True:
-        bar_labels = settings.DEFAULT_TIME_UNIT if plot_data.available is None else COUNT_ROWS
+        bar_labels = (
+            settings.DEFAULT_TIME_UNIT if (plot_data.available is None or _is_limits(available)) else COUNT_ROWS
+        )
 
     if ax is None:
         fig, ax = plt.subplots(
@@ -356,10 +359,15 @@ def _make_title(available: Any | None, split_kwargs: dict[str, Any]) -> str:
     kwargs = {key: value for key, value in split_kwargs.items() if not is_default(key)}
     if available is None:
         formatted_available = ""
-    elif isinstance(available, (tuple, list, set)) and len(available) == 2:
-        available = tuple(map(str, available))
+    elif _is_limits(available):
+        available = sorted(_PrettyTimestamp(a).auto for a in available)
+        available = tuple(available)
         formatted_available = f", {available=}"  # Probably pre-computed
     else:
         pretty = get_public_module(type(available), resolve_reexport=True, include_name=True)
         formatted_available = f", available={pretty}"
     return f"time_split.split({format_kwargs(kwargs, max_value_length=40)}{formatted_available})"
+
+
+def _is_limits(available: Any) -> bool:
+    return isinstance(available, (tuple, list, set)) and len(available) == 2
