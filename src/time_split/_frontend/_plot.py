@@ -12,7 +12,8 @@ from .._backend._datetime_index_like import DatetimeIndexLike
 from .._backend._limits import LimitsTuple
 from .._docstrings import docs
 from .._support import handle_dask
-from ..settings import plot as settings, misc as misc_settings
+from ..settings import misc as misc_settings
+from ..settings import plot as settings
 from ..types import (
     DatetimeIterable,
     DatetimeSplitBounds,
@@ -123,13 +124,14 @@ def plot(
         bar_labels = settings.DEFAULT_TIME_UNIT if plot_data.available is None else COUNT_ROWS
 
     if ax is None:
-        _, ax = plt.subplots(
+        fig, ax = plt.subplots(
             tight_layout=True,
             figsize=(
                 plt.rcParams["figure.figsize"][0],
                 3 + len(plot_data.splits) * 0.5,
             ),
         )
+        fig.autofmt_xdate(ha="center", rotation=15)
 
     _plot_splits(ax, plot_data.splits, removed=plot_data.removed)
 
@@ -166,7 +168,7 @@ def _plot_limits(ax: "Axes", limits: LimitsTuple) -> None:
     from matplotlib.dates import date2num
 
     left, right = limits
-    ax.axvline(left, color="k", ls="--", label="Outer range")
+    ax.axvline(left, color="k", ls="--", label="Available")
     ax.axvline(right, color="k", ls="--")
     left_tick, right_tick = date2num(left), date2num(right)  # type: ignore[no-untyped-call]
     ax.set_xticks([left_tick, *ax.get_xticks(), right_tick])
@@ -354,6 +356,9 @@ def _make_title(available: Any | None, split_kwargs: dict[str, Any]) -> str:
     kwargs = {key: value for key, value in split_kwargs.items() if not is_default(key)}
     if available is None:
         formatted_available = ""
+    elif isinstance(available, (tuple, list, set)) and len(available) == 2:
+        available = tuple(map(str, available))
+        formatted_available = f", {available=}"  # Probably pre-computed
     else:
         pretty = get_public_module(type(available), resolve_reexport=True, include_name=True)
         formatted_available = f", available={pretty}"
