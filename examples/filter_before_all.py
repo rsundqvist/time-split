@@ -1,5 +1,5 @@
-"""Filters: minimum ``before='all'`` size
-=========================================
+"""Filters: minimum ``before='all'`` size.
+==========================================
 
 Arbitrary filters can be applied for all applications using the :attr:`time_split.settings.misc.filter` option. Must be
 a predicate ``(start, mid, end) -> bool``. Consider using :func:`functools.cache` if your predicate is expensive.
