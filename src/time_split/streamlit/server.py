@@ -3,20 +3,18 @@ from datetime import datetime
 from pprint import pformat
 
 import numpy as np
-import pandas as pd
 import streamlit as st
 from rics.misc import format_kwargs
 from rics.plotting import configure as configure_plotting
 
 from time_split import split
 from time_split.integration.pandas import split_pandas
-from time_split.streamlit import data
-from time_split.streamlit.widgets import PlotFoldsWidget, ScheduleWidget
+from time_split.streamlit.widgets import DataWidget, ExpandLimitsWidget, PlotFoldsWidget, ScheduleWidget
 from time_split.support import to_string
 from time_split.types import DatetimeIndexSplitterKwargs, LogSplitProgressKwargs
 
 st.set_page_config(
-    page_title="Time folds",
+    page_title="Time fold explorer",
     page_icon="https://raw.githubusercontent.com/rsundqvist/time-split/master/docs/logo-icon.png",
     # layout="wide",
     menu_items=None,
@@ -24,8 +22,11 @@ st.set_page_config(
 )
 
 LOGGER = logging.getLogger(__name__)
+
+DATA_WIDGET = DataWidget()
 SCHEDULE_WIDGET = ScheduleWidget()
 PLOT_FOLDS_WIDGET = PlotFoldsWidget()
+EXPAND_LIMITS_WIDGET = ExpandLimitsWidget()
 
 LOGGER.setLevel(logging.INFO)
 configure_plotting()
@@ -33,27 +34,33 @@ configure_plotting()
 with st.sidebar:
     # st.file_uploader
     # data: st.file_uploader / range / demo (below)
-    with st.form("data"):
-        st.write("# Data configuration")
-        df: pd.DataFrame = data.load()
-        df, limits = data.select_index(df)
-        df = data.select_columns(df)
-        st.form_submit_button("Load data", use_container_width=True)
+    # with st.form("data"):
+    df, limits = DATA_WIDGET.load_data()
+    expand_limits = EXPAND_LIMITS_WIDGET.select_expand_limits(limits)
+
+    # df: pd.DataFrame = data.load()
+    # df, limits = data.select_index(df)
+    # df = data.select_columns(df)
+    # st.form_submit_button("Load data", use_container_width=True)
 
     st.write("# Fold configuration")
 
     split_kwargs: DatetimeIndexSplitterKwargs = DatetimeIndexSplitterKwargs(
         schedule=SCHEDULE_WIDGET.get_schedule(),
         n_splits=st.slider("n_splits", value=3, min_value=0, max_value=10),
-        before=st.slider("before", value=20, min_value=1, max_value=300),
+        before=st.slider("before", value=1, min_value=1, max_value=25),
         # after=st.slider("after", value=30, min_value=1, max_value=300),
         step=st.slider("step", value=2, min_value=1, max_value=10),
-        # expand_limits=st.toggle("expand_limits", True),
+        expand_limits=expand_limits,
     )
 
     # split_kwargs["schedule"] = "30 days"
     split_kwargs["before"] = f"{split_kwargs['before']} days"
     # split_kwargs["after"] = f"{split_kwargs['after']} days"
+
+if DATA_WIDGET.n_samples != 0:
+    with st.popover("Data details"):
+        DATA_WIDGET.show_data_details(df)
 
 st.code(pformat(split_kwargs))
 # st.stop()

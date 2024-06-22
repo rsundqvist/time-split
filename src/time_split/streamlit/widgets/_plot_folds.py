@@ -36,7 +36,7 @@ class PlotFoldsWidget:
 
             show_removed = self.show_removed
             if show_removed is None:
-                show_removed = left.toggle(":ghost: Removed folds", value=True)
+                show_removed = left.toggle(":ghost: Show removed folds", value=True)
 
             bar_labels = self._get_bar_labels(right)
 

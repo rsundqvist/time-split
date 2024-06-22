@@ -2,6 +2,7 @@ from typing import Any, Literal, overload
 
 from pandas import Timestamp
 
+from .._compat import fmt_sec
 from ..settings import log_split_progress
 from ..types import DatetimeSplitBounds, DatetimeTypes
 
@@ -71,6 +72,17 @@ def to_string(
         mid=_PrettyTimestamp(mid),
         end=_PrettyTimestamp(end),
     )
+
+
+def stringify(old: Timestamp, *, new: Timestamp | None = None) -> str:
+    if new is None:
+        return _PrettyTimestamp(old).auto
+
+    retval = f"{old} -> "
+    if old == new:
+        return retval + "<no change>"
+    diff = (new - old).total_seconds()
+    return retval + f"{_PrettyTimestamp(new).auto} ({'+' if diff > 0 else '-'}{fmt_sec(abs(diff))})"
 
 
 class _PrettyTimestamp:
