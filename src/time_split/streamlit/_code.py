@@ -2,18 +2,20 @@ from pprint import pformat
 from typing import Any
 
 import numpy as np
+import pandas as pd
 import streamlit as st
 from rics.misc import format_kwargs
 
+from time_split import split
 from time_split._frontend._to_string import stringify
 from time_split.types import DatetimeTypes
 
 
 def show_code(
-    split_kwargs: dict[str, Any],
-    *,
-    plot_kwargs: dict[str, Any],
-    limits: tuple[DatetimeTypes, DatetimeTypes],
+        split_kwargs: dict[str, Any],
+        *,
+        plot_kwargs: dict[str, Any],
+        limits: tuple[DatetimeTypes, DatetimeTypes],
 ) -> None:
     st.subheader("Code", divider="rainbow")
     st.write(
@@ -33,6 +35,38 @@ def show_code(
     )
     extra = f"\n  # Plot-specific arguments.\n  {format_kwargs(plot_kwargs)}"
     st.code(f"splits = time_split.split({''.join(split_rows)}{extra}\n)")
+
+    st.code(get_copy_paste(split_kwargs, limits=limits))
+
+
+def get_copy_paste(
+    split_kwargs: dict[str, Any],
+    *,
+    limits: tuple[DatetimeTypes, DatetimeTypes],
+) -> str:
+    module, _, cls = st.radio(
+        "Select type for copy-paste output.",
+        ["pandas.Timestamp", "datetime.datetime", "str"],
+        horizontal=True,
+    ).rpartition(".")
+
+    if cls == "Timestamp":
+        mapper = lambda ts: ts
+    elif cls == "datetime":
+        mapper = pd.Timestamp.to_pydatetime
+    else:
+        mapper = str
+
+    splits = "".join(f"\n    {tuple(map(mapper, s))}," for s in split(**split_kwargs, available=limits))
+    result = f"splits = [{splits}\n]"
+
+    if module:
+        result = f"from {module} import {cls}\n\n" + result
+
+    if module == "datetime":
+        result = result.replace("datetime.datetime", "datetime")
+
+    return result
 
 
 def _get_rows(split_kwargs: dict[str, Any], limits: tuple[DatetimeTypes, DatetimeTypes]) -> list[str]:

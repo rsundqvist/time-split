@@ -6,7 +6,7 @@ import streamlit as st
 from rics.logs import basic_config
 from rics.plotting import configure as configure_plotting
 
-from time_split import split
+from time_split import split, support
 from time_split._compat import fmt_sec
 from time_split.streamlit._code import get_repro, show_code
 from time_split.streamlit.widgets import (
@@ -76,7 +76,8 @@ if filters:
     split_kwargs["n_splits"] = filters.limit
     split_kwargs["step"] = filters.step
 
-n_splits = len(split(**split_kwargs, available=limits))
+splits = split(**split_kwargs, available=limits)
+n_splits = len(splits)
 
 if n_splits > MAX_SPLITS:
     st.error(f"Maximum number of splits ({MAX_SPLITS}) exceeded.", icon="🚨")
@@ -96,6 +97,15 @@ plot_folds_tab, aggregations_tab, code_tab = st.tabs(
 )
 with plot_folds_tab:
     plot_kwargs = PLOT_FOLDS_WIDGET.plot(split_kwargs, df)
+    parts = [
+        (
+            f"Fold {i}/{n_splits}:"
+            f"\n    pretty = {support.to_string(bounds)}"
+            f"\n    bounds = {tuple(map(str, bounds))}"
+        )
+        for i, bounds in enumerate(splits, start=1)
+    ]
+    st.code("\n".join(parts))
 
 with aggregations_tab:
     aggregations = DATA_WIDGET.show_data_details(df)

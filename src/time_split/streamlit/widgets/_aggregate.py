@@ -31,9 +31,14 @@ class AggregationWidget:
         if aggregations is None:
             aggregations = self.select_aggregation(df)
 
-        with (st.spinner("Aggregating data...")):
+        with st.spinner("Aggregating data..."):
             st.subheader("Aggregated folds", divider="rainbow")
-            table, figure = st.tabs([":chart_with_upwards_trend: Table", ":bar_chart: Figure",])
+            table, figure = st.tabs(
+                [
+                    ":chart_with_upwards_trend: Table",
+                    ":bar_chart: Figure",
+                ]
+            )
 
             with table:
                 agg = self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
@@ -51,10 +56,9 @@ class AggregationWidget:
                 g.set_titles(row_template="{row_name}")
 
                 g.figure.autofmt_xdate(ha="center", rotation=15)
-                g.add_legend(loc="upper right", bbox_to_anchor=(0.8, 1.01)) # TODO
+                g.add_legend(loc="upper right", bbox_to_anchor=(0.8, 1.01))  # TODO
 
                 st.pyplot(g.figure, clear_figure=True)
-
 
                 # st.dataframe(long)
 
