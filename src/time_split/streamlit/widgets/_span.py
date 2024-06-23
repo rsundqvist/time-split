@@ -6,6 +6,7 @@ from typing import Callable, TypeVar
 import pandas as pd
 import streamlit as st
 
+from time_split.streamlit.widgets import select_duration
 from time_split.types import Span
 
 R = TypeVar("R")
@@ -59,6 +60,9 @@ class SpanWidget:
         if kind == Kind.STEP:
             return st.number_input(label, min_value=1, max_value=self.step, label_visibility="collapsed")
 
+        if kind == Kind.DURATION:
+            return select_duration(label)
+
         user_input = st.text_input(
             label,
             value=_DEFAULTS_VALUES[kind],
@@ -75,9 +79,6 @@ class SpanWidget:
         if kind == Kind.ALL:
             assert user_input == "all"
             return "all"
-
-        if kind is Kind.DURATION:
-            return _validate(user_input, pd.Timedelta).to_pytimedelta()
 
         if kind is Kind.FREE_FORM:
             return _validate(user_input, literal_eval)

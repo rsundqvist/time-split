@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 from croniter import croniter
 
+from ._duration import select_duration
 from ._schedule_filter import Filters, ScheduleFilterWidget
 
 ProcessedSchedule = str | datetime.timedelta | list[str] | tuple[str, ...]
@@ -59,17 +60,22 @@ class ScheduleWidget:
             "Schedule", divider="rainbow", help="https://time-split.readthedocs.io/en/stable/guide/schedules.html"
         )
         kind: Kind = st.radio("schedule-type", kinds, horizontal=True, label_visibility="collapsed")
-        user_input = st.text_input(
-            "schedule",
-            value=_DEFAULTS_VALUES[kind],
-            placeholder=f"Enter {kind.name.replace('_', ' ').capitalize()}-schedule.",
-            label_visibility="collapsed",
-        )
 
-        if not user_input.strip():
-            st.stop()
+        if kind == Kind.DURATION:
+            schedule = select_duration("schedule")
+        else:
+            user_input = st.text_input(
+                "schedule",
+                value=_DEFAULTS_VALUES[kind],
+                placeholder=f"Enter {kind.name.replace('_', ' ').capitalize()}-schedule.",
+                label_visibility="collapsed",
+            )
 
-        schedule = self._process_user_input(kind, user_input)
+            if not user_input.strip():
+                st.stop()
+
+            schedule = self._process_user_input(kind, user_input)
+
         filters = self.filter.get_fold_filters() if self.filter else None
 
         return schedule, filters
