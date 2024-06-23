@@ -31,9 +31,32 @@ class AggregationWidget:
         if aggregations is None:
             aggregations = self.select_aggregation(df)
 
-        with st.spinner("Aggregating data..."):
+        with (st.spinner("Aggregating data...")):
             st.subheader("Aggregated folds", divider="rainbow")
-            self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
+            table, figure = st.tabs([":chart_with_upwards_trend: Table", ":bar_chart: Figure",])
+
+            with table:
+                agg = self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
+
+            with figure:
+                import seaborn as sns
+
+                melt = agg.melt(ignore_index=False).reset_index()
+                melt["dataset"] = melt["dataset"].astype("category")
+
+                g = sns.FacetGrid(melt, aspect=4, row="variable", hue="dataset", sharex=True, sharey=False)
+                g.map_dataframe(sns.lineplot, x="fold", y="value", marker="o")
+                # g.set_titles()
+                g.set_ylabels("")
+                g.set_titles(row_template="{row_name}")
+
+                g.figure.autofmt_xdate(ha="center", rotation=15)
+                g.add_legend(loc="upper right", bbox_to_anchor=(0.8, 1.01)) # TODO
+
+                st.pyplot(g.figure, clear_figure=True)
+
+
+                # st.dataframe(long)
 
     def aggregate(
         self,

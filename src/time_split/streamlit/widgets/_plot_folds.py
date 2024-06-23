@@ -65,7 +65,7 @@ class PlotFoldsWidget:
         if not self.bar_labels:
             return False
 
-        bar_labels = st.radio("bar-labels", self.bar_labels, horizontal=True, label_visibility="collapsed")
+        bar_labels = st.radio("Bar labels", self.bar_labels, horizontal=True)
         return False if bar_labels == BarLabels.DISABLED else bar_labels.name.lower()
 
 

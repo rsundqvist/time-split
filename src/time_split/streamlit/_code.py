@@ -15,19 +15,20 @@ def show_code(
     plot_kwargs: dict[str, Any],
     limits: tuple[DatetimeTypes, DatetimeTypes],
 ) -> None:
-    st.caption(
+    st.subheader("Code", divider="rainbow")
+    st.write(
         "Keyword dict (see [`DatetimeIndexSplitterKwargs`](https://time-split.readthedocs.io/en/stable/generated/time_split.types.html#time_split.types.DatetimeIndexSplitterKwargs))."
     )
     st.code(f"kwargs = {pformat(split_kwargs)}")
 
     split_rows = _get_rows(split_kwargs, limits)
 
-    st.caption(
+    st.write(
         "Using [`time_split.split()`](https://time-split.readthedocs.io/en/stable/generated/time_split.html#time_split.split)."
     )
     st.code(f"splits = time_split.split({''.join(split_rows)}\n)")
 
-    st.caption(
+    st.write(
         "Using [`time_split.plot()`](https://time-split.readthedocs.io/en/stable/generated/time_split.html#time_split.plot)."
     )
     extra = f"\n  # Plot-specific arguments.\n  {format_kwargs(plot_kwargs)}"

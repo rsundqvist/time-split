@@ -8,7 +8,6 @@ from rics.plotting import configure as configure_plotting
 
 from time_split import split
 from time_split._compat import fmt_sec
-from time_split.integration.pandas import split_pandas
 from time_split.streamlit._code import get_repro, show_code
 from time_split.streamlit.widgets import (
     DataWidget,
@@ -18,8 +17,7 @@ from time_split.streamlit.widgets import (
     SpanWidget,
     select_spans,
 )
-from time_split.support import to_string
-from time_split.types import DatetimeIndexSplitterKwargs, LogSplitProgressKwargs
+from time_split.types import DatetimeIndexSplitterKwargs
 
 MAX_SPLITS = int(os.environ.get("MAX_SPLITS", 50))
 
@@ -107,27 +105,3 @@ with aggregations_tab:
 
 with code_tab:
     show_code(split_kwargs, plot_kwargs=plot_kwargs, limits=limits)
-
-progress_kwargs = LogSplitProgressKwargs()
-
-try:
-    n_splits = len(split(**split_kwargs, available=limits))
-except Exception as e:
-    st.exception(e)
-    st.stop()
-
-percent_complete = 0.0
-# pbar = st.progress(percent_complete, f"Iterating over {n_splits} folds.")
-
-
-with st.status("Working"):
-    for data, future_data, bounds in split_pandas(df, **split_kwargs, log_progress=progress_kwargs):
-        pretty = to_string(bounds)
-        # pbar.progress(percent_complete, text=pretty)
-
-        msg = f"{pretty}:\n - {len(data)=}\n - {len(future_data)=}"
-        st.write(msg)
-        st.write(str(bounds))
-
-        percent_complete += 1 / n_splits
-        # pbar.progress(percent_complete)
