@@ -1,6 +1,8 @@
 """Streamlit components library."""
 
+from ._aggregate import AggregationWidget
 from ._data import DataWidget
+from ._datetime import select_datetime
 from ._duration import DurationWidget, select_duration
 from ._expand_limits import ExpandLimitsWidget
 from ._plot_folds import PlotFoldsWidget
@@ -10,7 +12,9 @@ from ._schedule_filter import ScheduleFilterWidget
 from ._span import SpanWidget, select_spans
 
 __all__ = [
+    "AggregationWidget",
     "DataWidget",
+    "select_datetime",
     "DurationWidget",
     "select_duration",
     "ExpandLimitsWidget",

@@ -2,6 +2,7 @@ from ast import literal_eval
 from dataclasses import dataclass
 from enum import StrEnum
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -28,6 +29,10 @@ class ExpandLimitsWidget:
 
     default_value: str = "d<3h"
     """Default (pre-selected) value for the manual input field."""
+    change_props: str = "color: black; background-color: rgba(255, 200, 50, 0.5);"
+    """Properties used to highlight changed limits. Set to an empty string to disable."""
+    no_change_props: str = "color: rgba(200, 200, 200, 0.5)"
+    """Properties used to highlight unchanged limits. Set to an empty string to disable."""
 
     def select_expand_limits(self, limits: tuple[pd.Timestamp, pd.Timestamp]) -> ExpandLimits:
         with st.container(border=True):
@@ -86,10 +91,13 @@ class ExpandLimitsWidget:
 
         data = {"Index": ["Start", "End"], "Original": limits, "Expanded": expanded_limits}
         df = pd.DataFrame(data)
-        df["Change"] = df["Expanded"] - df["Original"]
+        df["Change"] = [stringify(row.Original, new=row.Expanded, diff_only=True) for row in df.itertuples()]
+
+        same = df["Expanded"] == df["Original"]
+        # df.loc[same, ["Expanded", "Change"]] = "<same>"
 
         st.dataframe(
-            df.style.format(formatter={"Original": stringify, "Expanded": stringify}),
+            df.style.apply(lambda _: np.where(~same, self.change_props, self.no_change_props), axis=0),
             use_container_width=True,
             hide_index=True,
         )

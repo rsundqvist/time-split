@@ -1,15 +1,11 @@
 from ast import literal_eval
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Callable, TypeVar
 
-import pandas as pd
 import streamlit as st
 
 from time_split.streamlit.widgets import select_duration
 from time_split.types import Span
-
-R = TypeVar("R")
 
 
 class Kind(StrEnum):
@@ -81,25 +77,19 @@ class SpanWidget:
             return "all"
 
         if kind is Kind.FREE_FORM:
-            return _validate(user_input, literal_eval)
+            try:
+                return literal_eval(user_input)
+            except Exception:
+                return user_input.strip()
 
         raise NotImplementedError(f"{kind=}")
 
 
-def _validate(value: str, validator: Callable[[str], R]) -> R:
-    try:
-        return validator(value)
-    except Exception as e:
-        st.exception(e)
-        st.stop()
-
-
 SpanWidget.Kind = Kind
-
 _DEFAULTS_VALUES = {
     Kind.DURATION: "7 days",
     Kind.ALL: "all",
-    Kind.FREE_FORM: "['2019-05-11 20:30', '2019-05-16']",
+    Kind.FREE_FORM: "10 days 6 hours",
 }
 
 
@@ -109,7 +99,7 @@ def select_spans(before: SpanWidget, *, after: SpanWidget) -> tuple[Span, Span]:
             "Dataset spans", divider="rainbow", help="https://time-split.readthedocs.io/en/stable/guide/spans.html"
         )
 
-        left, right = st.columns(2)
+        left, right = st.columns(2, gap="large")
         with left:
             before_span = before.get_span("before", default_kind=SpanWidget.Kind.DURATION)
         with right:

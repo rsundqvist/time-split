@@ -61,22 +61,30 @@ class ScheduleWidget:
         )
         kind: Kind = st.radio("schedule-type", kinds, horizontal=True, label_visibility="collapsed")
 
-        if kind == Kind.DURATION:
-            schedule = select_duration("schedule")
+        if self.filter is None:
+            left, right = st, st
         else:
-            user_input = st.text_input(
-                "schedule",
-                value=_DEFAULTS_VALUES[kind],
-                placeholder=f"Enter {kind.name.replace('_', ' ').capitalize()}-schedule.",
-                label_visibility="collapsed",
-            )
+            left, right = st.columns(2, gap="large")
 
-            if not user_input.strip():
-                st.stop()
+        with left:
+            if kind == Kind.DURATION:
+                schedule = select_duration("schedule")
+            else:
+                user_input = st.text_area(
+                    "Enter schedule.",
+                    value=_DEFAULTS_VALUES[kind],
+                    placeholder=f"Enter {kind.name.replace('_', ' ').capitalize()}-schedule.",
+                    # label_visibility="collapsed",
+                    height=""
+                )
 
-            schedule = self._process_user_input(kind, user_input)
+                if not user_input.strip():
+                    st.stop()
 
-        filters = self.filter.get_fold_filters() if self.filter else None
+                schedule = self._process_user_input(kind, user_input)
+
+        with right:
+            filters = self.filter.get_fold_filters() if self.filter else None
 
         return schedule, filters
 

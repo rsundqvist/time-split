@@ -74,15 +74,23 @@ def to_string(
     )
 
 
-def stringify(old: Timestamp, *, new: Timestamp | None = None) -> str:
+def stringify(old: Timestamp, *, new: Timestamp | None = None, diff_only: bool = False) -> str:
     if new is None:
         return _PrettyTimestamp(old).auto
 
-    retval = f"{old} -> "
+    original = f"{old} -> "
     if old == new:
-        return retval + "<no change>"
+        no_change = "<no change>"
+        if diff_only:
+            return no_change
+        return original + no_change
     diff = (new - old).total_seconds()
-    return retval + f"{_PrettyTimestamp(new).auto} ({'+' if diff > 0 else '-'}{fmt_sec(abs(diff))})"
+    pretty_diff = f"{'+' if diff > 0 else '-'}{fmt_sec(abs(diff))}"
+
+    if diff_only:
+        return pretty_diff
+
+    return original + f"{_PrettyTimestamp(new).auto} ({pretty_diff})"
 
 
 class _PrettyTimestamp:

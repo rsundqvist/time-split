@@ -7,10 +7,12 @@ import streamlit as st
 
 from time_split.types import DatetimeTypes, TimedeltaTypes
 
+from ._datetime import select_datetime
+
 
 @dataclass(frozen=True)
 class SampleDataWidget:
-    datetime_range: bool | tuple[DatetimeTypes, DatetimeTypes] = ("2019-04-11", "2019-05-11 20:30")
+    initial_range: bool | tuple[DatetimeTypes, DatetimeTypes] = ("2019-01-01", "2019-06-01")
     """Control `'data'` selection using time ranges. Disabled if ``False``.
 
     Based on :meth:`load_sample_data` if ``True``. Otherwise, specify a tuple ``(min_start, max_end)``. Will appear as
@@ -18,50 +20,25 @@ class SampleDataWidget:
     
     This attribute determines the initial value. Use :attr:`datetime_range_limits` to control the limits.
     """
-    datetime_range_limits: tuple[DatetimeTypes, DatetimeTypes] | None = ("2019-04-01", "2019-06-01")
-    """Controls datetime slider limits. Set to ``None`` to use :attr:`datetime_range`."""
-    datetime_range_step: TimedeltaTypes = "1 hour"
-    """Controls increment size for the :attr:`datetime_range` widget (if enabled)."""
-
-    datetime_slider_format: str | None = None
-    """The https://momentjs.com/docs/#/displaying/format/ format spec to use. Derive if ``None``."""
 
     freq: str | TimedeltaTypes = "h"
     """Index frequency."""
 
     def select_sample_data(self, prompt: bool = True) -> pd.DataFrame:
-        value = tuple(map(pd.Timestamp.to_pydatetime, self.get_datetime_range()))
+        start, end = map(pd.Timestamp, self.initial_range)
 
         if prompt:
-            if self.datetime_range_limits is None:
-                min_value, max_value = value
-            else:
-                min_value, max_value = self.datetime_range_limits
-                min_value = pd.Timestamp(min_value).to_pydatetime()
-                max_value = pd.Timestamp(max_value).to_pydatetime()
+            left, right = st.columns(2)
+            with left:
+                start = select_datetime("Start", start.to_pydatetime())
+            with right:
+                end = select_datetime("End", end.to_pydatetime())
 
-            start, end = st.slider(
-                "generate-data-in-range",
-                min_value=min_value,
-                max_value=max_value,
-                value=value,
-                step=pd.Timedelta(self.datetime_range_step).to_pytimedelta(),
-                format=self._get_slider_format(),
-                label_visibility="collapsed",
-            )
-        else:
-            start, end = value
+        if start >= end:
+            st.error(f"Bad range: `start='{start}'` must be before `end='{end}'`", icon="🚨")
+            st.stop()
 
         return self._load_sample_date(n_rows=None, start=start, end=end, freq=self.freq)
-
-    def get_datetime_range(self) -> tuple[pd.Timestamp, pd.Timestamp]:
-        """Returns configured limits for the available data range slider."""
-        if isinstance(self.datetime_range, bool):
-            index = self._load_sample_date().index
-            return index[0], index[-1]
-        else:
-            lo, hi = self.datetime_range
-            return pd.Timestamp(lo), pd.Timestamp(hi)
 
     @final
     @st.cache_data
@@ -74,7 +51,7 @@ class SampleDataWidget:
         n_rows: int | None = 397,
         *,
         start: DatetimeTypes | None = None,
-        end: DatetimeTypes | None = "2019-05-11 20:30",
+        end: DatetimeTypes | None,
         freq: str | TimedeltaTypes | None = "h",
     ) -> pd.DataFrame:
         """Load timeseries sample data.

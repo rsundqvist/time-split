@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass, field
 from enum import StrEnum
 from time import perf_counter
@@ -8,7 +7,10 @@ import streamlit as st
 from rics.strings import format_bytes
 
 from time_split._compat import fmt_sec
+from time_split.types import DatetimeTypes
 
+from .._logging import log_perf
+from ._aggregate import AggregationWidget
 from ._sample_data import SampleDataWidget
 
 
@@ -25,13 +27,39 @@ class DataWidget:
     """Set to ``None`` to disable selection of the default timeseries sample data."""
     upload: bool = True
     """Enable to allow user data uploads."""
-    n_samples: int | None = 5
+    n_samples: int = -1
     """Number of sample rows to show.
     
     Set to 0 to hide the sampled data view, or -1 to show all rows. Set to ``None`` to disable entirely.
     """
+    initial_sample_subset_range: tuple[DatetimeTypes, DatetimeTypes] | None = None
+    """Initial subset range of the sample data when the data is generated. Set to ``None`` to use actual limits."""
+
+    aggregation: AggregationWidget | None = field(default_factory=AggregationWidget)
+    """Column aggregator. Set to ``None`` to disable."""
 
     # sample_data_glob_path: str | Path = "sample-data/*.csv"
+
+    def select_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
+        """Prompt user to configure generated data, or to upload their own."""
+        st.subheader("Select data source", divider="rainbow")
+        sources = self.get_data_sources()
+        source = st.radio(
+            "data-source",
+            sources,
+            captions=sources.values(),
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+
+        with st.container(border=True):
+            df, seconds, source = self._load_data(source)
+
+        df = self._select_range_subset(df, source)
+
+        df = df.convert_dtypes(dtype_backend="pyarrow")
+
+        return df, (df.index.min(), df.index.max()), seconds
 
     def load_dummy_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
         """Returns default generated data."""
@@ -50,35 +78,16 @@ class DataWidget:
         seconds = perf_counter() - start
         return df, limits, seconds
 
-    def select_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
-        """Prompt user to configure generated data, or to upload their own."""
-        st.subheader("Select data source", divider="rainbow")
-        sources = self.get_data_sources()
-        source = st.radio(
-            "data-source",
-            sources,
-            captions=sources.values(),
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-
-        with st.container(border=True):
-            df, seconds = self._load_data(source)
-
-        df = df.convert_dtypes(dtype_backend="pyarrow")
-
-        return df, (df.index.min(), df.index.max()), seconds
-
     @classmethod
     def brief(cls, df: pd.DataFrame, seconds: float) -> None:
         index_start, index_end = df.index.min(), df.index.max()
         summary = {
             "Rows": len(df),
-            "Columns": len(df.columns),
+            "Cols": len(df.columns),
             "Start": index_start,
             "Span": fmt_sec((index_end - index_start).total_seconds()),
             "End": index_end,
-            "Time": fmt_sec(seconds),
+            # "Time": fmt_sec(seconds),
         }
         st.dataframe(
             pd.Series(summary).to_frame().T,
@@ -87,7 +96,7 @@ class DataWidget:
             selection_mode="single-column",
         )
 
-    def _load_data(self, source: DataSource) -> tuple[pd.DataFrame, float]:
+    def _load_data(self, source: DataSource) -> tuple[pd.DataFrame, float, DataSource]:
         df: pd.DataFrame | None = None
 
         start = perf_counter()
@@ -106,65 +115,75 @@ class DataWidget:
             # msg = f"Data must have a DatetimeIndex: {df.index}"
             # raise TypeError(msg)
 
+        df = df.sort_index()
+
         seconds = perf_counter() - start
 
-        return df, seconds
+        return df, seconds, source
 
     def select_file(self) -> pd.DataFrame:
         start = perf_counter()
 
-        logger = logging.getLogger(f"{type(self).__name__}.upload")
-
-        file = st.file_uploader("upload-file", type=["csv", "parquet", "parq", "zip"], label_visibility="collapsed")
+        types = ["csv", "parquet", "parq"]
+        compressed_types = []
+        for c in ["zip", "gzip", "bz2", "zstd", "xz", "tar"]:
+            for t in types:
+                compressed_types.append(f"{t}.{c}")
+        file = st.file_uploader("upload-file", type=types + compressed_types, label_visibility="collapsed")
 
         if file is None:
             st.info("Select a file.", icon="ℹ️")
             st.stop()
 
-        df = pd.read_csv(file, compression="zip")
+        compression = file.name.rpartition(".")[-1] if file.name.endswith(tuple(compressed_types)) else None
+        df = pd.read_csv(file, compression=compression)
 
+        # Record performance
         seconds = perf_counter() - start
         msg = f"Read file `'{file.name}'` of size `{format_bytes(file.size)}` (`shape={df.shape}`) in `{fmt_sec(seconds)}`."
+        log_perf(msg, df, seconds, extra={"file": file.name, "id": file.file_id, "type": file.type})
         st.caption(msg)
-        logger.info(
-            msg,
-            extra={
-                "file": file.name,
-                "id": file.file_id,
-                "size": file.size,
-                "type": file.type,
-                "shape": df.shape,
-                "duration_ms": int(1000 * seconds),
-            },
-        )
-
-        # if file.name.endswith(".csv"):
-        # else:
-        #    raise NotImplementedError(file)
 
         return df
 
-    def show_data_details(self, df: pd.DataFrame) -> None:
-        st.subheader("Data details", divider="rainbow")
+    def show_data_details(self, df: pd.DataFrame) -> dict[str, str]:
+        aggregations = self.aggregation.select_aggregation(df) if self.aggregation else {}
+
+        st.subheader("Overview", divider="rainbow")
 
         frames = [
             df.dtypes.rename("dtype"),
+            df.memory_usage(index=False, deep=True).rename("memory").map(format_bytes),
             df.isna().mean().map("{:.2%}".format).rename("nan"),
             df.min().rename("min"),
             df.mean().rename("mean"),
             df.max().rename("max"),
             df.sum().rename("sum"),
         ]
+        if aggregations:
+            frames.append(pd.Series(aggregations, name="agg"))
+
         details = pd.concat(frames, axis=1)
         details.index.name = "Column"
 
-        st.caption(f"Overview for `{len(df.columns)}` columns.")
+        memory = df.memory_usage(index=True, deep=True)
+        st.caption(
+            f"Data has shape `{len(df)}x{len(df.columns)}` and contains `{df.size:{'_d' if df.size > 9999 else ''}}` "
+            f"elements, using `{format_bytes(memory.sum())}` of memory (including `{format_bytes(memory['Index'])}` for"
+            f" `index='{df.index.name}'` of type `{type(df.index).__name__}[{df.index.dtype}]`)."
+        )
+
         st.dataframe(details, use_container_width=True)
 
-        if self.n_samples is not None:
-            sampled = df.sample(self.n_samples).sort_index() if self.n_samples > 0 else df
-            st.caption(f"Showing `{len(sampled)}/{len(df)} ({len(sampled) / len(df):.2%})` random rows.")
-            st.dataframe(sampled, use_container_width=True)
+        return aggregations
+
+    def show_data(self, df: pd.DataFrame) -> None:
+        st.subheader("Data", divider="rainbow")
+
+        sampled = df.sample(self.n_samples, random_state=2019_05_11).sort_index() if self.n_samples > 0 else df
+        st.dataframe(sampled, use_container_width=True)
+
+        st.caption(f"Showing `{len(sampled)}/{len(df)} ({len(sampled) / len(df):.2%})` rows.")
 
     def get_data_sources(self) -> dict[DataSource, str]:
         sources = {}
@@ -175,6 +194,29 @@ class DataWidget:
             sources[DataSource.UPLOADED] = "Upload data from your computer."
 
         return sources
+
+    def _select_range_subset(self, df: pd.DataFrame, source: DataSource) -> pd.DataFrame:
+        min_value = df.index[0].to_pydatetime()
+        max_value = df.index[-1].to_pydatetime()
+
+        if source == DataSource.GENERATED and self.initial_sample_subset_range:
+            start, end = self.initial_sample_subset_range
+            value = pd.Timestamp(start).to_pydatetime(), pd.Timestamp(end).to_pydatetime()
+        else:
+            value = (min_value, max_value)
+
+        start, end = st.slider(
+            "Select partial range",
+            min_value=min_value,
+            max_value=max_value,
+            value=value,
+            step=pd.Timedelta(minutes=5).to_pytimedelta(),
+            format="YYYY-MM-DD HH:mm:ss",
+            help="Drag the sliders to use a subset of the original data.",
+            # label_visibility="collapsed",
+        )
+
+        return df[start:end]
 
     @staticmethod
     def _select_index(df: pd.DataFrame) -> pd.DataFrame:

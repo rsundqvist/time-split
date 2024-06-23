@@ -1,13 +1,15 @@
 import logging
+import os
 
 import pandas as pd
 import streamlit as st
+from rics.logs import basic_config
 from rics.plotting import configure as configure_plotting
 
 from time_split import split
 from time_split._compat import fmt_sec
 from time_split.integration.pandas import split_pandas
-from time_split.streamlit._code import show_code
+from time_split.streamlit._code import get_repro, show_code
 from time_split.streamlit.widgets import (
     DataWidget,
     ExpandLimitsWidget,
@@ -19,6 +21,8 @@ from time_split.streamlit.widgets import (
 from time_split.support import to_string
 from time_split.types import DatetimeIndexSplitterKwargs, LogSplitProgressKwargs
 
+MAX_SPLITS = int(os.environ.get("MAX_SPLITS", 50))
+
 st.set_page_config(
     page_title="Time fold explorer",
     page_icon="https://raw.githubusercontent.com/rsundqvist/time-split/master/docs/logo-icon.png",
@@ -27,17 +31,15 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-LOGGER = logging.getLogger(__name__)
-
-DATA_WIDGET = DataWidget()
+DATA_WIDGET = DataWidget(initial_sample_subset_range=("2019-04-01", "2019-05-11 21:30"))
 SCHEDULE_WIDGET = ScheduleWidget()
 PLOT_FOLDS_WIDGET = PlotFoldsWidget()
 EXPAND_LIMITS_WIDGET = ExpandLimitsWidget()
 SPAN_BEFORE_WIDGET = SpanWidget()
 SPAN_AFTER_WIDGET = SpanWidget()
 
-LOGGER.setLevel(logging.INFO)
 configure_plotting()
+basic_config(time_split_level=logging.WARNING, time_split__streamlit_level=logging.INFO)
 
 
 @st.experimental_dialog("Title")
@@ -76,23 +78,37 @@ if filters:
     split_kwargs["n_splits"] = filters.limit
     split_kwargs["step"] = filters.step
 
-plot_folds_tab, dataset_details_tab, code_tab = st.tabs(
+n_splits = len(split(**split_kwargs, available=limits))
+
+if n_splits > MAX_SPLITS:
+    st.error(f"Maximum number of splits ({MAX_SPLITS}) exceeded.", icon="🚨")
+    st.code(get_repro(split_kwargs, limits))
+    st.write(
+        f"The snippet above produces `len(splits)={n_splits} > {MAX_SPLITS}=MAX_SPLITS`."
+        " Try using different parameters to reduce the number of folds."
+    )
+    st.stop()
+
+plot_folds_tab, aggregations_tab, code_tab = st.tabs(
     [
         ":bar_chart: Show folds",
-        ":sleuth_or_spy: Dataset details",
+        ":chart_with_upwards_trend: Aggregations",
         ":desktop_computer: Code",
     ]
 )
 with plot_folds_tab:
-    plot_kwargs = PLOT_FOLDS_WIDGET.plot(split_kwargs, df.index)
+    plot_kwargs = PLOT_FOLDS_WIDGET.plot(split_kwargs, df)
 
-with dataset_details_tab:
-    DATA_WIDGET.show_data_details(df)
+with aggregations_tab:
+    aggregations = DATA_WIDGET.show_data_details(df)
+    DATA_WIDGET.aggregation.plot_aggregations(df, split_kwargs=split_kwargs, aggregations=aggregations)
+    DATA_WIDGET.show_data(df)
+
 
 with code_tab:
     show_code(split_kwargs, plot_kwargs=plot_kwargs, limits=limits)
 
-progress_kwargs = LogSplitProgressKwargs(logger=LOGGER)
+progress_kwargs = LogSplitProgressKwargs()
 
 try:
     n_splits = len(split(**split_kwargs, available=limits))

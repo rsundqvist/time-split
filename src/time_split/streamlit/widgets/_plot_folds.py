@@ -1,11 +1,15 @@
 from dataclasses import dataclass, field
 from enum import StrEnum
+from time import perf_counter
 from typing import Any, Literal
 
+import pandas as pd
 import streamlit as st
 
 from time_split import plot
-from time_split.types import DatetimeIndexSplitterKwargs
+from time_split._compat import fmt_sec
+from time_split.streamlit._logging import log_perf
+from time_split.types import DatetimeIndexSplitterKwargs, DatetimeIterable
 
 
 class BarLabels(StrEnum):
@@ -27,28 +31,41 @@ class PlotFoldsWidget:
     def plot(
         self,
         split_kwargs: DatetimeIndexSplitterKwargs,
-        limits,
+        available: pd.DataFrame | DatetimeIterable,
     ) -> dict[str, Any]:
-        with st.container(border=True):
-            st.subheader("Plot parameters", divider="rainbow")
-            left, right = st.columns([0.3, 0.7])
+        start = perf_counter()
 
+        with st.popover("Configure plot"):
             show_removed = self.show_removed
             if show_removed is None:
-                show_removed = left.toggle(":ghost: Show removed folds", value=True)
+                show_removed = st.toggle(":ghost: Show removed folds", value=True)
 
-            bar_labels = self._get_bar_labels(right)
+            bar_labels = self._get_bar_labels()
 
         with st.spinner("Plotting folds"):
-            ax = plot(**split_kwargs, available=limits, show_removed=show_removed, bar_labels=bar_labels)
+            ax = plot(
+                **split_kwargs,
+                available=available.index if isinstance(available, (pd.DataFrame, pd.Series)) else available,
+                show_removed=show_removed,
+                bar_labels=bar_labels,
+            )
             st.pyplot(ax.figure, clear_figure=True)
+
+        seconds = perf_counter() - start
+
+        # Record performance
+        if isinstance(available, pd.DataFrame):
+            msg = f"Created figure for data of (`shape={available.shape}`) in `{fmt_sec(seconds)}`."
+            log_perf(msg, available, seconds, extra={"show_removed": show_removed, "bar_labels": bar_labels})
+            st.caption(msg)
+
         return {"show_removed": show_removed, "bar_labels": bar_labels}
 
-    def _get_bar_labels(self, parent) -> str | Literal[False]:
+    def _get_bar_labels(self) -> str | Literal[False]:
         if not self.bar_labels:
             return False
 
-        bar_labels = parent.radio("bar-labels", self.bar_labels, horizontal=True, label_visibility="collapsed")
+        bar_labels = st.radio("bar-labels", self.bar_labels, horizontal=True, label_visibility="collapsed")
         return False if bar_labels == BarLabels.DISABLED else bar_labels.name.lower()
 
 
