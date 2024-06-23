@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Literal
+from typing import Any, Literal
 
 import streamlit as st
 
@@ -28,10 +28,9 @@ class PlotFoldsWidget:
         self,
         split_kwargs: DatetimeIndexSplitterKwargs,
         limits,
-    ) -> None:
-        st.subheader("Folds", divider="rainbow")
-
+    ) -> dict[str, Any]:
         with st.container(border=True):
+            st.subheader("Plot parameters", divider="rainbow")
             left, right = st.columns([0.3, 0.7])
 
             show_removed = self.show_removed
@@ -43,13 +42,14 @@ class PlotFoldsWidget:
         with st.spinner("Plotting folds"):
             ax = plot(**split_kwargs, available=limits, show_removed=show_removed, bar_labels=bar_labels)
             st.pyplot(ax.figure, clear_figure=True)
+        return {"show_removed": show_removed, "bar_labels": bar_labels}
 
     def _get_bar_labels(self, parent) -> str | Literal[False]:
         if not self.bar_labels:
             return False
 
         order = list(BarLabels)
-        bar_labels = parent.radio("Bar labels", sorted(self.bar_labels, key=order.index), horizontal=True)
+        bar_labels = parent.radio("bar-labels", sorted(self.bar_labels, key=order.index), horizontal=True, label_visibility="collapsed")
         return False if bar_labels == BarLabels.DISABLED else bar_labels.name.lower()
 
 

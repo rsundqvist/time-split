@@ -20,11 +20,9 @@ class Kind(StrEnum):
     FREE_FORM = "Free form :memo:"
 
 
-
-
 @dataclass(frozen=True)
 class SpanWidget:
-    step: int = 5
+    step: int = 10
     """Max value in the user form for integer spans. Set to zero to disable."""
     duration: bool = True
     """Allow duration-based (timedelta) inputs."""
@@ -49,36 +47,35 @@ class SpanWidget:
             kinds.append(Kind.FREE_FORM)
         return kinds
 
-    def get_span(self, label: str) -> Span:
+    def get_span(self, label: str, default_kind: Kind) -> Span:
         """Get before/after input from the user."""
-        with st.container(border=True):
-            return self._get_span(label)
+        return self._get_span(label, default_kind)
 
-    def _get_span(self, label: str) -> Span:
+    def _get_span(self, label: str, default_kind: Kind) -> Span:
         kinds = self._kinds()
 
-        st.subheader(label, divider="rainbow")
-
-        kind: Kind = st.radio("Select schedule type.", kinds, horizontal=True)
-
-        if kind == Kind.ALL:
-            return "all"
+        kind: Kind = st.radio(f"Available data ***{label}*** the fold date.", kinds, index=kinds.index(default_kind))
 
         if kind == Kind.STEP:
             return st.number_input(label, min_value=1, max_value=self.step, label_visibility="collapsed")
 
-        schedule = st.text_input(
-            "Enter schedule value.",
+        user_input = st.text_input(
+            label,
             value=_DEFAULTS_VALUES[kind],
-            placeholder=f"Enter {kind.name.replace('_', ' ').capitalize()}-schedule.",
+            label_visibility="collapsed",
+            disabled=kind == Kind.ALL,
         )
 
-        if not schedule.strip():
+        if not user_input.strip():
             st.stop()
 
-        return self._process_user_input(kind, schedule)
+        return self._process_user_input(kind, user_input)
 
     def _process_user_input(self, kind: Kind, user_input: str) -> Span:
+        if kind == Kind.ALL:
+            assert user_input == "all"
+            return "all"
+
         if kind is Kind.DURATION:
             return _validate(user_input, pd.Timedelta).to_pytimedelta()
 
@@ -100,9 +97,21 @@ SpanWidget.Kind = Kind
 
 _DEFAULTS_VALUES = {
     Kind.DURATION: "7 days",
+    Kind.ALL: "all",
     Kind.FREE_FORM: "['2019-05-11 20:30', '2019-05-16']",
 }
 
 
 def select_spans(before: SpanWidget, *, after: SpanWidget) -> tuple[Span, Span]:
-    return before.get_span("Before"), after.get_span("After")
+    with st.container(border=True):
+        st.subheader(
+            "Dataset spans", divider="rainbow", help="https://time-split.readthedocs.io/en/stable/guide/spans.html"
+        )
+
+        left, right = st.columns(2)
+        with left:
+            before_span = before.get_span("before", default_kind=SpanWidget.Kind.DURATION)
+        with right:
+            after_span = after.get_span("after", default_kind=SpanWidget.Kind.STEP)
+
+    return before_span, after_span

@@ -1,15 +1,20 @@
 import logging
-from datetime import datetime
-from pprint import pformat
 
-import numpy as np
 import streamlit as st
-from rics.misc import format_kwargs
 from rics.plotting import configure as configure_plotting
 
 from time_split import split
+from time_split._compat import fmt_sec
 from time_split.integration.pandas import split_pandas
-from time_split.streamlit.widgets import DataWidget, ExpandLimitsWidget, PlotFoldsWidget, ScheduleWidget
+from time_split.streamlit._code import show_code
+from time_split.streamlit.widgets import (
+    DataWidget,
+    ExpandLimitsWidget,
+    PlotFoldsWidget,
+    ScheduleWidget,
+    SpanWidget,
+    select_spans,
+)
 from time_split.support import to_string
 from time_split.types import DatetimeIndexSplitterKwargs, LogSplitProgressKwargs
 
@@ -27,45 +32,57 @@ DATA_WIDGET = DataWidget()
 SCHEDULE_WIDGET = ScheduleWidget()
 PLOT_FOLDS_WIDGET = PlotFoldsWidget()
 EXPAND_LIMITS_WIDGET = ExpandLimitsWidget()
+SPAN_BEFORE_WIDGET = SpanWidget()
+SPAN_AFTER_WIDGET = SpanWidget()
 
 LOGGER.setLevel(logging.INFO)
 configure_plotting()
 
 with st.sidebar:
+
+    left, right = st.columns(2)
+    with left, st.popover(":arrow_up: Select dataset"):
+        df, limits, seconds = DATA_WIDGET.load_data()
+
+    with right:
+        n_rows, n_cols = df.shape
+        st.caption(f"Finished loading data of shape `{n_rows}x{n_cols}` in `{fmt_sec(seconds)}`.")
+
+    DATA_WIDGET.brief(df, seconds)
+
     # st.file_uploader
     # data: st.file_uploader / range / demo (below)
     # with st.form("data"):
-    df, limits = DATA_WIDGET.load_data()
     expand_limits = EXPAND_LIMITS_WIDGET.select_expand_limits(limits)
+    schedule, filters = SCHEDULE_WIDGET.get_schedule()
 
-    # df: pd.DataFrame = data.load()
-    # df, limits = data.select_index(df)
-    # df = data.select_columns(df)
-    # st.form_submit_button("Load data", use_container_width=True)
+    before, after = select_spans(SPAN_BEFORE_WIDGET, after=SPAN_AFTER_WIDGET)
 
-    st.write("# Fold configuration")
 
-    split_kwargs: DatetimeIndexSplitterKwargs = DatetimeIndexSplitterKwargs(
-        schedule=SCHEDULE_WIDGET.get_schedule(),
-        n_splits=st.slider("n_splits", value=3, min_value=0, max_value=10),
-        before=st.slider("before", value=1, min_value=1, max_value=25),
-        # after=st.slider("after", value=30, min_value=1, max_value=300),
-        step=st.slider("step", value=2, min_value=1, max_value=10),
-        expand_limits=expand_limits,
-    )
+split_kwargs: DatetimeIndexSplitterKwargs = DatetimeIndexSplitterKwargs(
+    schedule=schedule,
+    before=before,
+    after=after,
+    expand_limits=expand_limits,
+)
+if filters:
+    split_kwargs["n_splits"] = filters.limit
+    split_kwargs["step"] = filters.step
 
-    # split_kwargs["schedule"] = "30 days"
-    split_kwargs["before"] = f"{split_kwargs['before']} days"
-    # split_kwargs["after"] = f"{split_kwargs['after']} days"
 
-if DATA_WIDGET.n_samples != 0:
-    with st.popover("Data details"):
-        DATA_WIDGET.show_data_details(df)
+plot_folds_tab, dataset_details_tab, code_tab = st.tabs([":bar_chart: Show folds", ":sleuth_or_spy: Dataset details", ":desktop_computer: Code", ])
+with plot_folds_tab:
+    plot_kwargs = PLOT_FOLDS_WIDGET.plot(split_kwargs, df.index)
 
-st.code(pformat(split_kwargs))
-# st.stop()
+with dataset_details_tab:
+    DATA_WIDGET.show_data_details(df)
 
-PLOT_FOLDS_WIDGET.plot(split_kwargs, df.index)
+with code_tab:
+    show_code(split_kwargs, plot_kwargs=plot_kwargs, limits=limits)
+
+
+
+
 
 progress_kwargs = LogSplitProgressKwargs(logger=LOGGER)
 
@@ -78,12 +95,6 @@ except Exception as e:
 percent_complete = 0.0
 # pbar = st.progress(percent_complete, f"Iterating over {n_splits} folds.")
 
-keys = np.array_split(list(split_kwargs), 2)
-rows = "\n".join(f"  {format_kwargs({k:split_kwargs[k] for k in kk})}," for kk in keys)
-code = f"time_split.split(\n{rows}\n  available={tuple(map(str, limits))},\n)"
-st.code(code, language="python")
-
-PLOT_FOLDS_WIDGET.plot(split_kwargs, limits)
 
 with st.status("Working"):
     for data, future_data, bounds in split_pandas(df, **split_kwargs, log_progress=progress_kwargs):
@@ -96,16 +107,3 @@ with st.status("Working"):
 
         percent_complete += 1 / n_splits
         # pbar.progress(percent_complete)
-
-st.success("This is a success message!", icon="✅")
-
-st.balloons()
-st.snow()
-
-appointment = st.slider(
-    "Schedule your appointment:",
-    value=(
-        datetime(2019, 5, 11, 20, 30),
-        datetime(2019, 6, 11, 20, 30),
-    ),
-)

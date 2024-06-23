@@ -1,12 +1,14 @@
 import datetime
 from ast import literal_eval
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Callable, Collection, TypeVar
 
 import pandas as pd
 import streamlit as st
 from croniter import croniter
+
+from ._schedule_filter import Filters, ScheduleFilterWidget
 
 ProcessedSchedule = str | datetime.timedelta | list[str] | tuple[str, ...]
 R = TypeVar("R")
@@ -28,6 +30,8 @@ class ScheduleWidget:
     """Allow duration-based (timedelta) inputs."""
     cron: bool = True
     """Allow `cron <https://pypi.org/project/croniter/>`_ expressions."""
+    filter: ScheduleFilterWidget | None = field(default_factory=ScheduleFilterWidget)
+    """Fold filter parameters. Set to ``None`` to disable fold filtering."""
 
     def __post_init__(self) -> None:
         if not self._kinds():
@@ -43,26 +47,32 @@ class ScheduleWidget:
             kinds.append(Kind.FREE_FORM)
         return kinds
 
-    def get_schedule(self) -> ProcessedSchedule:
+    def get_schedule(self) -> tuple[ProcessedSchedule, Filters]:
         """Get schedule input from the user."""
         with st.container(border=True):
             return self._get_schedule()
 
-    def _get_schedule(self) -> ProcessedSchedule:
+    def _get_schedule(self) -> tuple[ProcessedSchedule, Filters]:
         kinds = self._kinds()
 
-        st.subheader("Configure schedule", divider="rainbow")
-        kind: Kind = st.radio("Select schedule type.", kinds, horizontal=True)
-        schedule = st.text_input(
-            "Enter schedule value.",
+        st.subheader(
+            "Schedule", divider="rainbow", help="https://time-split.readthedocs.io/en/stable/guide/schedules.html"
+        )
+        kind: Kind = st.radio("schedule-type", kinds, horizontal=True, label_visibility="collapsed")
+        user_input = st.text_input(
+            "schedule",
             value=_DEFAULTS_VALUES[kind],
             placeholder=f"Enter {kind.name.replace('_', ' ').capitalize()}-schedule.",
+            label_visibility="collapsed",
         )
 
-        if not schedule.strip():
+        if not user_input.strip():
             st.stop()
 
-        return self._process_user_input(kind, schedule)
+        schedule = self._process_user_input(kind, user_input)
+        filters = self.filter.get_fold_filters() if self.filter else None
+
+        return schedule, filters
 
     def _process_user_input(self, kind: Kind, user_input: str) -> ProcessedSchedule:
         if kind is Kind.CRON:
