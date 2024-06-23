@@ -35,8 +35,8 @@ class DataWidget:
     initial_sample_subset_range: tuple[DatetimeTypes, DatetimeTypes] | None = None
     """Initial subset range of the sample data when the data is generated. Set to ``None`` to use actual limits."""
 
-    aggregation: AggregationWidget | None = field(default_factory=AggregationWidget)
-    """Column aggregator. Set to ``None`` to disable."""
+    aggregation: AggregationWidget = field(default_factory=AggregationWidget)
+    """Column aggregator."""
 
     # sample_data_glob_path: str | Path = "sample-data/*.csv"
 
@@ -78,22 +78,8 @@ class DataWidget:
         seconds = perf_counter() - start
         return df, limits, seconds
 
-    @classmethod
-    def brief(cls, df: pd.DataFrame) -> None:
-        index_start, index_end = df.index.min(), df.index.max()
-        summary = {
-            "Rows": len(df),
-            "Cols": len(df.columns),
-            "Start": index_start,
-            "Span": fmt_sec((index_end - index_start).total_seconds()),
-            "End": index_end,
-        }
-        st.dataframe(
-            pd.Series(summary).to_frame().T,
-            hide_index=True,
-            use_container_width=True,
-            selection_mode="single-column",
-        )
+    def configure(self, df: pd.DataFrame) -> dict[str, str]:
+        return self.aggregation.select_aggregation(df)
 
     def _load_data(self, source: DataSource) -> tuple[pd.DataFrame, float, DataSource]:
         df: pd.DataFrame | None = None
@@ -127,12 +113,11 @@ class DataWidget:
         types = ["csv", "parquet", "parq"]
         compressed_types = []
         for c in ["zip", "gzip", "bz2", "zstd", "xz", "tar"]:
-            for t in types:
-                compressed_types.append(f"{t}.{c}")
+            compressed_types.extend(f"{t}.{c}" for t in types)
         file = st.file_uploader("upload-file", type=types + compressed_types, label_visibility="collapsed")
 
         if file is None:
-            st.info("Select a file.", icon="ℹ️")
+            st.info("Select a file.", icon="ℹ️")  # noqa: RUF001
             st.stop()
 
         compression = file.name.rpartition(".")[-1] if file.name.endswith(tuple(compressed_types)) else None
@@ -146,8 +131,10 @@ class DataWidget:
 
         return df
 
-    def show_data_details(self, df: pd.DataFrame) -> dict[str, str]:
-        aggregations = self.aggregation.select_aggregation(df) if self.aggregation else {}
+    @classmethod
+    def show_data_overview(cls, df: pd.DataFrame) -> pd.DataFrame:
+        """Create data overview."""
+        start = perf_counter()
 
         st.subheader("Overview", divider="rainbow")
 
@@ -160,8 +147,6 @@ class DataWidget:
             df.max().rename("max"),
             df.sum().rename("sum"),
         ]
-        if aggregations:
-            frames.append(pd.Series(aggregations, name="agg"))
 
         details = pd.concat(frames, axis=1)
         details.index.name = "Column"
@@ -172,16 +157,21 @@ class DataWidget:
             f"elements, using `{format_bytes(memory.sum())}` of memory (including `{format_bytes(memory['Index'])}` for"
             f" `index='{df.index.name}'` of type `{type(df.index).__name__}[{df.index.dtype}]`)."
         )
-
         st.dataframe(details, use_container_width=True)
 
-        return aggregations
+        # Record performance
+        seconds = perf_counter() - start
+        msg = f"Created overview for data of `shape={df.shape}` in `{fmt_sec(seconds)}`."
+        log_perf(msg, df, seconds, extra={"aggregations": sorted(details), "frame": "data-overview"})
+        st.caption(msg)
+
+        return details
 
     def show_data(self, df: pd.DataFrame) -> None:
         st.subheader("Data", divider="rainbow")
 
         sampled = df.sample(self.n_samples, random_state=2019_05_11).sort_index() if self.n_samples > 0 else df
-        st.dataframe(sampled, use_container_width=True)
+        st.dataframe(sampled.reset_index(), hide_index=False, use_container_width=True)
 
         st.caption(f"Showing `{len(sampled)}/{len(df)} ({len(sampled) / len(df):.2%})` rows.")
 
@@ -247,3 +237,20 @@ class DataWidget:
         df = df.set_index(selection)
 
         return df
+
+    @classmethod
+    def show_summary(cls, df: pd.DataFrame) -> None:
+        index_start, index_end = df.index.min(), df.index.max()
+        summary = {
+            "Rows": len(df),
+            "Cols": len(df.columns),
+            "Start": index_start,
+            "Span": fmt_sec((index_end - index_start).total_seconds()),
+            "End": index_end,
+        }
+        st.dataframe(
+            pd.Series(summary).to_frame().T,
+            hide_index=True,
+            use_container_width=True,
+            selection_mode="single-column",
+        )

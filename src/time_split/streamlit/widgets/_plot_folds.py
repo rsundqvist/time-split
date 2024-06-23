@@ -21,6 +21,11 @@ class BarLabels(StrEnum):
     DISABLED = ":ghost: Hide"
 
 
+class RemovedFolds(StrEnum):
+    SHOW = ":ghost: Show"
+    HIDE = ":no_entry_sign: Hide"
+
+
 @dataclass(frozen=True)
 class PlotFoldsWidget:
     show_removed: bool | None = None
@@ -28,19 +33,25 @@ class PlotFoldsWidget:
     bar_labels: set[BarLabels] | Literal[False] = field(default_factory=lambda: list(BarLabels))
     """Bar label choices made available to the user. Set to ``False`` to disable."""
 
+    def configure(self) -> dict[str, Any]:
+        st.subheader("Plotting configuration", divider="rainbow")
+        show_removed = self.show_removed
+        if show_removed is None:
+            show_removed = st.radio("Removed folds", RemovedFolds, horizontal=True)
+
+        bar_labels = self._get_bar_labels()
+
+        return {"show_removed": show_removed == RemovedFolds.SHOW, "bar_labels": bar_labels}
+
+    @classmethod
     def plot(
-        self,
+        cls,
         split_kwargs: DatetimeIndexSplitterKwargs,
         available: pd.DataFrame | DatetimeIterable,
-    ) -> dict[str, Any]:
+        show_removed: bool = True,
+        bar_labels: str | list[tuple[str, str]] | bool = True,
+    ) -> None:
         start = perf_counter()
-
-        with st.popover("Configure plot"):
-            show_removed = self.show_removed
-            if show_removed is None:
-                show_removed = st.toggle(":ghost: Show removed folds", value=True)
-
-            bar_labels = self._get_bar_labels()
 
         with st.spinner("Plotting folds"):
             ax = plot(
@@ -55,11 +66,14 @@ class PlotFoldsWidget:
 
         # Record performance
         if isinstance(available, pd.DataFrame):
-            msg = f"Created figure for data of (`shape={available.shape}`) in `{fmt_sec(seconds)}`."
-            log_perf(msg, available, seconds, extra={"show_removed": show_removed, "bar_labels": bar_labels})
+            msg = f"Created `fold` figure for data of `shape={available.shape}` in `{fmt_sec(seconds)}`."
+            log_perf(
+                msg,
+                available,
+                seconds,
+                extra={"show_removed": show_removed, "bar_labels": bar_labels, "figure": "folds"},
+            )
             st.caption(msg)
-
-        return {"show_removed": show_removed, "bar_labels": bar_labels}
 
     def _get_bar_labels(self) -> str | Literal[False]:
         if not self.bar_labels:

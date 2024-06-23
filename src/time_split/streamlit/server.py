@@ -44,16 +44,21 @@ basic_config(time_split_level=logging.WARNING, time_split__streamlit_level=loggi
 with st.sidebar:
     with st.expander(":arrow_up: Select dataset or upload a file"):
         df, limits, seconds = DATA_WIDGET.select_data()
-    # st.button("LOAD DATASET", use_container_width=True, type="primary", on_click=select_data)
 
     n_rows, n_cols = df.shape
     st.caption(f"Finished loading data of shape `{n_rows}x{n_cols}` in `{fmt_sec(seconds)}`.")
 
-    DATA_WIDGET.brief(df, seconds)
+    DATA_WIDGET.show_summary(df)
 
-    # st.file_uploader
-    # data: st.file_uploader / range / demo (below)
-    # with st.form("data"):
+    columns = st.columns([1, 1, 2])
+    with columns[0].popover("Columns"):
+        DATA_WIDGET.show_data_overview(df)
+        aggregations = DATA_WIDGET.configure(df)
+    with columns[1].popover("Plotting"):
+        plot_kwargs = PLOT_FOLDS_WIDGET.configure()
+    with columns[2].popover("Show data rows"):
+        DATA_WIDGET.show_data(df)
+
     expand_limits = EXPAND_LIMITS_WIDGET.select_expand_limits(limits)
     schedule, filters = SCHEDULE_WIDGET.get_schedule()
 
@@ -83,13 +88,17 @@ if n_splits > MAX_SPLITS:
 
 plot_folds_tab, aggregations_tab, code_tab = st.tabs(
     [
-        ":bar_chart: Show folds",
-        ":chart_with_upwards_trend: Aggregations",
+        ":bar_chart: Folds",
+        ":chart_with_upwards_trend: Aggregations per fold",
         ":desktop_computer: Code",
     ]
 )
+
+with code_tab:
+    show_code(split_kwargs, plot_kwargs=plot_kwargs, limits=limits)
+
 with plot_folds_tab:
-    plot_kwargs = PLOT_FOLDS_WIDGET.plot(split_kwargs, df)
+    PLOT_FOLDS_WIDGET.plot(split_kwargs, df, **plot_kwargs)
     parts = [
         (
             f"Fold {i}/{n_splits}:"
@@ -101,10 +110,5 @@ with plot_folds_tab:
     st.code("\n".join(parts))
 
 with aggregations_tab:
-    aggregations = DATA_WIDGET.show_data_details(df)
     DATA_WIDGET.aggregation.plot_aggregations(df, split_kwargs=split_kwargs, aggregations=aggregations)
-    DATA_WIDGET.show_data(df)
 
-
-with code_tab:
-    show_code(split_kwargs, plot_kwargs=plot_kwargs, limits=limits)

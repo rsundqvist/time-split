@@ -4,6 +4,7 @@ from typing import Callable, Collection
 
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import streamlit as st
 
 from time_split._compat import fmt_sec
@@ -26,35 +27,45 @@ class AggregationWidget:
         df: pd.DataFrame,
         *,
         split_kwargs: DatetimeIndexSplitterKwargs,
-        aggregations: dict[str, str] | None = None,
+        aggregations: dict[str, str],
     ) -> None:
-        if aggregations is None:
-            aggregations = self.select_aggregation(df)
+        reserved = {"n_rows": "sum", "n_hours": "sum"}
+
+        if forbidden := set(reserved).intersection(aggregations):
+            raise ValueError(f"Found {len(forbidden)} reserved keys {sorted(aggregations)} in {aggregations=}")
 
         with st.spinner("Aggregating data..."):
             st.subheader("Aggregated folds", divider="rainbow")
-            table, figure = st.tabs([":chart_with_upwards_trend: Table", ":bar_chart: Figure"])
+            # table, figure = st.tabs([":chart_with_upwards_trend: Table", ":bar_chart: Figure"])
 
-            with table:
-                agg = self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
+            agg = self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
 
-            with figure:
-                import seaborn as sns
+            aggregations = aggregations | reserved
 
-                melt = agg.melt(ignore_index=False).reset_index()
-                melt["dataset"] = melt["dataset"].astype("category")
+            start = perf_counter()
 
-                g = sns.FacetGrid(melt, aspect=4, row="variable", hue="dataset", sharex=True, sharey=False)
-                g.map_dataframe(sns.lineplot, x="fold", y="value", marker="o")
-                g.set_ylabels("")
-                g.set_titles(row_template="{row_name}")
+            self._plot_agg(agg, aggregations)
 
-                g.figure.autofmt_xdate(ha="center", rotation=15)
-                g.add_legend(loc="upper right", title="", bbox_to_anchor=(0.8, 1.01, 0, 0))  # TODO
+            seconds = perf_counter() - start
+            msg = f"Created `aggregation` figure for data of (`shape={df.shape}`) in `{fmt_sec(seconds)}`."
+            log_perf(msg, df, seconds, extra={"figure": "aggregated-columns"})
+            st.caption(msg)
 
-                st.pyplot(g.figure, clear_figure=True)
+    @staticmethod
+    def _plot_agg(df: pd.DataFrame, aggregations: dict[str, str]) -> None:
+        melt = df.melt(ignore_index=False).reset_index()
+        melt["dataset"] = melt["dataset"].astype("category")
+        melt["variable"] = melt["variable"].map(lambda c: f"${aggregations[c]}({c})$".replace("_", "\\_"))
 
-                # st.dataframe(long)
+        g = sns.FacetGrid(melt, height=4, aspect=4, row="variable", hue="dataset", sharex=True, sharey=False)
+        g.map_dataframe(sns.lineplot, x="fold", y="value", marker="o")
+
+        g.set_ylabels("")
+        g.set_titles(row_template="{row_name}")
+        g.figure.autofmt_xdate(ha="center", rotation=15)
+        g.add_legend(loc="upper left", title="", bbox_to_anchor=(0, 1.01, 0, 0))
+
+        st.pyplot(g.figure, clear_figure=True)
 
     def aggregate(
         self,
@@ -91,7 +102,7 @@ class AggregationWidget:
         # Record performance
         n_folds = agg.index.get_level_values("fold").nunique()
         seconds = perf_counter() - start
-        msg = f"Aggregated datasets in {n_folds} folds for data of (`shape={df.shape}`) in `{fmt_sec(seconds)}`."
+        msg = f"Aggregated datasets in {n_folds} folds for data of `shape={df.shape}` in `{fmt_sec(seconds)}`."
         log_perf(msg, df, seconds, extra={"n_folds": n_folds, "aggregations": aggregations})
         st.caption(msg)
 
@@ -99,7 +110,10 @@ class AggregationWidget:
 
     @classmethod
     def _aggregate(
-        cls, df: pd.DataFrame, split_kwargs: DatetimeIndexSplitterKwargs, aggregations: dict[[int, str], str]
+        cls,
+        df: pd.DataFrame,
+        split_kwargs: DatetimeIndexSplitterKwargs,
+        aggregations: dict[str, str],
     ) -> pd.DataFrame:
         frames = {}
 
@@ -116,9 +130,8 @@ class AggregationWidget:
         return pd.concat(frames, names=["fold_no", "fold", "dataset"])
 
     def select_aggregation(self, df: pd.DataFrame) -> dict[str, str]:
-        with st.popover("Column configuration"):
-            st.subheader("Column configuration", divider="rainbow")
-            return self._select_aggregation(df)
+        st.subheader("Column configuration", divider="rainbow")
+        return self._select_aggregation(df)
 
     def _select_aggregation(self, df: pd.DataFrame) -> dict[str, str]:
         tabs = st.tabs(df.columns.to_list())
@@ -128,11 +141,12 @@ class AggregationWidget:
             column = df[name]
 
             agg = tab.radio(
-                "Aggregation function",
+                "Aggregation function.",
                 self.aggregations,
                 horizontal=True,
                 key=f"{column}-aggregation",
-                # help=f"Select aggregation for the `{name}` column with dtype=`{column.dtype}`.",
+                # label_visibility="collapsed",
+                help=f"Select fold-level aggregation for `{name}` with dtype=`{column.dtype}`.",
             )
             aggregations[name] = agg
 
