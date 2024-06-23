@@ -49,7 +49,7 @@ def select_data() -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], floa
 
 
 with st.sidebar:
-    with st.expander("Select dataset"):
+    with st.expander(":arrow_up: Select dataset or upload a file"):
         df, limits, seconds = DATA_WIDGET.select_data()
     # st.button("LOAD DATASET", use_container_width=True, type="primary", on_click=select_data)
 

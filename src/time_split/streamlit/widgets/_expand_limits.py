@@ -78,7 +78,10 @@ class ExpandLimitsWidget:
         expanded_limits = expanded_limits[0], expanded_limits[1]
 
         if limits == expanded_limits:
-            st.success("Original limits kept.", icon="✅")
+            if pd.Timestamp.now().second % 2 == 0:
+                st.success("TODO Original limits kept.", icon="✅")
+            else:
+                st.warning("TODO Limits could not be expanded.", icon="⚠️")
             return spec
 
         data = {"Index": ["Start", "End"], "Original": limits, "Expanded": expanded_limits}
