@@ -9,7 +9,7 @@ WORKDIR /app
 COPY src/ README.md pyproject.toml ./project/
 RUN pip install ./project[streamlit] && rm -rf ./project/
 
-COPY src/time_split/streamlit/server.py app.py
+COPY src/time_split/streamlit/app.py app.py
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health

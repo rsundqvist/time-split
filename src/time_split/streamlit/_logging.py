@@ -4,7 +4,7 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
-LOGGER = logging.getLogger("time_split.streamlit")
+_LOGGER = logging.getLogger("time-split.streamlit")
 
 
 def log_perf(message: str, df: pd.DataFrame, seconds: float, **extra: Any) -> None:
@@ -14,7 +14,7 @@ def log_perf(message: str, df: pd.DataFrame, seconds: float, **extra: Any) -> No
         "rows": len(df),
         "columns": len(df.columns),
     }
-    LOGGER.info(message, extra=extra)
+    _LOGGER.info(message.replace("`", ""), extra=extra)
 
 
 class StreamlitLoggingHandler(logging.Handler):

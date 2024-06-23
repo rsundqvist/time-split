@@ -36,8 +36,6 @@ class AggregationWidget:
 
         with st.spinner("Aggregating data..."):
             st.subheader("Aggregated folds", divider="rainbow")
-            # table, figure = st.tabs([":chart_with_upwards_trend: Table", ":bar_chart: Figure"])
-
             agg = self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
 
             aggregations = aggregations | reserved

@@ -2,6 +2,7 @@
 
 import logging
 import os
+from pprint import pformat
 
 import streamlit as st
 from rics.logs import basic_config
@@ -30,6 +31,23 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+HEADER = """
+# Time Fold explorer
+This applications is designed to help experiment with `time-fold` splitting parameters. Click
+[here](https://time-split.readthedocs.io/) for documentation.
+"""
+st.write(HEADER)
+
+GETTING_STARTED = """
+1. Use the **:arrow_up: Select dataset or upload a file** widget at the top of the `sidebar` to configure data.
+2. Use the `sidebar` other widgets to control the data is split.
+3. Use the tabs below to explore the effects.
+
+Please visit the [GitHub page](https://github.com/rsundqvist/time-split) for questions or feedback.
+"""
+with st.expander("Getting started", icon="🚀", expanded=True):
+    st.write(GETTING_STARTED)
+
 DATA_WIDGET = DataWidget(initial_sample_subset_range=("2019-04-01", "2019-05-11 21:30"))
 SCHEDULE_WIDGET = ScheduleWidget()
 PLOT_FOLDS_WIDGET = PlotFoldsWidget()
@@ -50,13 +68,13 @@ with st.sidebar:
 
     DATA_WIDGET.show_summary(df)
 
-    columns = st.columns([1, 1, 2])
-    with columns[0].popover("Columns"):
+    columns = st.columns(3)
+    with columns[0].popover("Columns", use_container_width=True):
         DATA_WIDGET.show_data_overview(df)
         aggregations = DATA_WIDGET.configure(df)
-    with columns[1].popover("Plotting"):
+    with columns[1].popover("Plotting", use_container_width=True):
         plot_kwargs = PLOT_FOLDS_WIDGET.configure()
-    with columns[2].popover("Show data rows"):
+    with columns[2].popover("Raw data", use_container_width=True):
         DATA_WIDGET.show_data(df)
 
     expand_limits = EXPAND_LIMITS_WIDGET.select_expand_limits(limits)
@@ -98,6 +116,14 @@ with code_tab:
     show_code(split_kwargs, plot_kwargs=plot_kwargs, limits=limits)
 
 with plot_folds_tab:
+    st.subheader("Folds", divider="rainbow")
+    str_splits = [tuple(map(str, s)) for s in splits]
+    st.code(
+        f"kwargs={split_kwargs}"
+        f"\nfolds={[s[1] for s in str_splits]}"
+        f"\nsplits={str_splits}"
+    )
+
     PLOT_FOLDS_WIDGET.plot(split_kwargs, df, **plot_kwargs)
     parts = [
         (

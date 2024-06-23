@@ -98,7 +98,7 @@ def select_spans(before: SpanWidget, *, after: SpanWidget) -> tuple[Span, Span]:
             "Dataset spans", divider="rainbow", help="https://time-split.readthedocs.io/en/stable/guide/spans.html"
         )
 
-        left, right = st.columns(2, gap="large")
+        left, right = st.columns(2, gap="medium")
         with left:
             before_span = before.get_span("before", default_kind=SpanWidget.Kind.DURATION)
         with right:
