@@ -33,12 +33,7 @@ class AggregationWidget:
 
         with st.spinner("Aggregating data..."):
             st.subheader("Aggregated folds", divider="rainbow")
-            table, figure = st.tabs(
-                [
-                    ":chart_with_upwards_trend: Table",
-                    ":bar_chart: Figure",
-                ]
-            )
+            table, figure = st.tabs([":chart_with_upwards_trend: Table", ":bar_chart: Figure"])
 
             with table:
                 agg = self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
@@ -51,12 +46,11 @@ class AggregationWidget:
 
                 g = sns.FacetGrid(melt, aspect=4, row="variable", hue="dataset", sharex=True, sharey=False)
                 g.map_dataframe(sns.lineplot, x="fold", y="value", marker="o")
-                # g.set_titles()
                 g.set_ylabels("")
                 g.set_titles(row_template="{row_name}")
 
                 g.figure.autofmt_xdate(ha="center", rotation=15)
-                g.add_legend(loc="upper right", bbox_to_anchor=(0.8, 1.01))  # TODO
+                g.add_legend(loc="upper right", title="", bbox_to_anchor=(0.8, 1.01, 0, 0))  # TODO
 
                 st.pyplot(g.figure, clear_figure=True)
 

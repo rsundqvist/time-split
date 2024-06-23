@@ -73,7 +73,6 @@ class SpanWidget:
 
     def _process_user_input(self, kind: Kind, user_input: str) -> Span:
         if kind == Kind.ALL:
-            assert user_input == "all"
             return "all"
 
         if kind is Kind.FREE_FORM:

@@ -12,10 +12,10 @@ from time_split.types import DatetimeTypes
 
 
 def show_code(
-        split_kwargs: dict[str, Any],
-        *,
-        plot_kwargs: dict[str, Any],
-        limits: tuple[DatetimeTypes, DatetimeTypes],
+    split_kwargs: dict[str, Any],
+    *,
+    plot_kwargs: dict[str, Any],
+    limits: tuple[DatetimeTypes, DatetimeTypes],
 ) -> None:
     st.subheader("Code", divider="rainbow")
     st.write(

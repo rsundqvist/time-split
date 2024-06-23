@@ -17,7 +17,7 @@ class SampleDataWidget:
 
     Based on :meth:`load_sample_data` if ``True``. Otherwise, specify a tuple ``(min_start, max_end)``. Will appear as
     a datetime slider to the user.
-    
+
     This attribute determines the initial value. Use :attr:`datetime_range_limits` to control the limits.
     """
 
@@ -69,7 +69,7 @@ class SampleDataWidget:
         Returns:
             Sample timeseries data.
         """
-        timeseries = pd.read_csv(Path(__file__).parent / "timeseries.csv", header=None)
+        timeseries = pd.read_csv(Path(__file__).parent / "sample.csv", header=None)
         reverse_timeseries = timeseries.iloc[::-1]
 
         index = cls._create_index(n_rows, start=start, end=end, freq=freq)

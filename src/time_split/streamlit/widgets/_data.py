@@ -29,7 +29,7 @@ class DataWidget:
     """Enable to allow user data uploads."""
     n_samples: int = -1
     """Number of sample rows to show.
-    
+
     Set to 0 to hide the sampled data view, or -1 to show all rows. Set to ``None`` to disable entirely.
     """
     initial_sample_subset_range: tuple[DatetimeTypes, DatetimeTypes] | None = None
@@ -79,7 +79,7 @@ class DataWidget:
         return df, limits, seconds
 
     @classmethod
-    def brief(cls, df: pd.DataFrame, seconds: float) -> None:
+    def brief(cls, df: pd.DataFrame) -> None:
         index_start, index_end = df.index.min(), df.index.max()
         summary = {
             "Rows": len(df),
@@ -87,7 +87,6 @@ class DataWidget:
             "Start": index_start,
             "Span": fmt_sec((index_end - index_start).total_seconds()),
             "End": index_end,
-            # "Time": fmt_sec(seconds),
         }
         st.dataframe(
             pd.Series(summary).to_frame().T,
@@ -101,7 +100,8 @@ class DataWidget:
 
         start = perf_counter()
         if source == DataSource.GENERATED:
-            assert self.sample_data is not None, "no sample data widget configured"
+            if self.sample_data is None:
+                raise ValueError("No sample data widget configured.")
             df = df if isinstance(self.sample_data, pd.DataFrame) else self.sample_data.select_sample_data()
 
         if source == DataSource.UPLOADED:
@@ -246,18 +246,4 @@ class DataWidget:
         df[selection] = datetime_index
         df = df.set_index(selection)
 
-        return df
-
-
-class TodoUseUse:
-    def select_columns(df: pd.DataFrame) -> pd.DataFrame:
-        columns = df.columns.to_list()
-        selection = st.multiselect("Columns", columns, columns)
-        if not selection:
-            selection = columns
-
-        df = df[selection]
-
-        types = (f"{col!r}: {dtype}" for col, dtype in df.dtypes.items())
-        st.write(f"Chosen columns ({len(selection)}/{len(columns)}): `{', '.join(types)}`")
         return df

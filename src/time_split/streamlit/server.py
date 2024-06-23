@@ -1,7 +1,8 @@
+"""Streamlit application file."""
+
 import logging
 import os
 
-import pandas as pd
 import streamlit as st
 from rics.logs import basic_config
 from rics.plotting import configure as configure_plotting
@@ -38,14 +39,6 @@ SPAN_AFTER_WIDGET = SpanWidget()
 
 configure_plotting()
 basic_config(time_split_level=logging.WARNING, time_split__streamlit_level=logging.INFO)
-
-
-@st.experimental_dialog("Title")
-def select_data() -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
-    with st.form("select-data-dialog"):
-        retval = DATA_WIDGET.select_data()
-        st.form_submit_button(":rocket: LOAD DATASET :rocket:", type="primary", use_container_width=True)
-    return retval
 
 
 with st.sidebar:
