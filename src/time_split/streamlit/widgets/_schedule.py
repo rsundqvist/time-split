@@ -59,23 +59,23 @@ class ScheduleWidget:
         st.subheader(
             "Schedule", divider="rainbow", help="https://time-split.readthedocs.io/en/stable/guide/schedules.html"
         )
-        kind: Kind = st.radio("schedule-type", kinds, horizontal=True, label_visibility="collapsed")
 
         if self.filter is None:
             left, right = st, st
         else:
-            left, right = st.columns(2, gap="large")
+            left, right = st.columns(2)
 
-        with left:
+        with left, st.container():
+            kind: Kind = st.radio("schedule-type", kinds, horizontal=True, label_visibility="collapsed")
+
             if kind == Kind.DURATION:
                 schedule = select_duration("schedule")
             else:
                 user_input = st.text_area(
-                    "Enter schedule.",
+                    "schedule",
                     value=_DEFAULTS_VALUES[kind],
                     placeholder=f"Enter {kind.name.replace('_', ' ').capitalize()}-schedule.",
-                    # label_visibility="collapsed",
-                    height=""
+                    label_visibility="collapsed",
                 )
 
                 if not user_input.strip():
@@ -83,7 +83,7 @@ class ScheduleWidget:
 
                 schedule = self._process_user_input(kind, user_input)
 
-        with right:
+        with right, st.container(border=True):
             filters = self.filter.get_fold_filters() if self.filter else None
 
         return schedule, filters
@@ -124,5 +124,5 @@ ScheduleWidget.Kind = Kind
 _DEFAULTS_VALUES = {
     Kind.CRON: "0 0 * * MON,FRI",
     Kind.DURATION: "7 days",
-    Kind.FREE_FORM: "['2019-05-11 20:30', '2019-05-16']",
+    Kind.FREE_FORM: repr(["2019-04-26", "2019-04-29", "2019-05-03", "2019-05-06"]),
 }
