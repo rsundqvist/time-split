@@ -1,5 +1,6 @@
 import logging
 
+import pandas as pd
 import streamlit as st
 from rics.plotting import configure as configure_plotting
 
@@ -21,7 +22,7 @@ from time_split.types import DatetimeIndexSplitterKwargs, LogSplitProgressKwargs
 st.set_page_config(
     page_title="Time fold explorer",
     page_icon="https://raw.githubusercontent.com/rsundqvist/time-split/master/docs/logo-icon.png",
-    # layout="wide",
+    layout="wide",
     menu_items=None,
     initial_sidebar_state="expanded",
 )
@@ -38,15 +39,22 @@ SPAN_AFTER_WIDGET = SpanWidget()
 LOGGER.setLevel(logging.INFO)
 configure_plotting()
 
+
+@st.experimental_dialog("Title")
+def select_data() -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
+    with st.form("select-data-dialog"):
+        retval = DATA_WIDGET.select_data()
+        st.form_submit_button(":rocket: LOAD DATASET :rocket:", type="primary", use_container_width=True)
+    return retval
+
+
 with st.sidebar:
+    with st.expander("Select dataset"):
+        df, limits, seconds = DATA_WIDGET.select_data()
+    # st.button("LOAD DATASET", use_container_width=True, type="primary", on_click=select_data)
 
-    left, right = st.columns(2)
-    with left, st.popover(":arrow_up: Select dataset"):
-        df, limits, seconds = DATA_WIDGET.load_data()
-
-    with right:
-        n_rows, n_cols = df.shape
-        st.caption(f"Finished loading data of shape `{n_rows}x{n_cols}` in `{fmt_sec(seconds)}`.")
+    n_rows, n_cols = df.shape
+    st.caption(f"Finished loading data of shape `{n_rows}x{n_cols}` in `{fmt_sec(seconds)}`.")
 
     DATA_WIDGET.brief(df, seconds)
 
@@ -58,7 +66,6 @@ with st.sidebar:
 
     before, after = select_spans(SPAN_BEFORE_WIDGET, after=SPAN_AFTER_WIDGET)
 
-
 split_kwargs: DatetimeIndexSplitterKwargs = DatetimeIndexSplitterKwargs(
     schedule=schedule,
     before=before,
@@ -69,8 +76,13 @@ if filters:
     split_kwargs["n_splits"] = filters.limit
     split_kwargs["step"] = filters.step
 
-
-plot_folds_tab, dataset_details_tab, code_tab = st.tabs([":bar_chart: Show folds", ":sleuth_or_spy: Dataset details", ":desktop_computer: Code", ])
+plot_folds_tab, dataset_details_tab, code_tab = st.tabs(
+    [
+        ":bar_chart: Show folds",
+        ":sleuth_or_spy: Dataset details",
+        ":desktop_computer: Code",
+    ]
+)
 with plot_folds_tab:
     plot_kwargs = PLOT_FOLDS_WIDGET.plot(split_kwargs, df.index)
 
@@ -79,10 +91,6 @@ with dataset_details_tab:
 
 with code_tab:
     show_code(split_kwargs, plot_kwargs=plot_kwargs, limits=limits)
-
-
-
-
 
 progress_kwargs = LogSplitProgressKwargs(logger=LOGGER)
 

@@ -3,13 +3,15 @@ from typing import Any
 
 import numpy as np
 import streamlit as st
+from rics.misc import format_kwargs
 
 from time_split._frontend._to_string import stringify
 from time_split.types import DatetimeTypes
-from rics.misc import format_kwargs
 
 
-def show_code(split_kwargs: dict[str, Any], *, plot_kwargs: dict[str, Any], limits: tuple[DatetimeTypes, DatetimeTypes]) -> None:
+def show_code(
+    split_kwargs: dict[str, Any], *, plot_kwargs: dict[str, Any], limits: tuple[DatetimeTypes, DatetimeTypes]
+) -> None:
     st.caption(
         "Keyword dict (see [`DatetimeIndexSplitterKwargs`](https://time-split.readthedocs.io/en/stable/generated/time_split.types.html#time_split.types.DatetimeIndexSplitterKwargs))."
     )

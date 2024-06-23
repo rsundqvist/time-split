@@ -29,25 +29,28 @@ class SampleDataWidget:
     freq: str | TimedeltaTypes = "h"
     """Index frequency."""
 
-    def select_sample_data(self) -> pd.DataFrame:
+    def select_sample_data(self, prompt: bool = True) -> pd.DataFrame:
         value = tuple(map(pd.Timestamp.to_pydatetime, self.get_datetime_range()))
 
-        if self.datetime_range_limits is None:
-            min_value, max_value = value
-        else:
-            min_value, max_value = self.datetime_range_limits
-            min_value = pd.Timestamp(min_value).to_pydatetime()
-            max_value = pd.Timestamp(max_value).to_pydatetime()
+        if prompt:
+            if self.datetime_range_limits is None:
+                min_value, max_value = value
+            else:
+                min_value, max_value = self.datetime_range_limits
+                min_value = pd.Timestamp(min_value).to_pydatetime()
+                max_value = pd.Timestamp(max_value).to_pydatetime()
 
-        start, end = st.slider(
-            "generate-data-in-range",
-            min_value=min_value,
-            max_value=max_value,
-            value=value,
-            step=pd.Timedelta(self.datetime_range_step).to_pytimedelta(),
-            format=self._get_slider_format(),
-            label_visibility="collapsed",
-        )
+            start, end = st.slider(
+                "generate-data-in-range",
+                min_value=min_value,
+                max_value=max_value,
+                value=value,
+                step=pd.Timedelta(self.datetime_range_step).to_pytimedelta(),
+                format=self._get_slider_format(),
+                label_visibility="collapsed",
+            )
+        else:
+            start, end = value
 
         return self._load_sample_date(n_rows=None, start=start, end=end, freq=self.freq)
 

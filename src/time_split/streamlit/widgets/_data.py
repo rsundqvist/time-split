@@ -34,7 +34,25 @@ class DataWidget:
 
     # sample_data_glob_path: str | Path = "sample-data/*.csv"
 
-    def load_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
+    def load_dummy_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
+        """Returns default generated data."""
+        start = perf_counter()
+        df = (
+            self.sample_data
+            if isinstance(self.sample_data, pd.DataFrame)
+            else self.sample_data.select_sample_data(prompt=False)
+        )
+        limits = df.index.min(), df.index.max()
+
+        if not isinstance(df.index, pd.DatetimeIndex):
+            msg = f"Data must have a DatetimeIndex: {df.index}"
+            raise TypeError(msg)
+
+        seconds = perf_counter() - start
+        return df, limits, seconds
+
+    def select_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
+        """Prompt user to configure generated data, or to upload their own."""
         st.subheader("Select data source", divider="rainbow")
         sources = self.get_data_sources()
         source = st.radio(
@@ -99,10 +117,10 @@ class DataWidget:
         frames = [
             df.dtypes.rename("dtype"),
             df.isna().mean().map("{:.2%}".format).rename("nan"),
-            df.sum().rename("sum"),
             df.min().rename("min"),
             df.mean().rename("mean"),
             df.max().rename("max"),
+            df.sum().rename("sum"),
         ]
         details = pd.concat(frames, axis=1)
         details.index.name = "Column"
@@ -111,7 +129,7 @@ class DataWidget:
         st.dataframe(details, use_container_width=True)
 
         if self.n_samples is not None:
-            sampled = df.sample(self.n_samples) if self.n_samples > 0 else df
+            sampled = df.sample(self.n_samples).sort_index() if self.n_samples > 0 else df
             st.caption(f"Showing `{len(sampled)}/{len(df)} ({len(sampled) / len(df):.2%})` random rows.")
             st.dataframe(sampled, use_container_width=True)
 
@@ -234,7 +252,6 @@ class TodoUseUse:
         st.write(f"Index column: `{selection!r}:{df.index.dtype}`")
 
         return df, (df.index.min(), df.index.max())
-
 
     def select_columns(df: pd.DataFrame) -> pd.DataFrame:
         columns = df.columns.to_list()

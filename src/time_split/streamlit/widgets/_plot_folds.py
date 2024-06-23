@@ -21,7 +21,7 @@ class BarLabels(StrEnum):
 class PlotFoldsWidget:
     show_removed: bool | None = None
     """Allow users to toggle showing removed folds if ``None``."""
-    bar_labels: set[BarLabels] | Literal[False] = field(default_factory=lambda: set(BarLabels))
+    bar_labels: set[BarLabels] | Literal[False] = field(default_factory=lambda: list(BarLabels))
     """Bar label choices made available to the user. Set to ``False`` to disable."""
 
     def plot(
@@ -48,8 +48,7 @@ class PlotFoldsWidget:
         if not self.bar_labels:
             return False
 
-        order = list(BarLabels)
-        bar_labels = parent.radio("bar-labels", sorted(self.bar_labels, key=order.index), horizontal=True, label_visibility="collapsed")
+        bar_labels = parent.radio("bar-labels", self.bar_labels, horizontal=True, label_visibility="collapsed")
         return False if bar_labels == BarLabels.DISABLED else bar_labels.name.lower()
 
 
