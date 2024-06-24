@@ -63,6 +63,7 @@ class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     step: int
     n_splits: int
     expand_limits: ExpandLimits
+    ignore_filters: bool
 
 
 LoggerArg = _logging.Logger | _logging.LoggerAdapter[_t.Any] | str

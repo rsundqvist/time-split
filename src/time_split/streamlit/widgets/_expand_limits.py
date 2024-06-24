@@ -5,6 +5,7 @@ from enum import StrEnum
 import numpy as np
 import pandas as pd
 import streamlit as st
+from streamlit.elements.layouts import LayoutsMixin
 
 from time_split._frontend._to_string import stringify
 from time_split.settings import auto_expand_limits as settings
@@ -18,7 +19,7 @@ class Option(StrEnum):
     FREE_FORM = "Free form :memo:"
 
 
-@dataclass(frozen=True)
+@dataclass
 class ExpandLimitsWidget:
     auto: bool = True
     """Preselect the `'auto'` option and add a dedicated button for it."""
@@ -34,10 +35,44 @@ class ExpandLimitsWidget:
     no_change_props: str = "color: rgba(200, 200, 200, 0.5)"
     """Properties used to highlight unchanged limits. Set to an empty string to disable."""
 
-    def select_expand_limits(self, limits: tuple[pd.Timestamp, pd.Timestamp]) -> ExpandLimits:
-        with st.container(border=True):
+    _container: LayoutsMixin | None = None
+
+    def select_expand_limits(self) -> ExpandLimits:
+        self._container = st.container(border=True)
+
+        with self._container:
             st.header("Data limits expansion", divider="rainbow", help=EXPAND_LIMITS_HELP)
-            return self._select_expand_limits(limits)
+            return self._select_expand_limits()
+
+    def show_expand_limits(self, limits: tuple[pd.Timestamp, pd.Timestamp], spec: ExpandLimits) -> None:
+        assert self._container is not None
+        with self._container:
+            self._show_expand_limits(limits, spec)
+
+    def _show_expand_limits(self, limits: tuple[pd.Timestamp, pd.Timestamp], spec: ExpandLimits) -> None:
+        try:
+            expanded_limits = expand_limits(limits, spec=spec)
+        except Exception as e:
+            st.exception(e)
+            st.stop()
+
+        expanded_limits = expanded_limits[0], expanded_limits[1]
+
+        if limits == expanded_limits:
+            if pd.Timestamp.now().second % 2 == 0:
+                st.info("Limits were not expanded.", icon="ℹ️")
+            return spec
+
+        data = {"Index": ["Start", "End"], "Original": limits, "Expanded": expanded_limits}
+        df = pd.DataFrame(data)
+        df["Change"] = [stringify(row.Original, new=row.Expanded, diff_only=True) for row in df.itertuples()]
+
+        same = df["Expanded"] == df["Original"]
+        st.dataframe(
+            df.style.apply(lambda _: np.where(~same, self.change_props, self.no_change_props), axis=0),
+            use_container_width=True,
+            hide_index=True,
+        )
 
     def get_options(self) -> list[Option]:
         options = []
@@ -51,7 +86,7 @@ class ExpandLimitsWidget:
 
         return options
 
-    def _select_expand_limits(self, limits: tuple[pd.Timestamp, pd.Timestamp]) -> ExpandLimits:
+    def _select_expand_limits(self) -> ExpandLimits:
         choice = st.radio("Data limits expansion", self.get_options(), horizontal=True, label_visibility="collapsed")
 
         if choice == Option.DISABLED:
@@ -73,32 +108,6 @@ class ExpandLimitsWidget:
 
             if not spec:
                 st.stop()
-
-        try:
-            expanded_limits = expand_limits(limits, spec=spec)
-        except Exception as e:
-            st.exception(e)
-            st.stop()
-
-        expanded_limits = expanded_limits[0], expanded_limits[1]
-
-        if limits == expanded_limits:
-            if pd.Timestamp.now().second % 2 == 0:
-                st.info("TODO Original limits kept.", icon="ℹ️")  # noqa: RUF001
-            return spec
-
-        data = {"Index": ["Start", "End"], "Original": limits, "Expanded": expanded_limits}
-        df = pd.DataFrame(data)
-        df["Change"] = [stringify(row.Original, new=row.Expanded, diff_only=True) for row in df.itertuples()]
-
-        same = df["Expanded"] == df["Original"]
-        # df.loc[same, ["Expanded", "Change"]] = "<same>"
-
-        st.dataframe(
-            df.style.apply(lambda _: np.where(~same, self.change_props, self.no_change_props), axis=0),
-            use_container_width=True,
-            hide_index=True,
-        )
 
         return spec
 

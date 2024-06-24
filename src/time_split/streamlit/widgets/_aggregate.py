@@ -4,13 +4,14 @@ from typing import Callable, Collection
 
 import numpy as np
 import pandas as pd
-import seaborn as sns
 import streamlit as st
+from matplotlib import pyplot as plt
 
 from time_split._compat import fmt_sec
 from time_split._frontend._to_string import stringify
 from time_split.integration.pandas import split_pandas
 from time_split.streamlit._logging import log_perf
+from time_split.streamlit.config import FIGURE_DPI, PLOT_AGGREGATIONS_PER_FOLD
 from time_split.types import DatetimeIndexSplitterKwargs
 
 
@@ -36,24 +37,51 @@ class AggregationWidget:
 
         with st.spinner("Aggregating data..."):
             st.subheader("Aggregated folds", divider="rainbow")
+
             agg = self.aggregate(df, split_kwargs=split_kwargs, aggregations=aggregations)
 
-            aggregations = aggregations | reserved
+            if not PLOT_AGGREGATIONS_PER_FOLD:
+                st.warning(f"{PLOT_AGGREGATIONS_PER_FOLD=}", icon="⚠️")
+                return
 
-            start = perf_counter()
-
-            self._plot_agg(agg, aggregations)
-
-            seconds = perf_counter() - start
-            msg = f"Created `aggregation` figure for data of (`shape={df.shape}`) in `{fmt_sec(seconds)}`."
-            log_perf(msg, df, seconds, extra={"figure": "aggregated-columns"})
-            st.caption(msg)
+            self._plot(agg, aggregations | reserved)
 
     @staticmethod
-    def _plot_agg(df: pd.DataFrame, aggregations: dict[str, str]) -> None:
+    def _plot(df: pd.DataFrame, aggregations: dict[str, str]) -> None:
+        start = perf_counter()
+
+        columns = df.columns
+        df = df.droplevel("fold_no").reset_index(level="dataset").pivot(columns="dataset")
+
+        pbar, p = st.progress(0.0), 0.0
+
+        for column in columns:
+            pbar.progress(p, f"plotting {column=}")
+
+            fig, ax = plt.subplots()
+            df[column].plot(ax=ax, marker="o")
+            ax.set_title(f"${aggregations[column]}({column!r})$".replace("_", "\\_"))
+            ax.set_xlabel(None)
+            ax.set_xticks(df.index)
+            fig.autofmt_xdate(ha="center", rotation=15)
+
+            st.pyplot(fig, clear_figure=True, dpi=FIGURE_DPI)
+
+            p += 1 / len(columns)
+            pbar.progress(p)
+
+        seconds = perf_counter() - start
+        msg = f"Created `aggregation` figure for data of (`shape={df.shape}`) in `{fmt_sec(seconds)}`."
+        log_perf(msg, df, seconds, extra={"figure": "aggregated-columns"})
+        st.caption(msg)
+
+    @staticmethod
+    def _plot_seaborn(df: pd.DataFrame, aggregations: dict[str, str]) -> None:
+        import seaborn as sns
+
         melt = df.melt(ignore_index=False).reset_index()
         melt["dataset"] = melt["dataset"].astype("category")
-        melt["variable"] = melt["variable"].map(lambda c: f"${aggregations[c]}({c})$".replace("_", "\\_"))
+        melt["variable"] = melt["variable"].map(lambda c: f"${aggregations[c]}({c})$".replace("_", "\\\\_"))
 
         g = sns.FacetGrid(melt, height=4, aspect=4, row="variable", hue="dataset", sharex=True, sharey=False)
         g.map_dataframe(sns.lineplot, x="fold", y="value", marker="o")
@@ -63,7 +91,7 @@ class AggregationWidget:
         g.figure.autofmt_xdate(ha="center", rotation=15)
         g.add_legend(loc="upper left", title="", bbox_to_anchor=(0, 1.01, 0, 0))
 
-        st.pyplot(g.figure, clear_figure=True)
+        st.pyplot(g.figure, clear_figure=True, dpi=FIGURE_DPI)
 
     def aggregate(
         self,
@@ -128,8 +156,9 @@ class AggregationWidget:
         return pd.concat(frames, names=["fold_no", "fold", "dataset"])
 
     def select_aggregation(self, df: pd.DataFrame) -> dict[str, str]:
-        st.subheader("Column configuration", divider="rainbow")
-        return self._select_aggregation(df)
+        with st.container(border=True):
+            st.subheader("Column configuration", divider="red")
+            return self._select_aggregation(df)
 
     def _select_aggregation(self, df: pd.DataFrame) -> dict[str, str]:
         tabs = st.tabs(df.columns.to_list())

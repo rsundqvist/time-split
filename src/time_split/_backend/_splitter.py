@@ -1,6 +1,6 @@
 import logging
 from dataclasses import asdict, dataclass
-from typing import Self, cast, get_args
+from typing import cast, get_args
 
 from pandas import Timedelta
 from rics.misc import format_kwargs
@@ -29,15 +29,12 @@ class DatetimeIndexSplitter:
     """Backend interface for splitting user data. See the :ref:`Parameter overview` page."""
 
     schedule: Schedule
-    before: Span
-    after: Span
-    step: int
-    n_splits: int
-    expand_limits: ExpandLimits
-
-    def no_remove(self) -> Self:
-        cls = type(self)
-        return cls()
+    before: Span = "7d"
+    after: Span = 1
+    step: int = 1
+    n_splits: int = 0
+    expand_limits: ExpandLimits = "auto"
+    ignore_filters: bool = False
 
     def get_splits(self, available: DatetimeIterable | None = None) -> DatetimeSplits:
         """Compute a split of given user data."""
@@ -108,7 +105,7 @@ class DatetimeIndexSplitter:
             msg = f"No valid splits with {limits_info}split params: ({format_kwargs(self.as_dict())})"
             raise ValueError(msg)
 
-        return self._filter(retval)
+        return retval if self.ignore_filters else self._filter(retval)
 
     def _filter(self, splits: DatetimeSplits) -> DatetimeSplits:
         """Apply splitting arguments.

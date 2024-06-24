@@ -1,5 +1,5 @@
 from collections.abc import Iterable, Sequence
-from typing import Any, cast, get_args
+from typing import Any, Unpack, cast, get_args
 
 from numpy import array, datetime64, logical_and, ndarray, nonzero
 from numpy.typing import NDArray
@@ -7,13 +7,11 @@ from numpy.typing import NDArray
 from ..._backend import DatetimeIndexSplitter
 from ..._docstrings import docs
 from ...types import (
+    DatetimeIndexSplitterKwargs,
     DatetimeIterable,
     DatetimeSplits,
     DatetimeTypes,
-    ExpandLimits,
     MetricsType,
-    Schedule,
-    Span,
 )
 from .._log_progress import LogProgressArg, handle_log_progress_arg
 
@@ -39,14 +37,9 @@ class ScikitLearnSplitter(BaseCrossValidator):  # type: ignore[misc]
     If a ``pandas`` type is passed to the :meth:`ScikitLearnSplitter.split`-method, the index will be used.
 
     Args:
-        schedule: {schedule}
-        before: {before}
-        after: {after}
-        step: {step}
-        n_splits: {n_splits}
-        expand_limits: {expand_limits}
         log_progress: {log_progress}
         verify_xy: If ``True``, split X and y independently and verify that they are equal.
+        **kwargs: {DatetimeIndexSplitterKwargs}
 
     {USER_GUIDE}
 
@@ -54,25 +47,13 @@ class ScikitLearnSplitter(BaseCrossValidator):  # type: ignore[misc]
 
     def __init__(
         self,
-        schedule: Schedule,
         *,
-        before: Span = "7d",
-        after: Span = 1,
-        n_splits: int = 0,
-        expand_limits: ExpandLimits = "auto",
-        step: int = 1,
         log_progress: LogProgressArg[MetricsType] = False,
         verify_xy: bool = True,
+        **kwargs: Unpack[DatetimeIndexSplitterKwargs],
     ) -> None:
         super().__init__()
-        self._splitter = DatetimeIndexSplitter(
-            schedule,
-            before=before,
-            after=after,
-            step=step,
-            n_splits=n_splits,
-            expand_limits=expand_limits,
-        )
+        self._splitter = DatetimeIndexSplitter(**kwargs)
         self.log_progress = log_progress
         self.verify_xy = verify_xy
 

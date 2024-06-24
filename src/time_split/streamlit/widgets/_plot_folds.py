@@ -9,6 +9,7 @@ import streamlit as st
 from time_split import plot
 from time_split._compat import fmt_sec
 from time_split.streamlit._logging import log_perf
+from time_split.streamlit.config import FIGURE_DPI
 from time_split.types import DatetimeIndexSplitterKwargs, DatetimeIterable
 
 
@@ -34,7 +35,6 @@ class PlotFoldsWidget:
     """Bar label choices made available to the user. Set to ``False`` to disable."""
 
     def configure(self) -> dict[str, Any]:
-        st.subheader("Plotting configuration", divider="rainbow")
         show_removed = self.show_removed
         if show_removed is None:
             show_removed = st.radio("Removed folds", RemovedFolds, horizontal=True)
@@ -60,7 +60,7 @@ class PlotFoldsWidget:
                 show_removed=show_removed,
                 bar_labels=bar_labels,
             )
-            st.pyplot(ax.figure, clear_figure=True)
+            st.pyplot(ax.figure, clear_figure=True, dpi=FIGURE_DPI)
 
         seconds = perf_counter() - start
 

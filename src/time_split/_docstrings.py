@@ -37,6 +37,7 @@ _DOCSTRINGS = {
     "n_splits": "Maximum number of folds, preferring folds later in the schedule.",
     "available": "Binds `schedule` to a range.",
     "expand_limits": f'A {_OFFSET} used to expand `available` data to its likely `"true"` limits. Pass ``False`` to disable.',
+    "ignore_filters": "Set to ignore filtering parameters (e.g. `step`) and global configuration.",
     "USER_GUIDE": (
         "For more information about the `schedule`, `before/after` and `expand_limits`-arguments"
         ", see the :ref:`User guide`."

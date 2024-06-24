@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from enum import StrEnum
 from time import perf_counter
+from typing import Never
 
 import pandas as pd
 import streamlit as st
@@ -40,7 +41,20 @@ class DataWidget:
 
     # sample_data_glob_path: str | Path = "sample-data/*.csv"
 
-    def select_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
+    def select_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], DataSource]:
+        start = perf_counter()
+
+        df, _, source = self._select_data()
+
+        df = df.convert_dtypes()
+        limits = df.index.min(), df.index.max()
+
+        n_rows, n_cols = df.shape
+        st.caption(f"Finished loading data of shape `{n_rows}x{n_cols}` in `{fmt_sec(perf_counter() - start)}`.")
+
+        return df, limits, source
+
+    def _select_data(self) -> tuple[pd.DataFrame, float, DataSource]:
         """Prompt user to configure generated data, or to upload their own."""
         st.subheader("Select data source", divider="rainbow")
         sources = self.get_data_sources()
@@ -53,13 +67,7 @@ class DataWidget:
         )
 
         with st.container(border=True):
-            df, seconds, source = self._load_data(source)
-
-        df = self._select_range_subset(df, source)
-
-        df = df.convert_dtypes(dtype_backend="pyarrow")
-
-        return df, (df.index.min(), df.index.max()), seconds
+            return self._load_data(source)
 
     def load_dummy_data(self) -> tuple[pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp], float]:
         """Returns default generated data."""
@@ -98,10 +106,12 @@ class DataWidget:
 
         if not isinstance(df.index, pd.DatetimeIndex):
             df = self._select_index(df)
-            # msg = f"Data must have a DatetimeIndex: {df.index}"
-            # raise TypeError(msg)
 
         df = df.sort_index()
+
+        if not df.index.is_unique:
+            st.error("Data must be pre-aggregated.", icon="🚨")
+            _error_on_unaggregated_data(df)
 
         seconds = perf_counter() - start
 
@@ -185,7 +195,9 @@ class DataWidget:
 
         return sources
 
-    def _select_range_subset(self, df: pd.DataFrame, source: DataSource) -> pd.DataFrame:
+    def select_range_subset(
+        self, df: pd.DataFrame, source: DataSource | None = None
+    ) -> [pd.DataFrame, tuple[pd.Timestamp, pd.Timestamp]]:
         min_value = df.index[0].to_pydatetime()
         max_value = df.index[-1].to_pydatetime()
 
@@ -195,18 +207,29 @@ class DataWidget:
         else:
             value = (min_value, max_value)
 
-        start, end = st.slider(
-            "Select partial range",
-            min_value=min_value,
-            max_value=max_value,
-            value=value,
-            step=pd.Timedelta(minutes=5).to_pytimedelta(),
-            format="YYYY-MM-DD HH:mm:ss",
-            help="Drag the sliders to use a subset of the original data.",
-            # label_visibility="collapsed",
-        )
+        with st.container(border=True):
+            st.subheader("Subset range", divider="red")
+            avail = (max_value - min_value).total_seconds()
+            st.write("Select a subset of the available range of data.")
 
-        return df[start:end]
+            with st.container(border=True):
+                start, end = st.slider(
+                    "partial-range",
+                    min_value=min_value,
+                    max_value=max_value,
+                    value=value,
+                    step=pd.Timedelta(minutes=5).to_pytimedelta(),
+                    format="YYYY-MM-DD HH:mm:ss",
+                    help="Drag the sliders to use a subset of the original data.",
+                    label_visibility="collapsed",
+                )
+            used = (end - start).total_seconds()
+            st.caption(
+                f"Currently using `{fmt_sec(used)}/{fmt_sec(avail)}` (`{used / avail :.1%}`) of the available data range."
+            )
+
+        df = df[start:end]
+        return df, (df.index.min(), df.index.max())
 
     @staticmethod
     def _select_index(df: pd.DataFrame) -> pd.DataFrame:
@@ -224,6 +247,12 @@ class DataWidget:
             return f"{column} [{df.dtypes[column]}]"
 
         selection = st.selectbox("Select index column", options=df.columns, format_func=format_func, index=index)
+        if selection is None:
+            st.info(
+                "Select a [datetime](http://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.html)-like index column to continue.",
+                icon="ℹ️",
+            )
+            st.stop()
 
         st.code(df[selection].sample(2).map(repr).to_string())
 
@@ -254,3 +283,31 @@ class DataWidget:
             use_container_width=True,
             selection_mode="single-column",
         )
+
+
+_UNAGGREGATED_DATA_MESSAGE = """
+Found {n_duplicated} duplicate index values.
+While the `time-split` [package](https://time-split.readthedocs.io/) is designed primarily with unaggregated data in 
+mind, this application requires pre-aggregated data for performance reasons.
+"""
+
+
+@st.experimental_dialog("🚨 Bad data")
+def _error_on_unaggregated_data(df: pd.DataFrame) -> Never:
+    st.error("Data must be pre-aggregated.", icon="🚨")
+
+    index = df.index
+    duplicated = index.duplicated(False)
+
+    message = _UNAGGREGATED_DATA_MESSAGE.format(n_duplicated=duplicated.sum())
+    st.write(message)
+
+    duplicated_df = df.loc[duplicated]
+    if len(duplicated_df) > 5:
+        samples = duplicated_df.head(5).sort_index()
+    else:
+        samples = duplicated_df
+    st.dataframe(samples.reset_index(), hide_index=False, use_container_width=True)
+    st.write(f"Showing `{len(samples)}/{len(duplicated_df)}` duplicated rows." f" Original `shape={df.shape}`.")
+
+    st.stop()

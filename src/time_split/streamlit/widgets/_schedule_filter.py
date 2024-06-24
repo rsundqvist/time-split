@@ -20,14 +20,14 @@ class ScheduleFilterWidget:
 
     def get_fold_filters(self) -> Filters:
         limit = st.number_input(
-            "Fold limit.",
+            ":no_entry: Fold limit.",
             value=0,
             min_value=0,
             max_value=self.limit or None,
             help="Keep at most *N* folds. Zero = no limit. Later folds are preferred.",
         )
         step = st.number_input(
-            "Step size.",
+            ":ladder: Step size.",
             min_value=1,
             max_value=self.step or None,
             help="Keep every *N* folds. Later folds are preferred.",
