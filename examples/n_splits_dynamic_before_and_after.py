@@ -22,7 +22,7 @@ config = dict(
 plot(**config, show_removed=True)
 # %%
 # Any non-zero integer before/after-range may be used. Setting ``show_removed=True`` forces plotting of folds that would
-# be silently discarded by the :func:`~rics.ml.time_split.split`-function. Later folds are preferred.
+# be silently discarded by the :func:`~time_split.split`-function. Later folds are preferred.
 
 for fold in log_split_progress(split(**config), logger="my-logger"):
     print("Doing work..")

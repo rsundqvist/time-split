@@ -8,7 +8,7 @@ from time_split.integration.sklearn import ScikitLearnSplitter
 
 def test_sklearn(caplog):
     # Check against pandas implementation
-    splitter = ScikitLearnSplitter("1d", log_progress={"logger": "test-sklearn", "start_level": logging.DEBUG})
+    splitter = ScikitLearnSplitter(schedule="1d", log_progress={"logger": "test-sklearn", "start_level": logging.DEBUG})
 
     index = pd.date_range("2022", "2022-1-10", freq="h")
     array = index.array
@@ -28,7 +28,7 @@ def test_sklearn(caplog):
 
 
 def test_bad_args():
-    splitter = ScikitLearnSplitter("1d", expand_limits=False)
+    splitter = ScikitLearnSplitter(schedule="1d", expand_limits=False)
     array = pd.date_range("2022", "2022-1-10", freq="h").array
 
     with pytest.raises(ValueError, match="are not equal."):
@@ -51,6 +51,6 @@ def test_cv():
         LinearRegression(),
         X=df[["x", "y"]],
         y=df["z"],
-        cv=ScikitLearnSplitter("1d"),
+        cv=ScikitLearnSplitter(schedule="1d"),
     )
     assert len(res) == 2

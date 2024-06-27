@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass, replace
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, Sized
 
 import pandas as pd
 from pandas import Timestamp
@@ -22,6 +22,7 @@ from ..types import (
     Span,
 )
 from ._split import split
+from ._to_string import _PrettyTimestamp
 from ._weight import fold_weight
 
 if TYPE_CHECKING:
@@ -66,6 +67,7 @@ def plot(
     n_splits: int = 0,
     available: DatetimeIterable | None = None,
     expand_limits: ExpandLimits = "auto",
+    ignore_filters: bool = False,
     # Split plot args
     bar_labels: str | Rows | list[tuple[str, str]] | bool = True,
     show_removed: bool = False,
@@ -86,6 +88,7 @@ def plot(
         available: {available} If `bar_labels` is given but is not a ``list``,
             this data will be used to compute fold sizes.
         expand_limits: {expand_limits}
+        ignore_filters: {ignore_filters}
         bar_labels: Labels to draw on the bars. If you pass a string, it will be interpreted as a time unit (see
             :ref:`pandas:timeseries.offset_aliases` for valid frequency strings). Bars will show the number of units
             contained. Pass `'rows'` to simply count the numbers of elements in `data` (if given). To write custom
@@ -116,20 +119,24 @@ def plot(
         step=step,
         n_splits=n_splits,
         expand_limits=expand_limits,
+        ignore_filters=ignore_filters,
     )
     plot_data = _get_plot_data(available, splitter, row_count_bin=row_count_bin, show_removed=show_removed)
 
     if bar_labels is True:
-        bar_labels = settings.DEFAULT_TIME_UNIT if plot_data.available is None else COUNT_ROWS
+        bar_labels = (
+            settings.DEFAULT_TIME_UNIT if (plot_data.available is None or _is_limits(available)) else COUNT_ROWS
+        )
 
     if ax is None:
-        _, ax = plt.subplots(
+        fig, ax = plt.subplots(
             tight_layout=True,
             figsize=(
                 plt.rcParams["figure.figsize"][0],
                 3 + len(plot_data.splits) * 0.5,
             ),
         )
+        fig.autofmt_xdate(ha="center", rotation=15)
 
     _plot_splits(ax, plot_data.splits, removed=plot_data.removed)
 
@@ -166,7 +173,7 @@ def _plot_limits(ax: "Axes", limits: LimitsTuple) -> None:
     from matplotlib.dates import date2num
 
     left, right = limits
-    ax.axvline(left, color="k", ls="--", label="Outer range")
+    ax.axvline(left, color="k", ls="--", label="Available")
     ax.axvline(right, color="k", ls="--")
     left_tick, right_tick = date2num(left), date2num(right)  # type: ignore[no-untyped-call]
     ax.set_xticks([left_tick, *ax.get_xticks(), right_tick])
@@ -284,7 +291,8 @@ def _get_plot_data(
 
     if show_removed:
         kept_splits = set(splits)
-        splits = replace(splitter, n_splits=0, step=1).get_plot_data(available)[0]
+        splits = replace(splitter, ignore_filters=True).get_plot_data(available)[0]
+
         if splitter.step < 0:
             splits.reverse()
         removed = set(splits) - set(kept_splits)
@@ -347,7 +355,15 @@ def _make_title(available: Any | None, split_kwargs: dict[str, Any]) -> str:
     kwargs = {key: value for key, value in split_kwargs.items() if not is_default(key)}
     if available is None:
         formatted_available = ""
+    elif _is_limits(available):
+        available = sorted(_PrettyTimestamp(a).auto for a in available)
+        available = tuple(available)
+        formatted_available = f", {available=}"  # Probably pre-computed
     else:
         pretty = get_public_module(type(available), resolve_reexport=True, include_name=True)
         formatted_available = f", available={pretty}"
     return f"time_split.split({format_kwargs(kwargs, max_value_length=40)}{formatted_available})"
+
+
+def _is_limits(available: Any) -> bool:
+    return isinstance(available, Sized) and len(available) == 2  # noqa: PLR2004
