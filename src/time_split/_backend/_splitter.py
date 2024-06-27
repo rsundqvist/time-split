@@ -7,7 +7,6 @@ from rics.misc import format_kwargs
 
 from time_split._compat import fmt_sec
 
-from ..settings import misc
 from ..types import (
     DatetimeIndexSplitterKwargs,
     DatetimeIterable,
@@ -30,11 +29,12 @@ class DatetimeIndexSplitter:
     """Backend interface for splitting user data. See the :ref:`Parameter overview` page."""
 
     schedule: Schedule
-    before: Span
-    after: Span
-    step: int
-    n_splits: int
-    expand_limits: ExpandLimits
+    before: Span = "7d"
+    after: Span = 1
+    step: int = 1
+    n_splits: int = 0
+    expand_limits: ExpandLimits = "auto"
+    ignore_filters: bool = False
 
     def get_splits(self, available: DatetimeIterable | None = None) -> DatetimeSplits:
         """Compute a split of given user data."""
@@ -55,7 +55,7 @@ class DatetimeIndexSplitter:
 
         types = get_args(TimedeltaTypes)
         if (
-            misc.snap_to_end
+            settings.snap_to_end
             and self.after != "all"
             and isinstance(self.schedule, types)
             and isinstance(self.after, types)
@@ -99,7 +99,7 @@ class DatetimeIndexSplitter:
             msg = f"No valid splits with {limits_info}split params: ({format_kwargs(self.as_dict())})"
             raise ValueError(msg)
 
-        return self._filter(retval)
+        return retval if self.ignore_filters else self._filter(retval)
 
     def _filter(self, splits: DatetimeSplits) -> DatetimeSplits:
         """Apply splitting arguments.
@@ -122,7 +122,10 @@ class DatetimeIndexSplitter:
         if self.step < 0:  # Poorly documented - might not work as expected?
             splits.reverse()
 
-        return splits
+        if settings.filter is None:
+            return splits
+
+        return [s for s in splits if settings.filter(*s)]
 
     def _log_expansion(self, original: LimitsTuple, *, expanded: LimitsTuple) -> None:
         if original == expanded:

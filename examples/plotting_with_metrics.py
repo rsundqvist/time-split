@@ -50,8 +50,8 @@ bar_labels = [
     )
     for date, fold_metrics in metrics.items()
 ]
-
 ax = plot(**config, bar_labels=bar_labels)
+ax.figure.set_size_inches(20, 6)
 
 # %%
 # Bar height is not based on `bar_labels`, so make sure to configure e.g. ``rcParams["figure.figsize"]`` beforehand when

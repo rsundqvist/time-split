@@ -19,7 +19,7 @@ for fold in log_split_progress(split(**config), logger="my-logger"):
     print("Doing work..")
 
 # %%
-# Setting :attr:`settings.misc.snap_to_end <rics.ml.time_split.settings.misc.snap_to_end>` to ``False`` will adopt the
+# Setting :attr:`settings.misc.snap_to_end <time_split.settings.misc.snap_to_end>` to ``False`` will adopt the
 # default behavior used by :func:`pandas.date_range`.
 
 settings.misc.snap_to_end = False
@@ -29,6 +29,6 @@ for fold in log_split_progress(split(**config), logger="my-logger"):
     print("Doing work..")
 
 # %%
-# The configuration in :mod:`rics.ml.time_split.settings` are global, so changes made will remain in effect for all
+# The configuration in :mod:`time_split.settings` are global, so changes made will remain in effect for all
 # callers until the original value is reset.
 settings.misc.snap_to_end = True

@@ -66,6 +66,7 @@ def plot(
     n_splits: int = 0,
     available: DatetimeIterable | None = None,
     expand_limits: ExpandLimits = "auto",
+    ignore_filters: bool = False,
     # Split plot args
     bar_labels: str | Rows | list[tuple[str, str]] | bool = True,
     show_removed: bool = False,
@@ -86,6 +87,7 @@ def plot(
         available: {available} If `bar_labels` is given but is not a ``list``,
             this data will be used to compute fold sizes.
         expand_limits: {expand_limits}
+        ignore_filters: {ignore_filters}
         bar_labels: Labels to draw on the bars. If you pass a string, it will be interpreted as a time unit (see
             :ref:`pandas:timeseries.offset_aliases` for valid frequency strings). Bars will show the number of units
             contained. Pass `'rows'` to simply count the numbers of elements in `data` (if given). To write custom
@@ -116,6 +118,7 @@ def plot(
         step=step,
         n_splits=n_splits,
         expand_limits=expand_limits,
+        ignore_filters=ignore_filters,
     )
     plot_data = _get_plot_data(available, splitter, row_count_bin=row_count_bin, show_removed=show_removed)
 
@@ -284,7 +287,8 @@ def _get_plot_data(
 
     if show_removed:
         kept_splits = set(splits)
-        splits = replace(splitter, n_splits=0, step=1).get_plot_data(available)[0]
+        splits = replace(splitter, ignore_filters=True).get_plot_data(available)[0]
+
         if splitter.step < 0:
             splits.reverse()
         removed = set(splits) - set(kept_splits)

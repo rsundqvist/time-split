@@ -109,3 +109,40 @@ class TestStep:
         expected = expected[-n_splits:]
         assert [f.mid for f in self.split(step, n_splits=n_splits)] == [pd.Timestamp(e) for e in expected]
         assert [f.mid for f in self.split(-step, n_splits=n_splits)] == [pd.Timestamp(e) for e in reversed(expected)]
+
+
+def test_filter(monkeypatch):
+    # Base case - this is DATA_CASES[0]
+    actual = split(schedule="68h", before="5d", after="1d", available=SPLIT_DATA)
+    expected = [
+        ("2022-01-02 20:00:00", "2022-01-07 20:00:00", "2022-01-08 20:00:00"),
+        ("2022-01-05 16:00:00", "2022-01-10 16:00:00", "2022-01-11 16:00:00"),
+        ("2022-01-08 12:00:00", "2022-01-13 12:00:00", "2022-01-14 12:00:00"),
+    ]
+
+    for left, right in zip(actual, expected, strict=True):
+        assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
+
+    # Test with filter
+    kept = "2022-01-10 16:00:00"
+
+    n_calls = 0
+
+    def func(start: pd.Timestamp, mid: pd.Timestamp, end: pd.Timestamp) -> bool:  # noqa: ARG001
+        nonlocal n_calls
+        n_calls += 1
+        return str(mid) == kept
+
+    monkeypatch.setattr("time_split.settings.misc.filter", func)
+
+    actual = split(schedule="68h", before="5d", after="1d", available=SPLIT_DATA)
+    assert len(actual) == 1
+    assert str(actual[0][1]) == "2022-01-10 16:00:00"
+    assert actual[0] == st.DatetimeSplitBounds(*map(pd.Timestamp, expected[1]))
+    assert n_calls == 3
+
+    # Test with filter and ignore_filters = True
+    actual = split(schedule="68h", before="5d", after="1d", available=SPLIT_DATA, ignore_filters=True)
+    assert n_calls == 3
+    for left, right in zip(actual, expected, strict=True):
+        assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
