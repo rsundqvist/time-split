@@ -2,11 +2,11 @@ import logging
 from dataclasses import asdict, dataclass
 from typing import cast, get_args
 
-from pandas import Timedelta, Timestamp
+from pandas import Timedelta
 from rics.misc import format_kwargs
 
-from time_split._compat import fmt_sec
-
+from .._frontend._to_string import stringify
+from ..settings import misc as settings
 from ..types import (
     DatetimeIndexSplitterKwargs,
     DatetimeIterable,
@@ -128,20 +128,8 @@ class DatetimeIndexSplitter:
         return [s for s in splits if settings.filter(*s)]
 
     def _log_expansion(self, original: LimitsTuple, *, expanded: LimitsTuple) -> None:
-        if original == expanded:
+        if original == expanded or not LOGGER.isEnabledFor(logging.INFO):
             return
-
-        if not LOGGER.isEnabledFor(logging.INFO):
-            return
-
-        def stringify(old: Timestamp, *, new: Timestamp) -> str:
-            from .._frontend._to_string import _PrettyTimestamp
-
-            retval = f"{old} -> "
-            if old == new:
-                return retval + "<no change>"
-            diff = (new - old).total_seconds()
-            return retval + f"{_PrettyTimestamp(new).auto} ({'+' if diff > 0 else '-'}{fmt_sec(abs(diff))})"
 
         LOGGER.info(
             f"Available data limits have been expanded (since expand_limits={self.expand_limits!r}):\n"
