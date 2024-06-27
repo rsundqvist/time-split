@@ -10,11 +10,11 @@ from . import types as _tst
 class auto_expand_limits:  # noqa: N801
     """Configuration for the `'auto'` :attr:`~time_split.types.ExpandLimits` logic.
 
-    This class determines how ``(min, max)``-tuples are expanded when expand_limitsible bounds are enabled.
+    This class determines how ``(min, max)``-tuples are expanded when expanded limits are enabled.
     """
 
     SANITY_CHECK: bool = True
-    """If ``True``, use original limits if expand_limitsed limits do not pass sanity checks."""
+    """If ``True``, use original limits if expanded limits do not pass sanity checks."""
 
     @classmethod
     def set_level(
@@ -86,8 +86,8 @@ class plot:  # noqa: N801
     FUTURE_DATA_LABEL: str = "Future data"
     """Label of the red bar; data in the the [:attr:`~.DatetimeSplitBounds.mid`, :attr:`~.types.DatetimeSplitBounds.end`)-range."""
 
-    DEFAULT_TIME_UNIT: str = "h"
-    """Time unit to use by default when ``bar_labels=True`` and ``available=None``."""
+    DEFAULT_TIME_UNIT: str = "hours"
+    """Time unit to use by default when ``bar_labels=True`` and ``available=None`` or a limits tuple."""
 
     REMOVED_FOLD_STYLE: _t.ClassVar[dict[str, _t.Any]] = {
         "alpha": 0.35,

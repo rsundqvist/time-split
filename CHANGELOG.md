@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add `settings.misc.filter` and `ignore_filters` argument.
 
+### Changed
+- The `plot()`-function now treats data of length two as a limits-tuple for display purposes.
+
 ## [0.4.0] - 2024-06-17
 
 ### Deprecated
