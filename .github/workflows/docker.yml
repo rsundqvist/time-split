@@ -32,4 +32,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: rsundqvist/testar-saker
           short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./docs/TEST.md
+          readme-filepath: docs/TEST.md
