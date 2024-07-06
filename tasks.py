@@ -20,6 +20,7 @@ COVERAGE_REPORT = COVERAGE_DIR.joinpath("index.html")
 SOURCE_DIR = ROOT_DIR.joinpath("src/time_split")
 TEST_DIR = ROOT_DIR.joinpath("tests")
 PYTHON_TARGETS = [
+    ROOT_DIR / "app.py",
     SOURCE_DIR,
     TEST_DIR,
     ROOT_DIR.joinpath("noxfile.py"),
@@ -107,9 +108,14 @@ def spelling(c: Context) -> None:
 @task
 def safety(c: Context) -> None:
     """Run safety."""
+    ignores = [
+        70612,  # CVE-2019-8341
+    ]
+
     _run(
         c,
-        "poetry export --format=requirements.txt --without-hashes | poetry run safety check --stdin --full-report",
+        f"poetry export --format=requirements.txt --without-hashes "
+        f"| poetry run safety check --stdin --full-report -i {','.join(map(str, ignores))}",
     )
 
 
