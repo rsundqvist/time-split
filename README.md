@@ -8,6 +8,7 @@ Time-based k-fold validation splits for heterogeneous data.
 [![Codecov](https://codecov.io/gh/rsundqvist/time-split/branch/master/graph/badge.svg)](https://codecov.io/gh/rsundqvist/time-split)
 [![Read the Docs](https://readthedocs.org/projects/time-split/badge/)](https://time-split.readthedocs.io/)
 [![PyPI - License](https://img.shields.io/pypi/l/time-split.svg)](https://pypi.python.org/pypi/time-split)
+[![Docker Image Size (tag)](https://img.shields.io/docker/image-size/rsundqvist/time-split/latest?logo=docker&label=time-split)](https://hub.docker.com/r/rsundqvist/time-split/)
 
 <div align="center">
   <img alt="Plotted folds on a two-by-two grid." 
@@ -34,6 +35,22 @@ strong non-stationary characteristics.
   [use custom text](https://time-split.readthedocs.io/en/stable/auto_examples/plotting_with_metrics.html).
 - [Integrations](https://time-split.readthedocs.io/en/stable/generated/time_split.integration.html) for popular 
   libraries such as `pandas`, `polars` and `scikit-learn`.
+- Convenient [web application](#experimenting-with-parameters) for exploring folds with different parameters.
+
+## Experimenting with parameters
+The **Time Fold Explorer** application
+(available [here](http://20.240.208.202/time-split/?data=1554942900-1557610200&schedule=0+0+%2A+%2A+MON%2CFRI&n_splits=2&step=2&show_removed=True))
+is designed to help evaluate the effects of different
+[parameters](https://time-split.readthedocs.io/en/stable/#parameter-overview).
+To start it locally using
+[![Docker Image Size (tag)](https://img.shields.io/docker/image-size/rsundqvist/time-split/latest?logo=docker&label=time-split)](https://hub.docker.com/r/rsundqvist/time-split/)
+Docker, run
+```sh
+docker run -p 8501:8501 rsundqvist/time-split
+```
+in the terminal. You may use
+[`create_explorer_link()`](https://time-split.readthedocs.io/en/stable/generated/time_split.support.html#time_split.support.create_explorer_link)
+to build application URLs with preselected splitting parameters.
 
 ## Installation
 The package is published through the [Python Package Index (PyPI)]. Source code

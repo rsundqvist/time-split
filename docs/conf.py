@@ -1,4 +1,5 @@
 """Sphinx configuration."""
+
 import os
 from datetime import datetime, timezone
 
@@ -208,11 +209,19 @@ html_context = {
             img="_static/toolbox.png",
         ),
         dict(
-            title="ID Translation <img src= https://img.shields.io/pypi/v/id-translation.svg >",
-            text="Documentation for the <i>id-translation</i> package.",
-            url=id_translation_docs,
-            img="https://raw.githubusercontent.com/rsundqvist/id-translation/master/docs/_images/translation.png",
+            title="Docker <img src= https://img.shields.io/docker/image-size/rsundqvist/time-split/latest?logo=docker&label=time-split >",
+            text=f"Image for the <i>Time Fold Explorer</i> application on DockerHub.",
+            url="https://hub.docker.com/r/rsundqvist/time-split/",
+            img="_static/app.jpg",
         ),
+        # https://img.shields.io/docker/image-size/rsundqvist/time-split/latest?style=flat&logo=docker
+        # <img src= https://img.shields.io/docker/image-size/:user/:repo/:tag >
+        # dict(
+        #     title="ID Translation <img src= https://img.shields.io/pypi/v/id-translation.svg >",
+        #     text="Documentation for the <i>id-translation</i> package.",
+        #     url=id_translation_docs,
+        #     img="https://raw.githubusercontent.com/rsundqvist/id-translation/master/docs/_images/translation.png",
+        # ),
         dict(
             title="RiCS <img src= https://img.shields.io/pypi/v/rics.svg >",
             text=f"Backing library. Original home of the <i>{project}</i> package.",

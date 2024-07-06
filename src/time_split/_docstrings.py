@@ -44,4 +44,5 @@ _DOCSTRINGS = {
     ),
     "OFFSET": _OFFSET,
     "DatetimeIndexSplitterKwargs": "See :func:`~time_split.split`. The `available` keyword is managed by the integration.",
+    "show_removed": "If ``True``, splits removed by `n_splits` or `step` are included in the figure.",
 }

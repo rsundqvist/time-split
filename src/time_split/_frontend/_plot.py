@@ -94,7 +94,7 @@ def plot(
             contained. Pass `'rows'` to simply count the numbers of elements in `data` (if given). To write custom
             bar labels, pass a list ``[(data_label, future_data_label), ...]``, one tuple for each fold. This may be
             used to write metric values per data set after cross validation.
-        show_removed: If ``True``, splits removed by `n_splits` or `step` are included in the figure.
+        show_removed: {show_removed}
         row_count_bin: A {OFFSET}. If given, show normalized row count per `row_count_bin` in the background. Pass
             ``pandas.Series`` to use pre-computed row counts.
         ax: Axis to use for plotting. If ``None``, create new axes.
@@ -362,7 +362,11 @@ def _make_title(available: Any | None, split_kwargs: dict[str, Any]) -> str:
     else:
         pretty = get_public_module(type(available), resolve_reexport=True, include_name=True)
         formatted_available = f", available={pretty}"
-    return f"time_split.split({format_kwargs(kwargs, max_value_length=40)}{formatted_available})"
+
+    title = f"time_split.split({format_kwargs(kwargs, max_value_length=40)}{formatted_available})"
+    title = title.replace("datetime.", "")
+    title = title.replace("pandas.", "pd.")
+    return title
 
 
 def _is_limits(available: Any) -> bool:

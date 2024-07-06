@@ -9,6 +9,7 @@ source = time_split
 
 [report]
 omit =
+   src/time_split/streamlit/*
 
 fail_under = 90
 

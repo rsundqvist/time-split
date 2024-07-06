@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add `settings.misc.filter` and `ignore_filters` argument.
+- A new Streamlit application (see `time_split.streamlit`): https://hub.docker.com/r/rsundqvist/time-split/.
 
 ### Changed
 - The `plot()`-function now treats data of length two as a limits-tuple for display purposes.
