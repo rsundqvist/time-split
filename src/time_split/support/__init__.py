@@ -12,7 +12,7 @@ dependencies if you need to use the ``support`` module.
 """
 
 from .._backend import DatetimeIndexSplitter, expand_limits, process_available
-from .._frontend import default_metrics_formatter, fold_weight, to_string
+from .._frontend import default_metrics_formatter, fold_weight, format_expanded_limits, to_string
 from ._create_explorer_link import create_explorer_link
 
 __all__ = [
@@ -22,5 +22,6 @@ __all__ = [
     "default_metrics_formatter",
     "fold_weight",
     "to_string",
+    "format_expanded_limits",
     "create_explorer_link",
 ]

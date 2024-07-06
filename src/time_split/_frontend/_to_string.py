@@ -2,9 +2,10 @@ from typing import Any, Literal, overload
 
 from pandas import Timestamp
 
+from .._backend._limits import LimitsTuple
 from .._compat import fmt_sec
 from ..settings import log_split_progress
-from ..types import DatetimeSplitBounds, DatetimeTypes
+from ..types import DatetimeSplitBounds, DatetimeTypes, ExpandLimits
 
 
 @overload
@@ -121,3 +122,31 @@ class _PrettyTimestamp:
             )
             self._auto = format(timestamp, format_spec)
         return self._auto
+
+
+def format_expanded_limits(
+    original: LimitsTuple,
+    *,
+    expanded: LimitsTuple | None = None,
+    expand_limits: ExpandLimits,
+) -> str:
+    """Format expanded limits.
+
+    Args:
+        original: The original data limits.
+        expanded: Expanded data limits. Derived based on `original` and `expanded_limits` if ``None``.
+        expand_limits: Limits expansion spec.
+
+    Returns:
+        A string.
+    """
+    if expanded is None:
+        from .._backend._limits import expand_limits as expand
+
+        expanded = expand(original, spec=expand_limits)
+
+    return (
+        f"Available data limits have been expanded (since {expand_limits=}):\n"
+        f"  start: {stringify(original[0], new=expanded[0])}\n"
+        f"    end: {stringify(original[1], new=expanded[1])}"
+    )
