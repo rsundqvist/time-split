@@ -22,7 +22,7 @@ def create_explorer_link(
     Args:
         host: Base address where the application is hosted.
         data: {available} Regular `available` arguments (as passed to e.g. :func:`time_split.split`) are encoded as
-            a date range to generate dummy data for. Pass a ``str`` to use dataset bundled by the server instead. Note
+            a date range to generate dummy data for. Pass a ``str`` to use a dataset bundled by the server instead. Note
             that this function cannot verify the `kwargs` if `available` is a ``str`` dataset.
         available: Alias of `data`.
         skip_default: If ``True``, do not include default split params in the link.

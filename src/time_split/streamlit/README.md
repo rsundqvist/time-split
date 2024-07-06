@@ -39,7 +39,7 @@ To bundle datasets, mount a configuration file (determined by
 [`DATASETS_CONFIG_PATH='/home/streamlit/datasets.toml'`](https://time-split.readthedocs.io/en/stable/generated/time_split.streamlit.config.html#time_split.streamlit.config.DATASETS_CONFIG_PATH)
 ). The `DatasetConfig` struct has the following keys:
 
-* `label`: Name shown in the UI. Defaults to section header (i.e. *"my-dataset"* below).
+* `label`: Optional. Name shown in the UI. Defaults to section header (i.e. *"my-dataset"* below).
 * `path`: Required. First argument to the `pandas` read function.
 * `index`: Required. Must be datetime-like.
 * `aggregations`: Optional. Determines function to use in the `📈 Aggregations per fold` tab.
@@ -57,7 +57,8 @@ index = "from"
 aggregations = { runtimeMinutes = "min", isAdult = "mean" }
 description = """This is the summary.
 
-Simplified version of the [Title basics](https://developer.imdb.com/non-commercial-datasets/#titlebasicstsvgz) IMDB
+Simplified version of the
+[Title basics](https://developer.imdb.com/non-commercial-datasets/#titlebasicstsvgz) IMDB
 dataset. The description supports Markdown syntax.
 """
 [my-dataset.read_function_kwargs]
