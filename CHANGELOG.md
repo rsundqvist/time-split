@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2024-07-06
+
 ### Added
 - Add `settings.misc.filter` and `ignore_filters` argument.
 - A new Streamlit application (see `time_split.streamlit`): https://hub.docker.com/r/rsundqvist/time-split/.
@@ -69,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed a few documentation and examples issues.
 
-[Unreleased]: https://github.com/rsundqvist/time-split/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/rsundqvist/time-split/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/rsundqvist/time-split/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/rsundqvist/time-split/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/rsundqvist/time-split/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/rsundqvist/time-split/compare/v0.2.0...v0.2.1
