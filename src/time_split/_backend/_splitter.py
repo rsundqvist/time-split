@@ -1,11 +1,11 @@
 import logging
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 from typing import cast, get_args
 
 from pandas import Timedelta
 from rics.misc import format_kwargs
 
-from .._frontend._to_string import stringify
 from ..settings import misc as settings
 from ..types import (
     DatetimeIndexSplitterKwargs,
@@ -128,14 +128,19 @@ class DatetimeIndexSplitter:
         return [s for s in splits if settings.filter(*s)]
 
     def _log_expansion(self, original: LimitsTuple, *, expanded: LimitsTuple) -> None:
+        from .._frontend import format_expanded_limits
+
         if original == expanded or not LOGGER.isEnabledFor(logging.INFO):
             return
 
-        LOGGER.info(
-            f"Available data limits have been expanded (since expand_limits={self.expand_limits!r}):\n"
-            f"  start: {stringify(original[0], new=expanded[0])}\n"
-            f"    end: {stringify(original[1], new=expanded[1])}"
-        )
+        message = format_expanded_limits(original, expanded=expanded, expand_limits=self.expand_limits)
+        self._emit_once(message)
+
+    @staticmethod
+    @lru_cache(8)
+    def _emit_once(message: str) -> None:
+        """Emit if **not** in the eight most recent emission messages."""
+        LOGGER.info(message)
 
     def __post_init__(self) -> None:
         # Verify n_splits

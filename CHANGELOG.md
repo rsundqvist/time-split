@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The `plot()`-function now treats data of length two as a limits-tuple for display purposes.
+- Reduce the number of the INFO-level limits expansion messages emitted.
 
 ## [0.4.0] - 2024-06-17
 
