@@ -3833,21 +3833,24 @@ test = ["cython (>=3.0)", "defusedxml (>=0.7.1)", "pytest (>=8.0)", "setuptools 
 
 [[package]]
 name = "sphinx-gallery"
-version = "0.16.0"
+version = "0.17.0"
 description = "A Sphinx extension that builds an HTML gallery of examples from any set of Python scripts."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "sphinx_gallery-0.16.0-py3-none-any.whl", hash = "sha256:f5456514f4efb230a6f1db6241667774ca3ee8f15e9a7456678f1d1815118e60"},
-    {file = "sphinx_gallery-0.16.0.tar.gz", hash = "sha256:3912765bc5e7b5451dc471ad50ead808a9752280b23fd2ec4277719a5ef68e42"},
+    {file = "sphinx_gallery-0.17.0-py3-none-any.whl", hash = "sha256:245c02d5cd156d568e978a562091c871255affe41f1a52e9b9eb5023f891cdb9"},
+    {file = "sphinx_gallery-0.17.0.tar.gz", hash = "sha256:cae4eb8317c7a316813e3ffdc13f92bcb932a54c360c07a94b60fced74a9fd3f"},
 ]
 
 [package.dependencies]
 pillow = "*"
-sphinx = ">=4"
+sphinx = ">=5"
 
 [package.extras]
+animations = ["sphinxcontrib-video"]
+dev = ["absl-py", "graphviz", "intersphinx-registry", "ipython", "joblib", "jupyterlite-sphinx", "lxml", "matplotlib", "numpy", "packaging", "plotly", "pydata-sphinx-theme", "pytest", "pytest-coverage", "seaborn", "sphinxcontrib-video", "statsmodels"]
 jupyterlite = ["jupyterlite-sphinx"]
+parallel = ["joblib"]
 recommender = ["numpy"]
 show-api-usage = ["graphviz"]
 show-memory = ["memory-profiler"]
@@ -4376,4 +4379,4 @@ streamlit = ["croniter", "matplotlib", "seaborn", "streamlit"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11"
-content-hash = "ae8856305df0af1480350167baaa034be433c7b70874e34f23a3b49c108ab017"
+content-hash = "c22099ca935b6e3be9335a18b2a8bd3dc2349fed885fddacc06664d4e2165cad"
