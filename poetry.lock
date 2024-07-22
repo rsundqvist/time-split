@@ -776,13 +776,13 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "dask"
-version = "2024.7.0"
+version = "2024.7.1"
 description = "Parallel PyData with Task Scheduling"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "dask-2024.7.0-py3-none-any.whl", hash = "sha256:0f30f218a1fe1c8e9a6ba8add1207088ba9ff049098d4ea4ce045fd5ff7ca914"},
-    {file = "dask-2024.7.0.tar.gz", hash = "sha256:0060bae9a58b5b3ce7e0d97040e903b4d3db09ba49222101cfc40f9834a8a6bc"},
+    {file = "dask-2024.7.1-py3-none-any.whl", hash = "sha256:dd046840050376c317de90629db5c6197adda820176cf3e2df10c3219d11951f"},
+    {file = "dask-2024.7.1.tar.gz", hash = "sha256:dbaef2d50efee841a9d981a218cfeb50392fc9a95e0403b6d680450e4f50d531"},
 ]
 
 [package.dependencies]
@@ -803,22 +803,22 @@ array = ["numpy (>=1.21)"]
 complete = ["dask[array,dataframe,diagnostics,distributed]", "lz4 (>=4.3.2)", "pyarrow (>=7.0)", "pyarrow-hotfix"]
 dataframe = ["dask-expr (>=1.1,<1.2)", "dask[array]", "pandas (>=2.0)"]
 diagnostics = ["bokeh (>=2.4.2)", "jinja2 (>=2.10.3)"]
-distributed = ["distributed (==2024.7.0)"]
+distributed = ["distributed (==2024.7.1)"]
 test = ["pandas[test]", "pre-commit", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-timeout", "pytest-xdist"]
 
 [[package]]
 name = "dask-expr"
-version = "1.1.7"
+version = "1.1.9"
 description = "High Level Expressions for Dask"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "dask_expr-1.1.7-py3-none-any.whl", hash = "sha256:6f45468499b50839e9d9a43f599f7f70a50f50048bce93557c2dea24bfcad3bb"},
-    {file = "dask_expr-1.1.7.tar.gz", hash = "sha256:90a0afae1fcdc2071914daf8f32673d59ee027c12ae041941043bdede63c993c"},
+    {file = "dask_expr-1.1.9-py3-none-any.whl", hash = "sha256:6a73d2ef8a4b697db476163ebfc661f7f4b6e12c4e483e8bf207e4d00e574f0c"},
+    {file = "dask_expr-1.1.9.tar.gz", hash = "sha256:edb4f5a38b70a15beb4cfd449c71526c728ff989d91edec210836aa05556c766"},
 ]
 
 [package.dependencies]
-dask = "2024.7.0"
+dask = "2024.7.1"
 pandas = ">=2"
 pyarrow = ">=7.0.0"
 
@@ -4379,4 +4379,4 @@ streamlit = ["croniter", "matplotlib", "seaborn", "streamlit"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11"
-content-hash = "c22099ca935b6e3be9335a18b2a8bd3dc2349fed885fddacc06664d4e2165cad"
+content-hash = "c790681e0546c6c7090b48f944a9b2df73b518fcb1f2fd97779646cbf06cec11"
