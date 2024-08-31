@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Move the [Streamlit application](https://time-split.streamlit.app/) into a 
+  separate repo: https://github.com/rsundqvist/time-fold-explorer/.
+
+### Removed
+- The `time_split.streamlit` submodule.
+
 ## [0.5.0] - 2024-07-06
 
 ### Added

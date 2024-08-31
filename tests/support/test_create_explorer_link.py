@@ -8,16 +8,16 @@ LIMITS = ("2019-04-11 00:35:00", "2019-05-11 21:30:00")
 
 def test_docs_link():
     link = create_explorer_link(
-        "http://20.240.208.202/time-split/",
+        "https://time-split.streamlit.app",
         LIMITS,
         schedule="0 0 * * MON,FRI",
         n_splits=2,
         step=2,
     )
     assert urlparse(link) == ParseResult(
-        scheme="http",
-        netloc="20.240.208.202",
-        path="/time-split/",
+        scheme="https",
+        netloc="time-split.streamlit.app",
+        path="",
         params="",
         query="data=1554942900-1557610200&schedule=0+0+%2A+%2A+MON%2CFRI&n_splits=2&step=2&show_removed=True",
         fragment="",

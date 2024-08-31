@@ -5,7 +5,7 @@ Time-based k-fold validation splits for heterogeneous data.
 Experimenting with parameters
 -----------------------------
 The **Time Fold Explorer** application
-(available `here <http://20.240.208.202/time-split/?data=1554942900-1557610200&schedule=0+0+%2A+%2A+MON%2CFRI&n_splits=2&step=2&show_removed=True>`_)
+(available `here <https://time-split.streamlit.app/?data=1554942900-1557610200&schedule=0+0+%2A+%2A+MON%2CFRI&n_splits=2&step=2&show_removed=True>`_)
 is designed to help evaluate the effects of different
 :ref:`parameters <Parameter overview>`.
 To start it locally using

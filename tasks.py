@@ -20,7 +20,6 @@ COVERAGE_REPORT = COVERAGE_DIR.joinpath("index.html")
 SOURCE_DIR = ROOT_DIR.joinpath("src/time_split")
 TEST_DIR = ROOT_DIR.joinpath("tests")
 PYTHON_TARGETS = [
-    ROOT_DIR / "app.py",
     SOURCE_DIR,
     TEST_DIR,
     ROOT_DIR.joinpath("noxfile.py"),

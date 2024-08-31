@@ -17,7 +17,7 @@ def docs(__func: Callable[P, T], /) -> Callable[P, T]:
     __func.__doc__ = __func.__doc__.format(**_DOCSTRINGS)
 
     if isinstance(__func, type):
-        __func.__init__ = deprecated_params(__func.__init__)
+        __func.__init__ = deprecated_params(__func.__init__)  # type: ignore[misc]
     else:
         __func = deprecated_params(__func)
 

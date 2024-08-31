@@ -40,13 +40,8 @@ rics = ">=4.1.1"
 matplotlib = { version = "*", optional = true }
 seaborn = { version = "*", optional = true }
 
-# explorer
-streamlit = { version = "*", optional = true }
-croniter = { version = "*", optional = true }
-
 [tool.poetry.extras]
 plotting = ["matplotlib", "seaborn"]
-streamlit = ["matplotlib", "seaborn", "streamlit", "croniter"]
 
 [tool.poetry.group.manual-extras.dependencies]
 # Extras that must be available for docs + tests go here. Doc/test-only deps go in their respective groups.

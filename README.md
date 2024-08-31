@@ -39,7 +39,7 @@ strong non-stationary characteristics.
 
 ## Experimenting with parameters
 The **Time Fold Explorer** application
-(available [here](http://20.240.208.202/time-split/?data=1554942900-1557610200&schedule=0+0+%2A+%2A+MON%2CFRI&n_splits=2&step=2&show_removed=True))
+(available [here](https://time-split.streamlit.app/?data=1554942900-1557610200&schedule=0+0+%2A+%2A+MON%2CFRI&n_splits=2&step=2&show_removed=True))
 is designed to help evaluate the effects of different
 [parameters](https://time-split.readthedocs.io/en/stable/#parameter-overview).
 To start it locally using
