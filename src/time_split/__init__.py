@@ -11,6 +11,6 @@ __all__ = [
     "__version__",  # Make MyPy happy
 ]
 
-__version__ = "0.5.0.dev1"
+__version__ = "0.6.0"
 
 _logging.getLogger(__name__).addHandler(_logging.NullHandler())
