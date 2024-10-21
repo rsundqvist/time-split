@@ -81,7 +81,7 @@ scikit-learn = "^1.4.2"
 # dask.datasets.timeseries() warns:
 #     UserWarning: dask_expr does not support the DataFrameIOFunction protocol for column projection
 # on dask == 2024.3.1
-dask = { version = "==2024.9.1", extras = ["dataframe"] }
+dask = { version = "==2024.10.0", extras = ["dataframe"] }
 
 [tool.poetry.group.devops.dependencies]
 invoke = "^2.2.0"
