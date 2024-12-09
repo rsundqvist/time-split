@@ -795,13 +795,13 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "dask"
-version = "2024.11.2"
+version = "2024.12.0"
 description = "Parallel PyData with Task Scheduling"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "dask-2024.11.2-py3-none-any.whl", hash = "sha256:6115c4b76015e8d9d9c2922b6a0a1c850e283fb7fee74eebbd2e28e9c117c30d"},
-    {file = "dask-2024.11.2.tar.gz", hash = "sha256:9a72bee3f149ff89bc492340d4bcba33d5dd3e3a9d471d2b4b3872f2d71ddaae"},
+    {file = "dask-2024.12.0-py3-none-any.whl", hash = "sha256:e038e87b9f06e7927b81ecde6cf2b49aa699bb902fec11abba5697cb48baeb8d"},
+    {file = "dask-2024.12.0.tar.gz", hash = "sha256:ffd02b06ac06b993df0b48e0ba4fe02abceb5c8b34b40bd91d63f33ec7a272a4"},
 ]
 
 [package.dependencies]
@@ -809,7 +809,7 @@ click = ">=8.1"
 cloudpickle = ">=3.0.0"
 dask-expr = {version = ">=1.1,<1.2", optional = true, markers = "extra == \"dataframe\""}
 fsspec = ">=2021.09.0"
-importlib-metadata = {version = ">=4.13.0", markers = "python_version < \"3.12\""}
+importlib_metadata = {version = ">=4.13.0", markers = "python_version < \"3.12\""}
 numpy = {version = ">=1.24", optional = true, markers = "extra == \"array\""}
 packaging = ">=20.0"
 pandas = {version = ">=2.0", optional = true, markers = "extra == \"dataframe\""}
@@ -822,22 +822,22 @@ array = ["numpy (>=1.24)"]
 complete = ["dask[array,dataframe,diagnostics,distributed]", "lz4 (>=4.3.2)", "pyarrow (>=14.0.1)"]
 dataframe = ["dask-expr (>=1.1,<1.2)", "dask[array]", "pandas (>=2.0)"]
 diagnostics = ["bokeh (>=3.1.0)", "jinja2 (>=2.10.3)"]
-distributed = ["distributed (==2024.11.2)"]
+distributed = ["distributed (==2024.12.0)"]
 test = ["pandas[test]", "pre-commit", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-timeout", "pytest-xdist"]
 
 [[package]]
 name = "dask-expr"
-version = "1.1.19"
+version = "1.1.20"
 description = "High Level Expressions for Dask"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "dask_expr-1.1.19-py3-none-any.whl", hash = "sha256:b2931c20241a3bc1978ccccc4b8a2f7b27b15bb85ce89fec04595bc5bcf20cf5"},
-    {file = "dask_expr-1.1.19.tar.gz", hash = "sha256:5c8a50924bf6718bb630d58f11311e3d928c7037af913e096fa0eb3f0a493b9f"},
+    {file = "dask_expr-1.1.20-py3-none-any.whl", hash = "sha256:a10755f2bc7d7cfb060b4fc9c7e8b139a03d961c4420ebd50ea319ea906f8b80"},
+    {file = "dask_expr-1.1.20.tar.gz", hash = "sha256:c5be6243296c299e21e02aa93e863e28e6f21ab3c01b645cec3dd56e1b1eac9b"},
 ]
 
 [package.dependencies]
-dask = "2024.11.2"
+dask = "2024.12.0"
 pandas = ">=2"
 pyarrow = ">=14.0.1"
 
@@ -4520,4 +4520,4 @@ plotting = ["matplotlib", "seaborn"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11"
-content-hash = "f9dd8dd7cc0ee6d091a9179dfa7dfcca968bf26745b693ce90818bb8de4cec8c"
+content-hash = "c747b7499e32c773e748f0475bdf5e335d999bcfaadde7a39cbf6b1c306e6923"
