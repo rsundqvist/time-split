@@ -58,7 +58,7 @@ streamlit = "*"
 sphinx = "^7.2.6"
 sphinx-gallery = ">=0.16,<0.19"
 pydata-sphinx-theme = ">=0.15.2,<0.17.0"
-myst-parser = ">=2,<4"
+myst-parser = ">=2,<5"
 nbsphinx = "^0.9.3"
 ipython = "^8.23.0"
 
