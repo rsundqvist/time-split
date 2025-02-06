@@ -44,7 +44,7 @@ def test_index_is_preserved():
 
 
 def test_series_is_preserved():
-    from dask.dataframe import Series  # type: ignore[attr-defined]
+    from dask.dataframe import Series
 
     available = timeseries(freq="10 min").index
 

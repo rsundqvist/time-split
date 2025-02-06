@@ -21,7 +21,14 @@ def test_handle_log_progress_arg(arg, name, caplog):
 
 def test_logger_adapter(caplog):
     # Custom adapter class until https://github.com/python/cpython/pull/107292
-    arg = logging.LoggerAdapter(logging.getLogger("test-logger-adapter"), extra={"foo": "bar"})
+
+    logger = logging.getLogger("test-logger-adapter")
+    extra = {"foo": "bar"}
+    if sys.version_info < (3, 13):
+        arg = logging.LoggerAdapter(logger, extra=extra)
+    else:
+        arg = logging.LoggerAdapter(logger, extra=extra, merge_extra=True)
+
     _run(arg, "test-logger-adapter", caplog)
     for record in caplog.records:
         assert record.foo == "bar"
