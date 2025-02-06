@@ -1,6 +1,7 @@
 from urllib.parse import ParseResult, urlparse
 
 import pytest
+
 from time_split.support import create_explorer_link
 
 LIMITS = ("2019-04-11 00:35:00", "2019-05-11 21:30:00")

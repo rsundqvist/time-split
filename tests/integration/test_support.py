@@ -1,7 +1,9 @@
 import logging
+import sys
 
 import pandas as pd
 import pytest
+
 from time_split.integration._log_progress import handle_log_progress_arg
 from time_split.types import DatetimeSplitBounds, DatetimeSplits
 

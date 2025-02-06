@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 from matplotlib import pyplot as plt
 from rics.plotting import configure
+
 from time_split import plot, split
 
 from .conftest import DATA_CASES, NO_DATA_CASES, NO_DATA_SCHEDULE, SPLIT_DATA

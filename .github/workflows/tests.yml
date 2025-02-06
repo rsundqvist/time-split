@@ -7,19 +7,15 @@ on:
         description: "Log level"
         required: true
         default: "info"
-      tags:
-        required: false
-        description: "Test scenario tags"
   push:
     branches:
      - master
+     - ci/*
   pull_request:
     branches:
 
 env:
-  # Need to be explicit when using pip; this is only for the official Poetry (curl-based) installer.
-  # https://github.com/python-poetry/poetry/issues/7611
-  POETRY_VERSION: 1.8.2
+  POETRY_VERSION: 2.0.1
   POLARS_SKIP_CPU_CHECK: true
 
 jobs:
@@ -29,14 +25,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.11
 
       - name: Linting
         run: |
-          pip install poetry==$POETRY_VERSION
+          pip install poetry==$POETRY_VERSION poetry-plugin-export
           poetry install --only=main,devops
           poetry run inv lint
 
@@ -49,7 +45,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ Ubuntu, MacOS, Windows ]
-        python-version: [ '3.11', '3.12' ]
+        python-version: [ '3.11', '3.12', '3.13' ]
         experimental: [false]
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +59,7 @@ jobs:
         shell: bash
         run: |
           pip install nox
-          pip install poetry==$POETRY_VERSION
+          pip install poetry==$POETRY_VERSION poetry-plugin-export
 
       - name: Run mypy with nox
         shell: bash
@@ -74,7 +70,7 @@ jobs:
         run: nox --force-color -s tests-${{ matrix.python-version }}
 
       - name: Run safety check
-        if: matrix.python-version == '3.12' && matrix.os == 'Ubuntu'
+        if: matrix.python-version == '3.11' && matrix.os == 'Ubuntu'
         shell: bash
         run: nox --force-color -s safety
 
@@ -83,23 +79,25 @@ jobs:
         with:
           name: coverage-data-${{ matrix.python-version }}+${{ matrix.os }}
           path: ".coverage.*"
-  
+          if-no-files-found: "error"
+          include-hidden-files: true
+
   coverage:
     needs: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.11
 
       - name: Install system deps
         shell: bash
         run: |
           pip install nox
-          pip install poetry==$POETRY_VERSION
+          pip install poetry==$POETRY_VERSION poetry-plugin-export
 
       - name: Download coverage data
         uses: actions/download-artifact@v4
@@ -113,6 +111,6 @@ jobs:
           nox --force-color --session=coverage -- --fmt xml
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v4.3.1
+        uses: codecov/codecov-action@v4.3.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

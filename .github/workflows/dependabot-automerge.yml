@@ -1,5 +1,13 @@
 name: Dependabot auto-approve
-on: pull_request
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Log level"
+        required: true
+        default: "info"
+  # pull_request:
 
 permissions:
   actions: read

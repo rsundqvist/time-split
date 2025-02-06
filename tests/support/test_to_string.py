@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
+
 from time_split.support import to_string
 from time_split.types import DatetimeSplitBounds
 

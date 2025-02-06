@@ -7,6 +7,6 @@ __all__ = [
     "DatetimeIndexLike",
     "DatetimeIndexSplitter",
     "ProcessAvailableResult",
-    "process_available",
     "expand_limits",
+    "process_available",
 ]

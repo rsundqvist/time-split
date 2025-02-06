@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 from pandas import Timestamp
+
 from time_split.settings import auto_expand_limits as settings
 from time_split.support import expand_limits
 

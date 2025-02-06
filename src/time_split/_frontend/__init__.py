@@ -5,11 +5,11 @@ from ._to_string import format_expanded_limits, to_string
 from ._weight import fold_weight
 
 __all__ = [
-    "fold_weight",
-    "log_split_progress",
     "default_metrics_formatter",
+    "fold_weight",
+    "format_expanded_limits",
+    "log_split_progress",
     "plot",
     "split",
     "to_string",
-    "format_expanded_limits",
 ]

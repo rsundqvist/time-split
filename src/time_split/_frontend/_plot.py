@@ -1,5 +1,6 @@
+from collections.abc import Sized
 from dataclasses import asdict, dataclass, replace
-from typing import TYPE_CHECKING, Any, Literal, Sized
+from typing import TYPE_CHECKING, Any, Literal
 
 import pandas as pd
 from pandas import Timestamp

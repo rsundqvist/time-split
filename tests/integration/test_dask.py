@@ -1,5 +1,6 @@
 import pytest
 from dask.datasets import timeseries
+
 from time_split import plot, split
 from time_split.support import process_available
 
@@ -23,7 +24,7 @@ def test_dask(kind):
 
     xtick_labels = [t.get_text() for t in ax.get_xticklabels()]
     assert len(xtick_labels) == len(unlimited_splits) + 2
-    assert f"dask_expr.{kind.capitalize()}" in ax.get_title()
+    assert f"dask.dataframe.{kind.capitalize()}" in ax.get_title()
 
     for i, (left, right) in enumerate(zip(xtick_labels[1:], unlimited_splits)):
         # Only mid (index 1) is added

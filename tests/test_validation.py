@@ -1,4 +1,5 @@
 import pytest
+
 from time_split import split
 from time_split._backend._span import InvalidSpanError
 

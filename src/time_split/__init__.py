@@ -5,10 +5,10 @@ import logging as _logging
 from ._frontend import log_split_progress, plot, split
 
 __all__ = [
+    "__version__",  # Make MyPy happy
     "log_split_progress",
     "plot",
     "split",
-    "__version__",  # Make MyPy happy
 ]
 
 __version__ = "0.6.0.dev1"

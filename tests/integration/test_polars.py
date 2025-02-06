@@ -3,6 +3,7 @@ from datetime import datetime
 
 import polars as pl
 import pytest
+
 from time_split import split
 from time_split.integration.polars import split_polars
 
