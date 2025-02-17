@@ -56,7 +56,7 @@ streamlit = "*"
 # description: https://github.com/astropy/astropy/issues/11723
 # https://github.com/astropy/astropy/pull/12270
 sphinx = ">=7.2.6,<9.0.0"
-sphinx-gallery = ">=0.16,<0.19"
+sphinx-gallery = ">=0.16,<0.20"
 pydata-sphinx-theme = ">=0.15.2,<0.17.0"
 myst-parser = ">=2,<5"
 nbsphinx = "^0.9.3"
