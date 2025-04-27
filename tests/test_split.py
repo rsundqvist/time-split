@@ -11,7 +11,7 @@ from .conftest import DATA_CASES, NO_DATA_CASES, NO_DATA_SCHEDULE, SPLIT_DATA
 def test_data(kwargs, expected):
     actual = split(**kwargs, available=SPLIT_DATA)
 
-    for i, (left, right) in enumerate(zip(actual, expected)):
+    for i, (left, right) in enumerate(zip(actual, expected, strict=True)):
         assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right)), i
     assert len(actual) == len(expected)
 
@@ -51,7 +51,7 @@ class TestSnapToEnd:
 def test_data_utc(kwargs, expected):
     actual = split(**kwargs, available=SPLIT_DATA.tz_localize("utc"))
 
-    for i, (left, right) in enumerate(zip(actual, expected)):
+    for i, (left, right) in enumerate(zip(actual, expected, strict=False)):
         assert left == st.DatetimeSplitBounds(*(pd.Timestamp(ts, tz="utc") for ts in right)), i
     assert len(actual) == len(expected)
 
@@ -63,7 +63,7 @@ def test_data_utc(kwargs, expected):
 def test_no_data(after, expected):
     actual = list(split(schedule=NO_DATA_SCHEDULE, before="5d", after=after))
 
-    for i, (left, right) in enumerate(zip(actual, expected)):
+    for i, (left, right) in enumerate(zip(actual, expected, strict=False)):
         assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right)), i
     assert len(expected) == len(actual)
 

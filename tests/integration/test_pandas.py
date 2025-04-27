@@ -21,6 +21,7 @@ def test_pandas(typ, caplog):
             log_progress={"logger": "test-pandas", "start_level": logging.DEBUG},
         ),
         split("1d", available=index),
+        strict=False,
     ):
         assert isinstance(expected_bounds, type(pandas_fold.bounds)), "bad"
         assert expected_bounds == pandas_fold.bounds
@@ -54,7 +55,7 @@ def test_inclusive_equality():
     by_column = split_pandas(**kwargs, time_column="time")
 
     count = 0
-    for index, column in zip(by_index, by_column):
+    for index, column in zip(by_index, by_column, strict=True):
         assert index.bounds == column.bounds
         pd.testing.assert_frame_equal(index.data, column.data)
         pd.testing.assert_frame_equal(index.future_data, column.future_data)

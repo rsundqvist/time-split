@@ -250,7 +250,7 @@ def _add_bar_labels(
             unit=unit_or_labels,
         )
 
-    for bar, label in zip(ax.containers, labels):
+    for bar, label in zip(ax.containers, labels, strict=True):
         ax.bar_label(bar, labels=[label], **kwargs)  # type: ignore[arg-type]
 
 

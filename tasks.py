@@ -154,7 +154,7 @@ def coverage(c: Context, fmt: str = "report", open_browser: bool = False) -> Non
         _run(c, "poetry run coverage combine")
     if fmt != "report":
         # Always print the report
-        _run(c, "poetry run coverage report -i")
+        _run(c, "poetry run coverage report -i --fail-under=0")
     _run(c, f"poetry run coverage {fmt} -i")
     if fmt == "html" and open_browser:
         webbrowser.open(COVERAGE_REPORT.as_uri())

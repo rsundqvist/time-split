@@ -19,7 +19,7 @@ def test_data(kwargs, expected):
     # Outer bounds of SPLIT_DATA are added when data is given
     assert len(xtick_labels) == len(expected) + 2
 
-    for i, (left, right) in enumerate(zip(xtick_labels[1:], expected)):
+    for i, (left, right) in enumerate(zip(xtick_labels[1:-1], expected, strict=True)):
         # Only mid (index 1) is added
         assert left in right[1], i
 
@@ -35,7 +35,7 @@ def test_no_data(after, expected):
     # No bounds when no available data is given
     assert len(xtick_labels) == len(expected)
 
-    for i, (left, right) in enumerate(zip(xtick_labels, expected)):
+    for i, (left, right) in enumerate(zip(xtick_labels, expected, strict=False)):
         # Only mid (index 1) is added
         assert left in right[1], i
 

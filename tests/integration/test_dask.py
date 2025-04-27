@@ -26,7 +26,7 @@ def test_dask(kind):
     assert len(xtick_labels) == len(unlimited_splits) + 2
     assert f"dask.dataframe.{kind.capitalize()}" in ax.get_title()
 
-    for i, (left, right) in enumerate(zip(xtick_labels[1:], unlimited_splits)):
+    for i, (left, right) in enumerate(zip(xtick_labels[1:-1], unlimited_splits, strict=True)):
         # Only mid (index 1) is added
         assert left in str(right[1]), i
 

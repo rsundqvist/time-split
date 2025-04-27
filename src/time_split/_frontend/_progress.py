@@ -122,7 +122,7 @@ class _ProgressTracker(Generic[MetricsType]):
         n_splits = len(splits)
 
         for n, split in enumerate(splits, start=1):
-            default_extras = SplitProgressExtras(
+            default_extras = SplitProgressExtras[MetricsType](
                 n=n,
                 n_splits=n_splits,
                 start=split.start.isoformat(),

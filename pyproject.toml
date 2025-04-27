@@ -1,15 +1,15 @@
-[tool.poetry]
+[project]
 name = "time-split"
 version = "0.6.0.dev1"
 description = "Time-based k-fold validation splits for heterogeneous data."
-authors = ["Richard Sundqvist <richard.sundqvist@live.se>"]
-
+authors = [
+    { name = "Richard Sundqvist", email = "richard.sundqvist@live.se" },
+]
+license = { text = "MIT" }
 readme = "README.md"
-homepage = "https://github.com/rsundqvist/time-split"
-repository = "https://github.com/rsundqvist/time-split"
-documentation = "https://time-split.readthedocs.io"
+keywords = ["hyper", "parameter", "optimization", "cross", "validation", "time", "temporal", "heterogenous", "data"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Operating System :: POSIX :: Linux",
@@ -17,15 +17,28 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
+    "Typing :: Typed",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
+requires-python = ">=3.11"
 
+dependencies = [
+    "pandas >= 2.0.3",
+    "rics   >= 4.1.1",
+]
 
-[tool.poetry.urls]
+[project.optional-dependencies]
+cli = ["click", "streamlit"]
+plotting = ["matplotlib", "seaborn"]
+
+[project.urls]
+homepage = "https://github.com/rsundqvist/time-split"
+repository = "https://github.com/rsundqvist/time-split"
+documentation = "https://time-split"
 "Bug Tracker" = "https://github.com/rsundqvist/time-split/issues"
 "Changelog" = "https://github.com/rsundqvist/time-split/blob/master/CHANGELOG.md"
 
@@ -37,12 +50,8 @@ python = ">=3.11"
 pandas = ">=2.0.3"
 rics = ">=4.1.1"
 
-# plotting
-matplotlib = { version = "*", optional = true }
-seaborn = { version = "*", optional = true }
-
-[tool.poetry.extras]
-plotting = ["matplotlib", "seaborn"]
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
 
 [tool.poetry.group.manual-extras.dependencies]
 # Extras that must be available for docs + tests go here. Doc/test-only deps go in their respective groups.
@@ -81,8 +90,8 @@ dask = { version = "^2025.1.0", extras = ["dataframe"] }
 
 [tool.poetry.group.devops.dependencies]
 invoke = "^2.2.0"
-mypy = "^1.14.1"
-ruff = "^0.9.3"
+mypy = "^1.15.0"
+ruff = "^0.11.7"
 
 safety = "^3.0.1"
 codespell = "^2.2.6"
@@ -141,8 +150,9 @@ ignore = [
     "PLR0913", #
     "SIM108", # Use ternary operator - coverage issue, see https://github.com/nedbat/coveragepy/issues/509
     "TD003", # Missing issue link
+    "TC006",  # Add quotes to type expression in `typing.cast()`
+    "UP038", #  https://github.com/astral-sh/ruff/issues/7871
 ]
-allowed-confusables = ["ℹ"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [

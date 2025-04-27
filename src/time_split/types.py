@@ -86,7 +86,7 @@ class LogSplitProgressKwargs(_t.TypedDict, _t.Generic[MetricsType], total=False)
     get_metrics: GetMetrics[MetricsType]
 
 
-class SplitProgressExtras(_t.TypedDict):
+class SplitProgressExtras(_t.TypedDict, _t.Generic[MetricsType]):
     """Named `extras` used for messages logged by :func:`.log_split_progress`."""
 
     n: int
@@ -101,3 +101,5 @@ class SplitProgressExtras(_t.TypedDict):
     """An :meth:`ISO-formatted <pandas.Timestamp.isoformat>` timestamp (see :attr:`.DatetimeSplitBounds.end`)."""
     seconds: _t.NotRequired[float]
     """User time for the fold. Available only for the :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>`."""
+    metrics: _t.NotRequired[MetricsType]
+    """Optional fold metrics. Typically appended to the :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>`."""

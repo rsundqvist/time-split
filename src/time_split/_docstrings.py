@@ -1,4 +1,5 @@
-from typing import Callable, ParamSpec, TypeVar
+from collections.abc import Callable
+from typing import ParamSpec, TypeVar
 
 from time_split._compat import deprecated_params
 

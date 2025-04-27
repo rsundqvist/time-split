@@ -30,6 +30,7 @@ def test_polars(df, caplog):
             time_column="timestamp",
         ),
         split("1d", available=list(df["timestamp"])),
+        strict=True,
     ):
         assert isinstance(expected_bounds, type(polars_fold.bounds)), "bad"
         assert expected_bounds == polars_fold.bounds

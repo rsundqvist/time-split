@@ -24,9 +24,9 @@ otherwise stated.
        * `cron <https://pypi.org/project/croniter/>`_ expression
      - Generates training dates (:attr:`.DatetimeSplitBounds.mid`). **Examples:**
 
+       * ``['2019-05-04', '2019-05-11']`` | *Hand-picked dates.*
        * ``'7d'`` | *every 7 days, aligned to the end of the available data.*
        * ``'0 0 * * MON,FRI'`` | *every Monday and Friday at midnight.*
-       * ``['2019-05-04', '2019-05-11']`` | *Hand-picked dates.*
 
    * - | ``before``
        | ``after``
