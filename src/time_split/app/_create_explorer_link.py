@@ -1,3 +1,4 @@
+from base64 import b16encode as encode_binary_data
 from datetime import datetime
 from typing import Any, Unpack
 from urllib.parse import ParseResult, urlencode, urlparse, urlunparse
@@ -10,8 +11,8 @@ from ..types import DatetimeIndexSplitterKwargs, DatetimeIterable
 @docs
 def create_explorer_link(
     host: str,
-    data: DatetimeIterable | str | None = None,
-    available: DatetimeIterable | str | None = None,
+    data: DatetimeIterable | str | bytes | None = None,
+    available: DatetimeIterable | str | bytes | None = None,
     *,
     show_removed: bool = True,
     skip_default: bool = False,
@@ -22,8 +23,9 @@ def create_explorer_link(
     Args:
         host: Base address where the application is hosted.
         data: {available} Regular `available` arguments (as passed to e.g. :func:`time_split.split`) are encoded as
-            a date range to generate dummy data for. Pass a ``str`` to use dataset bundled by the server instead. Note
-            that this function cannot verify the `kwargs` if `available` is a ``str`` dataset.
+            a date range to generate dummy data for.
+            Pass a ``str`` to use a bundled dataset, or ``bytes`` to use a custom loader. Note that this will disable
+            verification of the `**kwargs`.
         available: Alias of `data`.
         skip_default: If ``True``, do not include default split params in the link.
         show_removed: {show_removed}
@@ -59,14 +61,14 @@ def create_explorer_link(
     if data is None:
         data = available
 
-    assert data is not None  # noqa: S101
+    assert data is not None
     pr = _create_explorer_link(host, data, show_removed=show_removed, skip_default=skip_default, **kwargs)
     return urlunparse(pr)
 
 
 def _create_explorer_link(
     host: str,
-    data: DatetimeIterable | str,
+    data: DatetimeIterable | str | bytes,
     *,
     show_removed: bool = True,
     skip_default: bool = False,
@@ -81,13 +83,16 @@ def _create_explorer_link(
 
 
 def _create_query(
-    data: DatetimeIterable | str,
+    data: DatetimeIterable | str | bytes,
     *,
     skip_default: bool,
     show_removed: bool,
     kwargs: DatetimeIndexSplitterKwargs,
 ) -> dict[str, Any]:
     query: dict[str, Any] = {}
+
+    if isinstance(data, bytes):
+        data = "0x" + encode_binary_data(data).decode()
 
     if isinstance(data, str):
         query = {"data": data, **kwargs}

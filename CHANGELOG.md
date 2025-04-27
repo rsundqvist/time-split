@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- The `create_explorer_link()` function will now hex-encode `bytes` data.
+
 ### Changed
 - Make `types.SplitProgressExtras` generic on `MetricsType`.
+- Moved `support.create_explorer_link()` to new submodule `time_split.app`.
 
 ## [0.6.0] - 2024-08-31
 

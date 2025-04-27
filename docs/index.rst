@@ -17,7 +17,7 @@ Docker, run
     docker run -p 8501:8501 rsundqvist/time-split
 
 in the terminal. You may use
-:func:`~time_split.support.create_explorer_link`
+:func:`~time_split.app.create_explorer_link`
 to build application URLs with preselected splitting parameters.
 
 
