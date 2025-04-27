@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - The `create_explorer_link()` function will now hex-encode `bytes` data.
-- Added user-facing Streamlit app API to `time_split.datasets`.
+- Added user-facing Streamlit app API to `time_split.app.datasets`.
+- New class `app.streamlit.DatasetLoaderWidget` + supporting functions and classes.
 
 ### Changed
 - Make `types.SplitProgressExtras` generic on `MetricsType`.

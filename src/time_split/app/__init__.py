@@ -1,4 +1,7 @@
-"""Supporting functions and classes for the Streamlit companion app."""
+"""Supporting functions and classes for the Streamlit companion app.
+
+This is the public API of the Streamlit companion app.
+"""
 
 from ._create_explorer_link import create_explorer_link
 
