@@ -108,13 +108,14 @@ def spelling(c: Context) -> None:
 def safety(c: Context) -> None:
     """Run safety."""
     ignores = [
-        70612,  # CVE-2019-8341
+        # 70612,  # CVE-2019-8341
     ]
+    ignore = f" -i {','.join(map(str, ignores))}" if ignores else ""
 
     _run(
         c,
-        f"poetry export --format=requirements.txt --without-hashes "
-        f"| poetry run safety check --stdin --full-report -i {','.join(map(str, ignores))}",
+        "poetry export --format=requirements.txt --without-hashes "
+        "| poetry run safety check --stdin --full-report" + ignore,
     )
 
 

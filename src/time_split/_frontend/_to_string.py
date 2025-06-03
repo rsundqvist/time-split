@@ -1,9 +1,9 @@
 from typing import Any, Literal, overload
 
 from pandas import Timestamp
+from rics.strings import format_seconds as fmt_sec
 
 from .._backend._limits import LimitsTuple
-from .._compat import fmt_sec
 from ..settings import log_split_progress
 from ..types import DatetimeSplitBounds, DatetimeTypes, ExpandLimits
 

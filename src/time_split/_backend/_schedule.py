@@ -1,4 +1,4 @@
-from typing import NamedTuple, cast, get_args
+from typing import NamedTuple, get_args
 
 from pandas import DatetimeIndex, NaT, Timedelta, Timestamp, date_range
 
@@ -6,7 +6,7 @@ from ..types import DatetimeIterable, ExpandLimits, Schedule, TimedeltaTypes
 from ._limits import LimitsTuple
 from ._process_available import ProcessAvailableResult, process_available
 
-NO_LIMITS = cast(LimitsTuple, (NaT, NaT))
+NO_LIMITS: LimitsTuple = NaT, NaT
 
 
 class MaterializedSchedule(NamedTuple):

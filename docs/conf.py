@@ -210,7 +210,7 @@ html_context = {
         ),
         dict(
             title="Docker <img src= https://img.shields.io/docker/image-size/rsundqvist/time-split/latest?logo=docker&label=time-split >",
-            text=f"Image for the <i>Time Fold Explorer</i> application on DockerHub.",
+            text="Explorer application Docker image.",
             url="https://hub.docker.com/r/rsundqvist/time-split/",
             img="_static/app.jpg",
         ),

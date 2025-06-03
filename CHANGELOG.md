@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - The `time_split.streamlit` submodule.
+- Deprecated alias `flex`; use `expand_limits` instead.
 
 ## [0.5.0] - 2024-07-06
 

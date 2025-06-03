@@ -81,11 +81,11 @@ def random_density_timestamps() -> tuple[pd.Timestamp, ...]:
     prev_size = 5000
     for _ in range(31 * 24):
         choices = pd.date_range(start, start + pd.Timedelta(hours=1), freq="5min", inclusive="left")
-        size = prev_size + rng.integers(-1000, 1000)
+        size = prev_size + rng.integers(-1000, 1000, dtype=int)
         if size < 500:
-            size = 500 + rng.integers(0, 500 - size)
+            size = 500 + rng.integers(0, 500 - size, dtype=int)
         if size > 10_000:
-            size = 10_000 + rng.integers(0, size - 10_000)
+            size = 10_000 + rng.integers(0, size - 10_000, dtype=int)
         timestamps = rng.choice(choices, size=size)
         parts.extend(timestamps)
 

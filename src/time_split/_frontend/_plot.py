@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Any, Literal
 import pandas as pd
 from pandas import Timestamp
 from rics.misc import format_kwargs, get_public_module
-
-from time_split._compat import fmt_sec
+from rics.strings import format_seconds as fmt_sec
 
 from .._backend import DatetimeIndexSplitter
 from .._backend._datetime_index_like import DatetimeIndexLike

@@ -1,8 +1,6 @@
 from collections.abc import Callable
 from typing import ParamSpec, TypeVar
 
-from time_split._compat import deprecated_params
-
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -16,12 +14,6 @@ def docs(__func: Callable[P, T], /) -> Callable[P, T]:
     """Add info the docstring of a function."""
     assert __func.__doc__ is not None  # noqa: S101
     __func.__doc__ = __func.__doc__.format(**_DOCSTRINGS)
-
-    if isinstance(__func, type):
-        __func.__init__ = deprecated_params(__func.__init__)  # type: ignore[misc]
-    else:
-        __func = deprecated_params(__func)
-
     return __func
 
 

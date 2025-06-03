@@ -6,8 +6,7 @@ from typing import Any, Generic
 
 import pandas as pd
 from rics.collections.dicts import flatten_dict
-
-from time_split._compat import fmt_sec
+from rics.strings import format_seconds as fmt_sec
 
 from ..settings import log_split_progress as settings
 from ..types import DatetimeSplitBounds, FormatMetrics, GetMetrics, LoggerArg, MetricsType, SplitProgressExtras
