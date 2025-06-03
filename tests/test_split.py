@@ -47,6 +47,28 @@ class TestSnapToEnd:
         ]
 
 
+@pytest.mark.parametrize(
+    "round_limits, snap_to_end, expected",
+    [
+        (False, False, "2019-05-10 23:55:00"),
+        (False, True, "2019-05-11 23:55:00"),
+        (True, False, "2019-05-11 00:00:00"),
+        (True, True, "2019-05-12 00:00:00"),
+    ],
+)
+def test_round_limits_snap_to_end_interaction(monkeypatch, *, round_limits, snap_to_end, expected):
+    from time_split.settings import misc as settings
+
+    limits = "2019-04-10 23:55:00", "2019-05-12 01:00:00"
+
+    monkeypatch.setattr(settings, "round_limits", round_limits)
+    monkeypatch.setattr(settings, "snap_to_end", snap_to_end)
+
+    folds = split(schedule="7d", before="3d", after="2d", available=limits)
+    assert len(folds) == 4
+    assert str(folds[-1].end) == expected
+
+
 @pytest.mark.parametrize("kwargs, expected", *DATA_CASES)
 def test_data_utc(kwargs, expected):
     actual = split(**kwargs, available=SPLIT_DATA.tz_localize("utc"))

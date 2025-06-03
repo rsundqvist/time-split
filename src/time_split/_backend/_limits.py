@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 from pandas import Timedelta, Timestamp
 
-from ..settings import auto_expand_limits
+from ..settings import auto_expand_limits, misc
 from ..types import ExpandLimits, TimedeltaTypes
 
 LimitsTuple = tuple[Timestamp, Timestamp]
@@ -22,6 +22,8 @@ def expand_limits(
     spec: ExpandLimits | LevelTuple | Iterable[LevelTuple] = "auto",
 ) -> LimitsTuple:
     """Derive the `"real"` bounds of `limits`.
+
+    Use :attr:`time_split.settings.misc.round_limits` to allow inward "expansion".
 
     Args:
         limits: A tuple ``(min, max)`` of timestamps.
@@ -61,6 +63,7 @@ def expand_limits(
         >>> expand_limits(limits, "d<14h")
         (Timestamp('2019-05-11 00:00:00'), Timestamp('2019-05-11 11:05:30'))
 
+        To disable this restriction, set :attr:`round_limits=True <.misc.round_limits>` in the settings.
     """
     if limits[0] >= limits[1]:
         msg = f"Bad limits. Expected limits[1] > limits[0], but got {limits=}."
@@ -102,19 +105,24 @@ def _from_levels(limits: LimitsTuple, *, levels: Iterable[_TimedeltaTuple] | Non
 def _apply(limits: LimitsTuple, *, level: _TimedeltaTuple) -> LimitsTuple:
     lo, hi = limits
 
-    lo_floor = lo.floor(level.round_to)
+    round = misc.round_limits
+    lo_floor = lo.round(level.round_to) if round else lo.floor(level.round_to)
     if abs(lo_floor - lo) > level.tolerance:
         return limits
 
-    hi_ceil = hi.ceil(level.round_to)
+    hi_ceil = hi.round(level.round_to) if round else hi.ceil(level.round_to)
     if abs(hi_ceil - hi) > level.tolerance:
         return limits
 
     if auto_expand_limits.SANITY_CHECK:
-        if lo.round(level.round_to) != lo_floor:
-            return limits
-        if hi.round(level.round_to) != hi_ceil:
-            return limits
+        if round:
+            if lo_floor == hi_ceil:
+                return limits
+        else:
+            if lo.round(level.round_to) != lo_floor:
+                return limits
+            if hi.round(level.round_to) != hi_ceil:
+                return limits
 
     return lo_floor, hi_ceil
 

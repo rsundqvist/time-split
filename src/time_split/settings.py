@@ -177,3 +177,33 @@ class misc:  # noqa: N801
 
     filter: _t.Callable[[_pd.Timestamp, _pd.Timestamp, _pd.Timestamp], bool] | None = None
     """A callable ``(start, mid, end) -> bool`` applied to all generated folds."""
+
+    round_limits: bool = False
+    """If ``True``, use rounding instead of ``floor`` and ``ceil`` for limits expansion.
+
+    Normally, limits such as
+
+    >>> ('2019-04-10 23:55:00', '2019-05-12 01:00:00')
+
+    will never be rounded to
+
+    >>> ('2019-04-11', '2019-05-12')
+
+    since that wouldn't be an expansion of the limits. Setting ``round_limits=True`` will allow the
+    :func:`~time_split.support.expand_limits` function round these bounds inward to the nearest dates.
+    """
+
+
+def no_init(self: object) -> None:
+    """Prevents initialization of config classes."""
+    raise TypeError(
+        f"Class '{__package__}.{type(self).__name__}' is used as a public"
+        f" namespace. There is no need to instantiate this class."
+    )
+
+
+for cls in auto_expand_limits, plot, log_split_progress, misc:
+    cls.__init__ = no_init  # type: ignore[method-assign]
+
+del cls
+del no_init

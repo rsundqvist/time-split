@@ -70,7 +70,7 @@ class DatetimeIndexSplitter:
             return ms
 
         from_end = ms.available_metadata.expanded_limits[1] - (ms.schedule[-1] + Timedelta(self.after))
-        from_end = from_end.floor(schedule_frequency.base)
+        from_end = from_end.floor(schedule_frequency.base)  # TODO(settings): should this depend on misc.round_limits?
 
         return ms._replace(schedule=ms.schedule + from_end)
 

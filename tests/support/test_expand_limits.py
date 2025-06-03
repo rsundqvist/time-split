@@ -71,6 +71,18 @@ def test_sanity(enabled, expected, monkeypatch):
     _run(f"2019-05-11,{expected}", "d", limits)
 
 
+def test_round(monkeypatch):
+    from time_split.settings import misc as misc_settings
+
+    limits = Timestamp("2019-05-10 23:55:00"), Timestamp("2019-05-12 01:00:00")
+
+    monkeypatch.setattr(misc_settings, "round_limits", True)
+    _run("2019-05-11,2019-05-12", "d", limits)
+
+    monkeypatch.setattr(misc_settings, "round_limits", False)
+    _run("2019-05-10 23:55:00,2019-05-12 01:00:00", "d", limits)
+
+
 class TestErrors:
     limits = pd.Timestamp("1991-06-05"), pd.Timestamp("1999-04-30")
 

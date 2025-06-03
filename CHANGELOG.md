@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `create_explorer_link()` function will now hex-encode `bytes` data.
 - Added user-facing Streamlit app API to `time_split.app.datasets`.
 - New class `app.streamlit.DatasetLoaderWidget` + supporting functions and classes.
+- Add `settings.misc.round_limits=False`. Enable to allow inward rounding of limits.
 
 ### Changed
 - Make `types.SplitProgressExtras` generic on `MetricsType`.
