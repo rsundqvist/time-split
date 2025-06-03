@@ -1,7 +1,7 @@
 :orphan:
 
 .. autosummary::
-   :toctree: generated
+   :toctree: api
    :recursive:
 
    time_split

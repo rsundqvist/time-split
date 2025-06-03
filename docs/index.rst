@@ -30,7 +30,7 @@ to build application URLs with preselected splitting parameters.
 .. toctree::
    :hidden:
 
-   API reference <generated/time_split>
+   API reference <api/time_split>
    auto_examples/index
    guide/index
    development

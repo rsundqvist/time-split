@@ -187,13 +187,13 @@ html_context = {
         dict(
             title="Split",
             text="Main entry point function.",
-            url="generated/time_split.html#time_split.split",
+            url="api/time_split.html#time_split.split",
             img="_static/logo.png",
         ),
         dict(
             title="Plot",
             text="Visualization of kept and removed folds.",
-            url="generated/time_split.html#time_split.plot",
+            url="api/time_split.html#time_split.plot",
             img="_images/sphx_glr_step_001.png",
         ),
         dict(
@@ -205,7 +205,7 @@ html_context = {
         dict(
             title="Integrations",
             text="Convenience functions for libraries such as <i>pandas</i> and <i>scikit-learn</i>.",
-            url="generated/time_split.integration.html",
+            url="api/time_split.integration.html",
             img="_static/toolbox.png",
         ),
         dict(

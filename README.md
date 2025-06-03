@@ -30,10 +30,10 @@ strong non-stationary characteristics.
   schedule itself.
 - Automatically extract and [normalize](https://time-split.readthedocs.io/en/stable/guide/expand_limits.html) data limits for 
   supported data types.
-- [Plotting function](https://time-split.readthedocs.io/en/stable/generated/time_split.html#time_split.plot) for
+- [Plotting function](https://time-split.readthedocs.io/en/stable/api/time_split.html#time_split.plot) for
   visualization of folds. Display fold sizes (hour/row count), or 
   [use custom text](https://time-split.readthedocs.io/en/stable/auto_examples/plotting_with_metrics.html).
-- [Integrations](https://time-split.readthedocs.io/en/stable/generated/time_split.integration.html) for popular 
+- [Integrations](https://time-split.readthedocs.io/en/stable/api/time_split.integration.html) for popular 
   libraries such as `pandas`, `polars` and `scikit-learn`.
 - Convenient [web application](#experimenting-with-parameters) for exploring folds with different parameters.
 
@@ -49,7 +49,7 @@ Docker, run
 docker run -p 8501:8501 rsundqvist/time-split
 ```
 in the terminal. You may use
-[`create_explorer_link()`](https://time-split.readthedocs.io/en/stable/generated/time_split.support.html#time_split.support.create_explorer_link)
+[`create_explorer_link()`](https://time-split.readthedocs.io/en/stable/api/time_split.app.html#time_split.app.create_explorer_link)
 to build application URLs with preselected splitting parameters.
 
 ## Installation
