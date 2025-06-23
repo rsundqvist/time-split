@@ -3718,21 +3718,18 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "rics"
-version = "5.1.2"
+version = "6.0.0"
 description = "My personal little ML engineering library."
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "rics-5.1.2-py3-none-any.whl", hash = "sha256:edb3b65f39745b8702249ac1a9eb51d14fe130dec6fee126f30df122017872cd"},
-    {file = "rics-5.1.2.tar.gz", hash = "sha256:b3c6a997af9511e278eadd43ce2be5f142e3860188dbe9e5ec3950d07d93905f"},
+    {file = "rics-6.0.0-py3-none-any.whl", hash = "sha256:5d3f0bd629e9219cac8aaa805890f66f1e1b5d295c74847e4016cabe8876a6eb"},
+    {file = "rics-6.0.0.tar.gz", hash = "sha256:b845b3eac707b8cdc4a863a737749dbd52a550fcc85c891f334e5bd155183e78"},
 ]
 
-[package.dependencies]
-pandas = ">=2.0.3"
-
 [package.extras]
-cli = ["click (>=8.1.0)", "ipykernel (>=6.29.3)", "requests (>=2.30.0)"]
+cli = ["click (>=8.1.0)", "ipykernel (>=6.29.3)", "pandas (>=2.0.3)", "requests (>=2.30.0)"]
 plotting = ["matplotlib", "seaborn"]
 
 [[package]]
