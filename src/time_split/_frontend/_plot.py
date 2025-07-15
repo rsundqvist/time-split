@@ -65,7 +65,7 @@ def plot(
     after: Span = 1,
     step: int = 1,
     n_splits: int = 0,
-    available: DatetimeIterable | None = None,
+    available: DatetimeIterable | pd.DataFrame | pd.Series | None = None,
     expand_limits: ExpandLimits = "auto",
     ignore_filters: bool = False,
     # Split plot args
@@ -112,6 +112,15 @@ def plot(
     """
     import matplotlib.pyplot as plt
 
+    if (
+        available is not None
+        and hasattr(available, "index")
+        and not callable(available.index)
+        and hasattr(available, "shape")
+        and len(available.shape) != 1
+    ):
+        available = available.index
+
     splitter = DatetimeIndexSplitter(
         schedule,
         before=before,
@@ -121,6 +130,7 @@ def plot(
         expand_limits=expand_limits,
         ignore_filters=ignore_filters,
     )
+
     plot_data = _get_plot_data(available, splitter, row_count_bin=row_count_bin, show_removed=show_removed)
 
     if bar_labels is True:

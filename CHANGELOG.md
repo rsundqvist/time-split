@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Make `types.SplitProgressExtras` generic on `MetricsType`.
 - Moved `support.create_explorer_link()` to new submodule `time_split.app`.
+- Allow passing `Series/DataFrame` as `plot(available=...)`.
 
 ## [0.6.0] - 2024-08-31
 
