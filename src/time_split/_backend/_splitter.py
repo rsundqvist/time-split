@@ -1,6 +1,4 @@
-import logging
 from dataclasses import asdict, dataclass
-from functools import lru_cache
 from typing import cast, get_args
 
 from pandas import Timedelta
@@ -17,11 +15,8 @@ from ..types import (
     Span,
     TimedeltaTypes,
 )
-from ._limits import LimitsTuple
 from ._schedule import MaterializedSchedule, materialize_schedule
 from ._span import OffsetCalculator, to_strict_span
-
-LOGGER = logging.getLogger("time_split")
 
 
 @dataclass(frozen=True)
@@ -39,7 +34,6 @@ class DatetimeIndexSplitter:
     def get_splits(self, available: DatetimeIterable | None = None) -> DatetimeSplits:
         """Compute a split of given user data."""
         ms = self._materialize_schedule(available)
-        self._log_expansion(ms.available_metadata.limits, expanded=ms.available_metadata.expanded_limits)
         return self._make_bounds_list(ms)
 
     def get_plot_data(self, available: DatetimeIterable | None = None) -> tuple[DatetimeSplits, MaterializedSchedule]:
@@ -109,7 +103,6 @@ class DatetimeIndexSplitter:
 
         Returns:
             Filtered splits.
-
         """
         if self.step != 1:
             step = abs(self.step)
@@ -126,21 +119,6 @@ class DatetimeIndexSplitter:
             return splits
 
         return [s for s in splits if settings.filter(*s)]
-
-    def _log_expansion(self, original: LimitsTuple, *, expanded: LimitsTuple) -> None:
-        from .._frontend import format_expanded_limits
-
-        if original == expanded or not LOGGER.isEnabledFor(logging.INFO):
-            return
-
-        message = format_expanded_limits(original, expanded=expanded, expand_limits=self.expand_limits)
-        self._emit_once(message)
-
-    @staticmethod
-    @lru_cache(8)
-    def _emit_once(message: str) -> None:
-        """Emit if **not** in the eight most recent emission messages."""
-        LOGGER.info(message)
 
     def __post_init__(self) -> None:
         # Verify n_splits
