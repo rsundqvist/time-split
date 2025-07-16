@@ -18,7 +18,7 @@ def create_explorer_link(
     skip_default: bool = False,
     **kwargs: Unpack[DatetimeIndexSplitterKwargs],
 ) -> str:
-    """Create a `Time Fold Explorer` application URL.
+    """Create an application URL.
 
     Args:
         host: Base address where the application is hosted.
@@ -56,12 +56,13 @@ def create_explorer_link(
                    :target: https://hub.docker.com/r/rsundqvist/time-split/
                    :alt: Docker Image Size (tag)
     """
-    if sum([data is None, available is None]) != 1:
-        raise ValueError("Exactly one of `data` and `available` must be given.")
     if data is None:
+        if available is None:
+            raise ValueError("Exactly one of `data` and `available` must be given.")
         data = available
+    elif data is not None and available is not None:
+        raise ValueError("Exactly one of `data` and `available` must be given.")
 
-    assert data is not None
     pr = _create_explorer_link(host, data, show_removed=show_removed, skip_default=skip_default, **kwargs)
     return urlunparse(pr)
 

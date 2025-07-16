@@ -155,11 +155,11 @@ class _PrettyTimestamp:
 
     @property
     def iso(self) -> str:
-        return self.timestamp.isoformat()
+        return self.timestamp.isoformat()  # type: ignore[no-any-return]
 
     @property
     def date(self) -> datetime.date:
-        return self.timestamp.date()
+        return self.timestamp.date()  # type: ignore[no-any-return]
 
 
 def format_expanded_limits(

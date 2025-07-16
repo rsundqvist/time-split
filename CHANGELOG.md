@@ -8,14 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- The `time-split[app]` extra; adds `time_split_app` namespace.
+  * New `time-split` cli; `python -m time_split`.
 - The `create_explorer_link()` function will now hex-encode `bytes` data.
-- Added user-facing Streamlit app API to `time_split.app.datasets`.
-- New class `app.streamlit.DatasetLoaderWidget` + supporting functions and classes.
 - Add `settings.misc.round_limits=False`. Enable to allow inward rounding of limits.
 
 ### Changed
 - Make `types.SplitProgressExtras` generic on `MetricsType`.
-- Moved `support.create_explorer_link()` to new submodule `time_split.app`.
 - Allow passing `Series/DataFrame` as `plot(available=...)`.
 - The `to_string()` function now supports using _.delta_ and _.iso_ (like _.auto_) in the format.
 

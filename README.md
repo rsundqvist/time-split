@@ -38,15 +38,18 @@ strong non-stationary characteristics.
 - Convenient [web application](#experimenting-with-parameters) for exploring folds with different parameters.
 
 ## Experimenting with parameters
-The **Time Fold Explorer** application
+The **Time Split** application
 (available [here](https://time-split.streamlit.app/?data=1554942900-1557610200&schedule=0+0+%2A+%2A+MON%2CFRI&n_splits=2&step=2&show_removed=True))
 is designed to help evaluate the effects of different
 [parameters](https://time-split.readthedocs.io/en/stable/#parameter-overview).
-To start it locally using
-[![Docker Image Size (tag)](https://img.shields.io/docker/image-size/rsundqvist/time-split/latest?logo=docker&label=time-split)](https://hub.docker.com/r/rsundqvist/time-split/)
-Docker, run
+To start it locally, run
 ```sh
 docker run -p 8501:8501 rsundqvist/time-split
+```
+or 
+```bash
+pip install time-split[app]
+python -m time_split app start
 ```
 in the terminal. You may use
 [`create_explorer_link()`](https://time-split.readthedocs.io/en/stable/api/time_split.app.html#time_split.app.create_explorer_link)

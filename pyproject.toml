@@ -28,11 +28,11 @@ requires-python = ">=3.11"
 
 dependencies = [
     "pandas >= 2.0.3",
-    "rics   >= 5.1.0",
+    "rics   >= 6.0.1",
 ]
 
 [project.optional-dependencies]
-cli = ["click", "streamlit"]
+app = ["click", "time-split-app"]  # Constraints managed by app.
 plotting = ["matplotlib", "seaborn"]
 
 [project.urls]
@@ -42,13 +42,8 @@ documentation = "https://time-split"
 "Bug Tracker" = "https://github.com/rsundqvist/time-split/issues"
 "Changelog" = "https://github.com/rsundqvist/time-split/blob/master/CHANGELOG.md"
 
-[tool.poetry.scripts]
-
-[tool.poetry.dependencies]
-python = ">=3.11"
-
-pandas = ">=2.0.3"
-rics = ">=4.1.1"
+[project.entry-points."rics.cli"]
+time-split = "time_split.cli:main"
 
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.8"
@@ -90,10 +85,10 @@ dask = { version = "^2025.1.0", extras = ["dataframe"] }
 
 [tool.poetry.group.devops.dependencies]
 invoke = "~2.2.0"
-mypy = "~1.16.0"
-ruff = "~0.11.12"
+mypy = "~1.17.0"
+ruff = "~0.12.3"
 
-safety = "~3.5.1 "
+safety = "~3.5.1"
 codespell = "~2.4.1"
 bump2version = "~1.0.1"
 
@@ -150,7 +145,7 @@ ignore = [
     "PLR0913", #
     "SIM108", # Use ternary operator - coverage issue, see https://github.com/nedbat/coveragepy/issues/509
     "TD003", # Missing issue link
-    "TC006",  # Add quotes to type expression in `typing.cast()`
+    "TC006", # Add quotes to type expression in `typing.cast()`
     "UP038", #  https://github.com/astral-sh/ruff/issues/7871
 ]
 
@@ -187,13 +182,10 @@ max-line-length = 150
 filterwarnings = [
     "error",
     "ignore:Matplotlib is currently using agg:UserWarning",
-    "ignore:.*utcfromtimestamp.*:DeprecationWarning", # Detta är farligt - ta bort
+    "ignore:.*'mode' parameter.*Pillow 13.*:DeprecationWarning",
 ]
 log_file_level = 10
 log_file = "pytest.log"
-norecursedirs = [
-    "**/cli_modules/*",
-]
 
 [build-system]
 requires = ["poetry-core>=1.0.8"]
