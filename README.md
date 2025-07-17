@@ -55,6 +55,9 @@ in the terminal. You may use
 [`create_explorer_link()`](https://time-split.readthedocs.io/en/stable/api/time_split.app.html#time_split.app.create_explorer_link)
 to build application URLs with preselected splitting parameters.
 
+Click [here](https://time-split.readthedocs.io/en/stable/api/time_split.app.reexport.html) for documentation of the most
+important types, functions and classes used by the application.
+
 ## Installation
 The package is published through the [Python Package Index (PyPI)]. Source code
 is available on GitHub: https://github.com/rsundqvist/time-split
