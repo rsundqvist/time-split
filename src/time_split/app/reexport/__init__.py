@@ -1,28 +1,30 @@
-"""Reexported resources from the ``time_split_app`` namespace.
+"""Reexported members of the ``time_split_app`` namespace.
 
-Running ``python -m time_split app new`` will create a ``Dockerfile`` and a simple ``my_extensions.py`` module.
+.. warning::
 
-Environment variables:
-    Subset of variables used to customize Docker-based deployments.
+   The application API may change without a major version bump.
 
-    .. envvar:: DATASET_LOADER
+Environment variables
+---------------------
 
-       A :class:`DataLoaderWidget` instance or type, e.g. ``my_extensions:MyDatasetLoader``.
+.. envvar:: DATASET_LOADER
 
-    .. envvar:: SPLIT_SELECT_FN
+   A :class:`DataLoaderWidget` instance or type, e.g. ``my_extensions:MyDatasetLoader``.
 
-       A :attr:`SelectSplitParams`-function, e.g. ``my_extensions:my_select_fn``.
+.. envvar:: SPLIT_SELECT_FN
 
-    .. envvar:: PLOT_FN
+   A :attr:`SelectSplitParams`-function, e.g. ``my_extensions:my_select_fn``.
 
-       A :func:`~time_split.plot`-like function, e.g. ``my_extensions:my_plot_fn``.
+.. envvar:: PLOT_FN
 
-    .. envvar:: LINK_FN
+   A :func:`~time_split.plot`-like function, e.g. ``my_extensions:my_plot_fn``.
 
-       A :func:`.create_explorer_link`-like function, e.g. ``my_extensions:my_link_fn``.
+.. envvar:: LINK_FN
 
-    See https://github.com/rsundqvist/time-split-app/blob/master/src/time_split_app/config.py
-    for more variable-based configuration options.
+   A :func:`.create_explorer_link`-like function, e.g. ``my_extensions:my_link_fn``.
+
+See `time_split_app/config.py <https://github.com/rsundqvist/time-split-app/blob/master/src/time_split_app/config.py>`_
+for all variable-based configuration options.
 """
 
 from time_split_app.datasets import Dataset, DatasetConfig, DuplicateIndexError, load_dataset, load_dataset_configs

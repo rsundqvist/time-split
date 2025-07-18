@@ -11,6 +11,7 @@ docs/**/notebooks/
 docs/generated/*
 docs/api/*
 docs/changelog/*
+my-time-split-app/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
