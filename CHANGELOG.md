@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.1] - 2025-07-17
 
+### Added
+* app: Add `time_split.app.reexport`.
+
 ## [0.7.0] - 2025-07-16
 
 ### Added
