@@ -1,6 +1,6 @@
 from .._backend import DatetimeIndexSplitter
 from .._docstrings import docs
-from ..types import DatetimeIterable, DatetimeSplits, ExpandLimits, Schedule, Span
+from ..types import DatetimeIterable, DatetimeSplits, ExpandLimits, Filter, Schedule, Span
 
 
 @docs
@@ -13,6 +13,7 @@ def split(
     n_splits: int = 0,
     available: DatetimeIterable | None = None,
     expand_limits: ExpandLimits = "auto",
+    filter: Filter | str | None = None,
     ignore_filters: bool = False,
 ) -> DatetimeSplits:
     """Create time-based cross-validation splits.
@@ -27,6 +28,7 @@ def split(
         n_splits: {n_splits}
         available: {available} Passing a tuple ``(min, max)`` is enough.
         expand_limits: {expand_limits}
+        filter: {filter}
         ignore_filters: {ignore_filters}
 
     {USER_GUIDE}
@@ -44,5 +46,6 @@ def split(
         step=step,
         n_splits=n_splits,
         expand_limits=expand_limits,
+        filter=filter,
         ignore_filters=ignore_filters,
     ).get_splits(available)

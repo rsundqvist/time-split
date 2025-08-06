@@ -1,12 +1,11 @@
 """Filters: minimum ``before='all'`` size.
 ==========================================
 
-Arbitrary filters can be applied for all applications using the :attr:`time_split.settings.misc.filter` option. Must be
-a predicate ``(start, mid, end) -> bool``. Consider using :func:`functools.cache` if your predicate is expensive.
+Remove bad folds by using the `filter` parameter. Must be a predicate ``(start, mid, end) -> bool``.
 """
 
 from rics import configure_stuff
-from time_split import log_split_progress, plot, settings, split
+from time_split import log_split_progress, plot, split
 
 configure_stuff(datefmt="")
 
@@ -19,25 +18,21 @@ for fold in log_split_progress(split(**config), logger="my-logger"):
     print("Doing work..")
 
 # %%
-# By setting :attr:`settings.misc.filter <time_split.settings.misc.filter>`, arbitrary conditions may be
-# forced on the generated folds.
+# By using a :attr:`~time_split.types.Filter`, arbitrary conditions may be forced on the generated folds.
 
 
 def at_least_10_days(start, mid, end):
+    # end: fixed distance from `mid` since after="5d"
     return (mid - start).days >= 10
 
 
 # %%
 # Enforcing 10 days of training data.
 
+plot(**config, filter=at_least_10_days, bar_labels="days", show_removed=True)
 
-settings.misc.filter = at_least_10_days
-plot(**config, bar_labels="days", show_removed=True)
-
-for fold in log_split_progress(split(**config), logger="my-logger"):
+for fold in log_split_progress(
+    split(**config, filter=at_least_10_days),
+    logger="my-logger",
+):
     print("Doing work..")
-
-# %%
-# The configuration in :mod:`time_split.settings` are global, so changes made will remain in effect for all
-# callers until the original value is reset.
-settings.misc.filter = None

@@ -2,8 +2,6 @@
 
 import typing as _t
 
-import pandas as _pd
-
 from . import types as _tst
 
 
@@ -174,9 +172,6 @@ class misc:  # noqa: N801
     If ``True``, ensure that the `Future data` of the final fold ends at the rightmost edge of the available data range.
     Otherwise, alignment is determined by :func:`pandas.date_range`.
     """
-
-    filter: _t.Callable[[_pd.Timestamp, _pd.Timestamp, _pd.Timestamp], bool] | None = None
-    """A callable ``(start, mid, end) -> bool`` applied to all generated folds."""
 
     round_limits: bool = False
     """If ``True``, use rounding instead of ``floor`` and ``ceil`` for limits expansion.

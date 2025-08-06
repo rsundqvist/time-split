@@ -18,6 +18,7 @@ from ..types import (
     DatetimeSplitBounds,
     DatetimeSplits,
     ExpandLimits,
+    Filter,
     Schedule,
     Span,
 )
@@ -67,6 +68,7 @@ def plot(
     n_splits: int = 0,
     available: DatetimeIterable | pd.DataFrame | pd.Series | None = None,
     expand_limits: ExpandLimits = "auto",
+    filter: Filter | str | None = None,
     ignore_filters: bool = False,
     # Split plot args
     bar_labels: str | Rows | list[tuple[str, str]] | bool = True,
@@ -88,6 +90,7 @@ def plot(
         available: {available} If `bar_labels` is given but is not a ``list``,
             this data will be used to compute fold sizes.
         expand_limits: {expand_limits}
+        filter: {filter}
         ignore_filters: {ignore_filters}
         bar_labels: Labels to draw on the bars. If you pass a string, it will be interpreted as a time unit (see
             :ref:`pandas:timeseries.offset_aliases` for valid frequency strings). Bars will show the number of units
@@ -128,6 +131,7 @@ def plot(
         step=step,
         n_splits=n_splits,
         expand_limits=expand_limits,
+        filter=filter,
         ignore_filters=ignore_filters,
     )
 

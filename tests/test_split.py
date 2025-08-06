@@ -134,7 +134,7 @@ class TestStep:
         assert [f.mid for f in self.split(-step, n_splits=n_splits)] == [pd.Timestamp(e) for e in reversed(expected)]
 
 
-def test_filter(monkeypatch):
+def test_filter():
     # Base case - this is DATA_CASES[0]
     actual = split(schedule="68h", before="5d", after="1d", available=SPLIT_DATA)
     expected = [
@@ -151,21 +151,29 @@ def test_filter(monkeypatch):
 
     n_calls = 0
 
-    def func(start: pd.Timestamp, mid: pd.Timestamp, end: pd.Timestamp) -> bool:  # noqa: ARG001
+    def func(_start: pd.Timestamp, mid: pd.Timestamp, _end: pd.Timestamp) -> bool:
         nonlocal n_calls
         n_calls += 1
         return str(mid) == kept
 
-    monkeypatch.setattr("time_split.settings.misc.filter", func)
+    kwargs = st.DatetimeIndexSplitterKwargs(
+        schedule="68h",
+        before="5d",
+        after="1d",
+        filter=func,
+    )
 
-    actual = split(schedule="68h", before="5d", after="1d", available=SPLIT_DATA)
+    actual = split(
+        **kwargs,
+        available=SPLIT_DATA,
+    )
     assert len(actual) == 1
     assert str(actual[0][1]) == "2022-01-10 16:00:00"
     assert actual[0] == st.DatetimeSplitBounds(*map(pd.Timestamp, expected[1]))
     assert n_calls == 3
 
     # Test with filter and ignore_filters = True
-    actual = split(schedule="68h", before="5d", after="1d", available=SPLIT_DATA, ignore_filters=True)
+    actual = split(**kwargs, available=SPLIT_DATA, ignore_filters=True)
     assert n_calls == 3
     for left, right in zip(actual, expected, strict=True):
         assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))

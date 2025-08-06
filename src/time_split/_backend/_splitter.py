@@ -2,7 +2,7 @@ from dataclasses import asdict, dataclass
 from typing import cast, get_args
 
 from pandas import Timedelta
-from rics.misc import format_kwargs
+from rics.misc import format_kwargs, get_by_full_name
 
 from ..settings import misc as settings
 from ..types import (
@@ -11,6 +11,7 @@ from ..types import (
     DatetimeSplitBounds,
     DatetimeSplits,
     ExpandLimits,
+    Filter,
     Schedule,
     Span,
     TimedeltaTypes,
@@ -30,6 +31,7 @@ class DatetimeIndexSplitter:
     n_splits: int = 0
     expand_limits: ExpandLimits = "auto"
     ignore_filters: bool = False
+    filter: Filter | str | None = None
 
     def get_splits(self, available: DatetimeIterable | None = None) -> DatetimeSplits:
         """Compute a split of given user data."""
@@ -115,10 +117,14 @@ class DatetimeIndexSplitter:
         if self.step < 0:  # Poorly documented - might not work as expected?
             splits.reverse()
 
-        if settings.filter is None:
+        filter = self.filter
+        if filter is None:
             return splits
 
-        return [s for s in splits if settings.filter(*s)]
+        if isinstance(filter, str):
+            filter = cast(Filter, get_by_full_name(filter))
+
+        return [s for s in splits if filter(*s)]
 
     def __post_init__(self) -> None:
         # Verify n_splits

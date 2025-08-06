@@ -21,6 +21,9 @@ Span = int | _t.Literal["all"] | TimedeltaTypes
 ExpandLimits = bool | _t.Literal["auto"] | str
 """Limits flexibility spec for ``floor/ceil``. Pass ``False`` to disable."""
 
+Filter = _t.Callable[[_pd.Timestamp, _pd.Timestamp, _pd.Timestamp], bool]
+"""A callable ``(start, mid, end) -> bool`` used to filter folds."""
+
 
 class DatetimeSplitBounds(_t.NamedTuple):
     """A 3-tuple which denotes two adjacent datetime ranges."""
@@ -63,6 +66,7 @@ class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     step: int
     n_splits: int
     expand_limits: ExpandLimits
+    filter: Filter | str | None
 
 
 LoggerArg = _logging.Logger | _logging.LoggerAdapter[_t.Any] | str

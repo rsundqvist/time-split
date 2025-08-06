@@ -35,7 +35,7 @@ otherwise stated.
      - Valid :attr:`~types.Span` types:
 
        * pandas :ref:`offset alias <pandas:timeseries.offset_aliases>`
-       * Literal `'all'`
+       * Literal `'all'` [#]_
        * ``int >= 1``
      - Range before/after schedule timestamps.
 
@@ -74,11 +74,17 @@ otherwise stated.
        **Example**: Passing ``expand_limits='d<3h'`` expands ``(min, max)`` -limits (derived from `available`) to the nearest
        day, at most 3 hours from the original limit.
 
+   * - ``filter``
+     - = ``None``
+     - :attr:`~types.Filter` or ``str``.
+     - A callable ``(start, mid, end) -> bool``. Strings are converted using :func:`~rics.misc.get_by_full_name`.
+
 Later folds are always [#]_ preferred. For more information about the `schedule`, `before/after` and `expand_limits`-arguments,
 see the :ref:`User guide`. See the :doc:`../auto_examples/index` page for plots using the various parameter options.
 
 .. rubric:: Footnotes
 
+.. [#] May produce empty ranges, depending on the `schedule`. Use a :attr:`~types.Filter` to remove bad folds.
 .. [#] Auto-expand_limits levels are :class:`configurable <time_split.settings.auto_expand_limits>`. Use :func:`.expand_limits` to
        experiment with `expand_limits` arguments.
 .. [#] This is :attr:`configurable <time_split.settings.misc.snap_to_end>` when `schedule` and `after` are both
