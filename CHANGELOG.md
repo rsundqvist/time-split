@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New sequence-like type `LogSplitProgress`; returned by `log_split_progress` instead of generic iterable.
+
 ### Changed
 - Convert `settings.filter` to a keyword argument.
 

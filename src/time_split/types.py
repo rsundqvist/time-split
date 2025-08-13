@@ -3,13 +3,15 @@
 import datetime as _dt
 import logging as _logging
 import typing as _t
+from abc import ABC as _ABC
+from collections import abc as _abc
 
 import numpy as _np
 import pandas as _pd
 
 DatetimeTypes: _t.TypeAlias = str | _pd.Timestamp | _dt.datetime | _dt.date | _np.datetime64
 """Types that may be cast to :class:`pandas.Timestamp`."""
-DatetimeIterable = _t.Iterable[DatetimeTypes]
+DatetimeIterable = _abc.Iterable[DatetimeTypes]
 """Iterable that may be cast to :class:`pandas.DatetimeIndex`."""
 TimedeltaTypes: _t.TypeAlias = str | _pd.Timedelta | _dt.timedelta | _np.timedelta64
 """Types that may be cast to :class:`pandas.Timedelta`."""
@@ -69,9 +71,8 @@ class DatetimeIndexSplitterKwargs(_t.TypedDict, total=False):
     filter: Filter | str | None
 
 
-LoggerArg = _logging.Logger | _logging.LoggerAdapter[_t.Any] | str
-
-
+LogSplitProgressLoggerArg = _logging.Logger | _logging.LoggerAdapter[_t.Any] | str
+"""A logger or string."""
 MetricsType = _t.TypeVar("MetricsType")
 """Metrics argument type."""
 GetMetrics = _t.Callable[[_pd.Timestamp], MetricsType]
@@ -83,7 +84,7 @@ FormatMetrics = _t.Callable[[str, MetricsType], str]
 class LogSplitProgressKwargs(_t.TypedDict, _t.Generic[MetricsType], total=False):
     """Keyword arguments for by :func:`.log_split_progress`."""
 
-    logger: LoggerArg
+    logger: LogSplitProgressLoggerArg
     start_level: int
     end_level: int
     extra: dict[str, _t.Any] | None
@@ -107,3 +108,16 @@ class SplitProgressExtras(_t.TypedDict, _t.Generic[MetricsType]):
     """User time for the fold. Available only for the :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>`."""
     metrics: _t.NotRequired[MetricsType]
     """Optional fold metrics. Typically appended to the :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>`."""
+
+
+class LogSplitProgress(_ABC, _abc.Sequence[DatetimeSplitBounds]):
+    """The sequence-like return type of :func:`.log_split_progress`.
+
+    A sequence ``[(start, mid, end), ...]`` which logs progress when iterating.
+    """
+
+    splits: _abc.Sequence[DatetimeSplitBounds]
+    """The underlying splits."""
+
+    logger: _logging.Logger | _logging.LoggerAdapter  # type: ignore[type-arg]
+    """Logger instance that emits messages."""

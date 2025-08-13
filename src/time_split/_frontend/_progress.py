@@ -1,27 +1,35 @@
 import logging
-from collections.abc import Callable, Iterable, MutableMapping, Sequence
+from collections.abc import Callable, Iterator, MutableMapping, Sequence
 from dataclasses import dataclass
 from time import perf_counter
-from typing import Any, Generic
+from typing import Any, Generic, overload
 
 import pandas as pd
 from rics.collections.dicts import flatten_dict
 from rics.strings import format_seconds as fmt_sec
 
 from ..settings import log_split_progress as settings
-from ..types import DatetimeSplitBounds, FormatMetrics, GetMetrics, LoggerArg, MetricsType, SplitProgressExtras
+from ..types import (
+    DatetimeSplitBounds,
+    FormatMetrics,
+    GetMetrics,
+    LogSplitProgress,
+    LogSplitProgressLoggerArg,
+    MetricsType,
+    SplitProgressExtras,
+)
 from ._to_string import _PrettyTimestamp
 
 
 def log_split_progress(
     splits: Sequence[DatetimeSplitBounds],
     *,
-    logger: LoggerArg = "time_split",
+    logger: LogSplitProgressLoggerArg = "time_split",
     start_level: int = logging.INFO,
     end_level: int = logging.INFO,
     extra: dict[str, Any] | None = None,
     get_metrics: GetMetrics[MetricsType] | None = None,
-) -> Iterable[DatetimeSplitBounds]:
+) -> LogSplitProgress:
     """Log iteration progress.
 
     Args:
@@ -40,7 +48,7 @@ def log_split_progress(
             :attr:`fold-end message <.settings.log_split_progress.END_MESSAGE>` as-is.
 
     Returns:
-        An iterable over `splits`.
+        A :class:`.LogSplitProgress` object.
 
     Examples:
         Configuring the `logger` name and
@@ -89,7 +97,8 @@ def log_split_progress(
         # Backport of https://github.com/python/cpython/pull/107292
         logger = _MergingLoggerAdapter(logger.logger, logger.extra)
 
-    track = _ProgressTracker(
+    return _ProgressTracker(
+        splits,
         logger=logger,
         fold_format=settings.FOLD_FORMAT,
         start_level=start_level,
@@ -101,11 +110,11 @@ def log_split_progress(
         get_metrics=get_metrics,
         format_metrics=settings.FORMAT_METRICS or default_metrics_formatter,
     )
-    return track(splits)
 
 
 @dataclass(frozen=True)
-class _ProgressTracker(Generic[MetricsType]):
+class _ProgressTracker(LogSplitProgress, Generic[MetricsType]):
+    splits: Sequence[DatetimeSplitBounds]
     logger: logging.Logger | logging.LoggerAdapter  # type: ignore[type-arg]
     fold_format: str
     start_level: int
@@ -117,13 +126,23 @@ class _ProgressTracker(Generic[MetricsType]):
     get_metrics: GetMetrics[MetricsType] | None
     format_metrics: FormatMetrics[MetricsType]
 
-    def __call__(self, splits: Sequence[DatetimeSplitBounds]) -> Iterable[DatetimeSplitBounds]:
-        n_splits = len(splits)
+    @overload
+    def __getitem__(self, index: int) -> DatetimeSplitBounds: ...
 
-        for n, split in enumerate(splits, start=1):
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[DatetimeSplitBounds]: ...
+
+    def __getitem__(self, index: int | slice) -> DatetimeSplitBounds | Sequence[DatetimeSplitBounds]:
+        return self.splits[index]
+
+    def __len__(self) -> int:
+        return len(self.splits)
+
+    def __iter__(self) -> Iterator[DatetimeSplitBounds]:
+        for n, split in enumerate(self.splits, start=1):
             default_extras = SplitProgressExtras[MetricsType](
                 n=n,
-                n_splits=n_splits,
+                n_splits=len(self.splits),
                 start=split.start.isoformat(),
                 mid=split.mid.isoformat(),
                 end=split.end.isoformat(),
@@ -131,7 +150,7 @@ class _ProgressTracker(Generic[MetricsType]):
             extra = {**self.user_extra, **default_extras}
             kwargs: dict[str, Any] = dict(
                 n=n,
-                n_splits=n_splits,
+                n_splits=len(self.splits),
                 start=_PrettyTimestamp(split.start),
                 mid=_PrettyTimestamp(split.mid),
                 end=_PrettyTimestamp(split.end),
