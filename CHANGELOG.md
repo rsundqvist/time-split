@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2025-08-21
+
 ### Added
 - New sequence-like type `LogSplitProgress`; returned by `log_split_progress` instead of generic iterable.
 
@@ -105,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed a few documentation and examples issues.
 
-[Unreleased]: https://github.com/rsundqvist/time-split/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/rsundqvist/time-split/compare/v0.7.1...v1.0.0
 [0.7.1]: https://github.com/rsundqvist/time-split/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/rsundqvist/time-split/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/rsundqvist/time-split/compare/v0.5.0...v0.6.0
