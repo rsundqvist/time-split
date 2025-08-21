@@ -9,7 +9,7 @@ license = { text = "MIT" }
 readme = "README.md"
 keywords = ["hyper", "parameter", "optimization", "cross", "validation", "time", "temporal", "heterogenous", "data"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Operating System :: POSIX :: Linux",
@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-app = ["click", "time-split-app"]  # Constraints managed by app.
+app = ["click", "time-split-app >= 1.0.0"]
 plotting = ["matplotlib", "seaborn"]
 
 [project.urls]

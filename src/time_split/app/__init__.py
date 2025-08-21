@@ -10,7 +10,6 @@ Run ``pip install time-split[app]`` to install the https://github.com/rsundqvist
 Once installed, the application will be available under the ``time_split_app`` namespace. Key parts of the API of the
 application are documented in the :mod:`.reexport` submodule.
 
-
 Getting started
 ---------------
 To start the application directly from the command line, run

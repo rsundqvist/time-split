@@ -5,3 +5,4 @@
    :recursive:
 
    time_split
+   time_split_app.config
