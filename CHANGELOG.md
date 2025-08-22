@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-08-22
+
+### Changed
+- Bump app version.
+
 ## [1.0.0] - 2025-08-21
 
 ### Added
@@ -18,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.7.1] - 2025-07-17
 
 ### Added
-* app: Add `time_split.app.reexport`.
+- app: Add `time_split.app.reexport`.
 
 ## [0.7.0] - 2025-07-16
 
@@ -107,7 +112,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed a few documentation and examples issues.
 
-[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/rsundqvist/time-split/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rsundqvist/time-split/compare/v0.7.1...v1.0.0
 [0.7.1]: https://github.com/rsundqvist/time-split/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/rsundqvist/time-split/compare/v0.6.0...v0.7.0

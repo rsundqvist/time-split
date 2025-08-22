@@ -1,6 +1,6 @@
 [project]
 name = "time-split"
-version = "1.0.0.dev1"
+version = "1.0.1"
 description = "Time-based k-fold validation splits for heterogeneous data."
 authors = [
     { name = "Richard Sundqvist", email = "richard.sundqvist@live.se" },
@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-app = ["click", "time-split-app >= 1.0.0"]
+app = ["click", "time-split-app >= 1.1.0"]
 plotting = ["matplotlib", "seaborn"]
 
 [project.urls]
