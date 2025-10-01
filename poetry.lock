@@ -3727,14 +3727,14 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "rics"
-version = "6.0.1"
+version = "6.0.3"
 description = "My personal little ML engineering library."
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "rics-6.0.1-py3-none-any.whl", hash = "sha256:1167cd6df20f07a3894e65a2b8b7d46858e8691ae6ae95c44e95ae605a23b589"},
-    {file = "rics-6.0.1.tar.gz", hash = "sha256:b69e4d9f728acf6ab1e6ab7f4dff5e045f6f186dac356fc0e51ae3b967a8286d"},
+    {file = "rics-6.0.3-py3-none-any.whl", hash = "sha256:da0c15e8b7983e2d6e4bd3f46b46e27d58993b75d0ee9660e3138031fd8a5148"},
+    {file = "rics-6.0.3.tar.gz", hash = "sha256:0ce391b7f9d125fbfe631055f5bae072163ddfcab498a0606f298be2f66e65e7"},
 ]
 
 [package.extras]
