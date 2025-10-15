@@ -875,14 +875,14 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "dask"
-version = "2025.9.1"
+version = "2025.10.0"
 description = "Parallel PyData with Task Scheduling"
 optional = false
 python-versions = ">=3.10"
 groups = ["test"]
 files = [
-    {file = "dask-2025.9.1-py3-none-any.whl", hash = "sha256:2a8a7dc933caaea2f47745a65a6ec93d9e616e12aab53b4f03ee161d31939110"},
-    {file = "dask-2025.9.1.tar.gz", hash = "sha256:718df73e1fd3d7e2b8546e0f04ce08e1ed7f9aa3da1eecd0c1f44c8b6d52f7e0"},
+    {file = "dask-2025.10.0-py3-none-any.whl", hash = "sha256:86c0a4aecbed3eae938f13a52bcc3fdc35852cce34d7d701590c15850b92506e"},
+    {file = "dask-2025.10.0.tar.gz", hash = "sha256:fd3159c319c27cea39b891c0f22d60056a33575fb4906618eab0aeeb5dcd0cbc"},
 ]
 
 [package.dependencies]
@@ -903,7 +903,7 @@ array = ["numpy (>=1.24)"]
 complete = ["dask[array,dataframe,diagnostics,distributed]", "lz4 (>=4.3.2)", "pyarrow (>=14.0.1)"]
 dataframe = ["dask[array]", "pandas (>=2.0)", "pyarrow (>=14.0.1)"]
 diagnostics = ["bokeh (>=3.1.0)", "jinja2 (>=2.10.3)"]
-distributed = ["distributed (==2025.9.1)"]
+distributed = ["distributed (==2025.10.0)"]
 test = ["pandas[test]", "pre-commit", "pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "pytest-timeout", "pytest-xdist"]
 
 [[package]]
@@ -4974,4 +4974,4 @@ plotting = ["matplotlib", "seaborn"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "8655a0fee958033c23986d04fd95316cb6997ff70fa2ad74939d24ed1cb4ba82"
+content-hash = "59955199f04034ca80a5884f8ad9066e4bbfb6cc91705116e72fe8740b604f0a"
