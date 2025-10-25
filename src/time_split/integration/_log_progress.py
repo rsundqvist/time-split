@@ -3,12 +3,9 @@ from collections.abc import Iterable
 from typing import Any
 
 from .. import log_split_progress
-from .._docstrings import add_docstrings
 from ..types import DatetimeSplitBounds, DatetimeSplits, LogSplitProgressKwargs, MetricsType
 
 LogProgressArg = str | bool | logging.Logger | logging.LoggerAdapter[Any] | LogSplitProgressKwargs[MetricsType]
-
-add_docstrings(log_progress="Controls logging of fold progress. See :func:`~.log_split_progress` for details.")
 
 
 def handle_log_progress_arg(

@@ -28,7 +28,7 @@ strong non-stationary characteristics.
   a CRON-expression, or a pre-defined list.
 - [Data selection](https://time-split.readthedocs.io/en/stable/guide/spans.html) based on a timedelta, or the splitting 
   schedule itself.
-- Automatically extract and [normalize](https://time-split.readthedocs.io/en/stable/guide/expand_limits.html) data limits for 
+- Automatically extract and [normalize](https://time-split.readthedocs.io/en/stable/guide/expand-limits.html) data limits for 
   supported data types.
 - [Plotting function](https://time-split.readthedocs.io/en/stable/api/time_split.html#time_split.plot) for
   visualization of folds. Display fold sizes (hour/row count), or 
@@ -69,9 +69,6 @@ pip install -U time-split
 This is the preferred method to install ``time-split``, as it will always install the
 most recent stable release.
 
-If you don't have [pip] installed, this [Python installation guide] can guide
-you through the process.
-
 ## License
 [MIT](LICENSE.md)
 
@@ -84,5 +81,3 @@ All contributions, bug reports, bug fixes, documentation improvements, enhanceme
 started, see the [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
 [Python Package Index (PyPI)]: https://pypi.org/project/time-split
-[pip]: https://pip.pypa.io
-[Python installation guide]: http://docs.python-guide.org/en/stable/starting/installation/

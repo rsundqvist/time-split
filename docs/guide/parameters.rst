@@ -66,13 +66,14 @@ otherwise stated.
        * Literal `'auto'` [#]_
        * ``bool``
        * `'round_to[<tolerance]'`
-     - Expand `available` data outward to its likely `"true"` limits. Disabled if ``False``, ``True == 'auto'``. The
-       `tolerance` argument is optional; ``expand_limits='d'`` performs regular :attr:`floor(min) <pandas.Timestamp.floor>` /
-       :attr:`ceil(max) <pandas.Timestamp.ceil>` rounding of the limits.
+     - Expand `available` data outward to its likely `"true"` limits. Disabled if ``False``, ``True == 'auto'``.
        Use :func:`~time_split.support.expand_limits` to experiment.
 
        **Example**: Passing ``expand_limits='d<3h'`` expands ``(min, max)`` -limits (derived from `available`) to the nearest
        day, at most 3 hours from the original limit.
+
+       The `tolerance` argument is optional; ``expand_limits='d'`` performs regular
+       :attr:`floor(min) <pandas.Timestamp.floor>` / :attr:`ceil(max) <pandas.Timestamp.ceil>` expansion of the limits.
 
    * - ``filter``
      - = ``None``
