@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-10-25
+
 ### Fixed
 - Fix crashes when using `python -OO` and some other docs issues.
 
@@ -115,7 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed a few documentation and examples issues.
 
-[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/rsundqvist/time-split/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/rsundqvist/time-split/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rsundqvist/time-split/compare/v0.7.1...v1.0.0
 [0.7.1]: https://github.com/rsundqvist/time-split/compare/v0.7.0...v0.7.1
