@@ -32,7 +32,7 @@ def test_bad_args():
     splitter = ScikitLearnSplitter(schedule="1d", expand_limits=False)
     array = pd.date_range("2022", "2022-1-10", freq="h").array
 
-    with pytest.raises(ValueError, match="are not equal."):
+    with pytest.raises(ValueError, match=r"are not equal."):
         splitter.get_n_splits(array, array[5:])
 
     with pytest.raises(ValueError, match="At least one of"):

@@ -24,18 +24,18 @@ def test_bad_limits(available):
 
 @pytest.mark.parametrize("span", [-1, "-1d", -5, "-100m", 0, "0 minutes"])
 def test_invalid_offset(span):
-    with pytest.raises(InvalidSpanError, match="'before'.* greater than zero"):
+    with pytest.raises(InvalidSpanError, match=r"'before'.* greater than zero"):
         split("1d", before=span, available=SPLIT_DATA)
 
-    with pytest.raises(InvalidSpanError, match="'after'.* greater than zero"):
+    with pytest.raises(InvalidSpanError, match=r"'after'.* greater than zero"):
         split("1d", after=span, available=SPLIT_DATA)
 
 
 def test_all_without_available():
     schedule = ["1991", "1999", "2019"]
-    with pytest.raises(InvalidSpanError, match="'before'.* requires available data"):
+    with pytest.raises(InvalidSpanError, match=r"'before'.* requires available data"):
         split(schedule, before="all", available=None)
-    with pytest.raises(InvalidSpanError, match="'after'.* requires available data"):
+    with pytest.raises(InvalidSpanError, match=r"'after'.* requires available data"):
         split(schedule, after="all", available=None)
 
 

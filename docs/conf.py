@@ -116,7 +116,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",
     "sphinx_gallery.gen_gallery",
-    "nbsphinx",
     "sphinx.ext.mathjax",
     "myst_parser",
 ]
@@ -129,6 +128,7 @@ set_type_checking_flag = True  # Enable 'expensive' imports for sphinx_autodoc_t
 nbsphinx_allow_errors = True  # Continue through Jupyter errors
 # autodoc_typehints = "description" # Sphinx-native method. Not as good as sphinx_autodoc_typehints
 add_module_names = False  # Remove namespaces from class/method signatures
+myst_heading_anchors = 3  # https://myst-parser.readthedocs.io/en/v4.0.1/syntax/optional.html#auto-generated-header-anchors
 
 suppress_warnings = [
     "autosectionlabel.*",  # https://github.com/sphinx-doc/sphinx/issues/7697
@@ -264,14 +264,12 @@ autodoc_default_options = {
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
-    # https://github.com/pola-rs/polars/issues/7027
-    # "polars": ("https://docs.pola.rs/py-polars/html/reference/", None),
+    # "polars": ("https://docs.pola.rs/py-polars/html/reference/", None),  # https://github.com/pola-rs/polars/issues/7027
     "numpy": ("http://docs.scipy.org/doc/numpy/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "seaborn": ("https://seaborn.pydata.org/", None),
     "rics": (rics_docs, None),
-    "id_translation": (id_translation_docs, None),
 }
 
 # -- Gallery configuration -------------------------------------------------

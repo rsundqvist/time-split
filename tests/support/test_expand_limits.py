@@ -133,10 +133,10 @@ class TestErrors:
 
     def test_bad_hour_setting(self, monkeypatch):
         monkeypatch.setattr(settings, "hour", ("2 days", "day", "15 min"))
-        with pytest.raises(ValueError, match="Invalid settings: auto_expand_limits.hour="):
+        with pytest.raises(ValueError, match=r"Invalid settings: auto_expand_limits.hour="):
             expand_limits(self.limits, spec=True)
 
     def test_bad_day_setting(self, monkeypatch):
         monkeypatch.setattr(settings, "day", ("2 hour", "hour", "1 hour"))
-        with pytest.raises(ValueError, match="Invalid settings: auto_expand_limits.day="):
+        with pytest.raises(ValueError, match=r"Invalid settings: auto_expand_limits.day="):
             expand_limits(self.limits, spec=True)
