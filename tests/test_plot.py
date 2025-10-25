@@ -1,3 +1,4 @@
+import matplotlib as mpl
 import pandas as pd
 import pytest
 from matplotlib import pyplot as plt
@@ -7,6 +8,7 @@ from time_split import plot, split
 
 from .conftest import DATA_CASES, NO_DATA_CASES, NO_DATA_SCHEDULE, SPLIT_DATA
 
+mpl.use("Agg")  # Fix `_tkinter.TclError: Can't find a usable init.tcl` @ 3.13 on Windows
 configure()
 
 
