@@ -52,7 +52,7 @@ poetry-plugin-export = ">=1.8"
 # Extras that must be available for docs + tests go here. Doc/test-only deps go in their respective groups.
 croniter = "^6.0.0"
 pyarrow = "^19.0.0"
-polars = { version = "^1.21.0", extras = ["pandas"] }
+polars = { version = "^1.34.0", extras = ["pandas"] }
 
 [tool.poetry.group.docs]
 [tool.poetry.group.docs.dependencies]
