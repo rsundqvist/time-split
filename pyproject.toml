@@ -64,7 +64,7 @@ sphinx-gallery = "^0.18.0"
 pydata-sphinx-theme = "^0.16.1"
 myst-parser = "^4.0.0"
 nbsphinx = "^0.9.6"
-ipython = "^8.31.0"
+ipython = "^9.6.0"
 
 [tool.poetry.group.notebooks]
 optional = true
