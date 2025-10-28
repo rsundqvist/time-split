@@ -2697,6 +2697,7 @@ files = [
     {file = "numpy-2.3.4-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:81b3a59793523e552c4a96109dde028aa4448ae06ccac5a76ff6532a85558a7f"},
     {file = "numpy-2.3.4.tar.gz", hash = "sha256:a7d018bfedb375a8d979ac758b120ba846a7fe764911a64465fd87b8729f4a6a"},
 ]
+markers = {main = "extra == \"app\" or extra == \"plotting\""}
 
 [[package]]
 name = "overrides"
@@ -2788,6 +2789,7 @@ files = [
     {file = "pandas-2.3.3-cp39-cp39-win_amd64.whl", hash = "sha256:d3e28b3e83862ccf4d85ff19cf8c20b2ae7e503881711ff2d534dc8f761131aa"},
     {file = "pandas-2.3.3.tar.gz", hash = "sha256:e05e1af93b977f7eafa636d043f9f94c7ee3ac81af99c13508215942e64c993b"},
 ]
+markers = {main = "extra == \"app\" or extra == \"plotting\""}
 
 [package.dependencies]
 numpy = [
@@ -5091,6 +5093,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
+markers = {main = "extra == \"app\" or extra == \"plotting\""}
 
 [[package]]
 name = "uri-template"
@@ -5286,9 +5289,9 @@ type = ["pytest-mypy"]
 
 [extras]
 app = ["click", "time-split-app"]
-plotting = ["matplotlib", "seaborn"]
+plotting = ["matplotlib", "pandas", "seaborn"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "e1b45cad1f38582e1621fb12de0ca5dc2926a17d0bb2e7506c63710e287947b2"
+content-hash = "197088504858af9f582679b171e55137aaa2240833e9b24f1ffbed4138ab6b2d"

@@ -27,13 +27,12 @@ classifiers = [
 requires-python = ">=3.11"
 
 dependencies = [
-    "pandas >= 2.0.3",
     "rics   >= 6.0.1",
 ]
 
 [project.optional-dependencies]
 app = ["click", "time-split-app >= 1.1.0"]
-plotting = ["matplotlib", "seaborn"]
+plotting = ["matplotlib", "seaborn", "pandas >= 2.0.3" ]
 
 [project.urls]
 homepage = "https://github.com/rsundqvist/time-split"
