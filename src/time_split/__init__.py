@@ -11,6 +11,6 @@ __all__ = [
     "split",
 ]
 
-__version__ = "1.0.2.dev1"
+__version__ = "1.0.3"
 
 _logging.getLogger(__name__).addHandler(_logging.NullHandler())
