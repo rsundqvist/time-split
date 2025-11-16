@@ -181,19 +181,19 @@ test = ["dateparser (==1.*)", "pre-commit", "pytest", "pytest-cov", "pytest-mock
 
 [[package]]
 name = "asttokens"
-version = "3.0.0"
+version = "3.0.1"
 description = "Annotate AST trees with source code positions"
 optional = false
 python-versions = ">=3.8"
 groups = ["docs", "notebooks"]
 files = [
-    {file = "asttokens-3.0.0-py3-none-any.whl", hash = "sha256:e3078351a059199dd5138cb1c706e6430c05eff2ff136af5eb4790f9d28932e2"},
-    {file = "asttokens-3.0.0.tar.gz", hash = "sha256:0dcd8baa8d62b0c1d118b399b2ddba3c4aff271d0d7a9e0d4c1681c79035bbc7"},
+    {file = "asttokens-3.0.1-py3-none-any.whl", hash = "sha256:15a3ebc0f43c2d0a50eeafea25e19046c68398e487b9f1f5b517f7c0f40f976a"},
+    {file = "asttokens-3.0.1.tar.gz", hash = "sha256:71a4ee5de0bde6a31d64f6b13f2293ac190344478f081c3d1bccfcf5eacb0cb7"},
 ]
 
 [package.extras]
-astroid = ["astroid (>=2,<4)"]
-test = ["astroid (>=2,<4)", "pytest", "pytest-cov", "pytest-xdist"]
+astroid = ["astroid (>=2,<5)"]
+test = ["astroid (>=2,<5)", "pytest (<9.0)", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "async-lru"
@@ -567,14 +567,14 @@ markers = {main = "extra == \"app\""}
 
 [[package]]
 name = "click"
-version = "8.3.0"
+version = "8.3.1"
 description = "Composable command line interface toolkit"
 optional = false
 python-versions = ">=3.10"
 groups = ["main", "devops", "test"]
 files = [
-    {file = "click-8.3.0-py3-none-any.whl", hash = "sha256:9b9f285302c6e3064f4330c05f05b81945b2a39544279343e6e7c5f27a9baddc"},
-    {file = "click-8.3.0.tar.gz", hash = "sha256:e7b8232224eba16f4ebe410c25ced9f7875cb5f3263ffc93cc3e8da705e229c4"},
+    {file = "click-8.3.1-py3-none-any.whl", hash = "sha256:981153a64e25f12d547d3426c367a4857371575ee7ad18df2a6183ab0545b2a6"},
+    {file = "click-8.3.1.tar.gz", hash = "sha256:12ff4785d337a1bb490bb7e9c2b1ee5da3112e94a8622f26a6c77f5d2fc6842a"},
 ]
 markers = {main = "extra == \"app\""}
 
@@ -4901,15 +4901,15 @@ files = [
 
 [[package]]
 name = "time-split-app"
-version = "1.1.0"
+version = "2.0.0"
 description = "Companion app for the `time-split` library."
 optional = true
 python-versions = ">=3.11"
 groups = ["main"]
 markers = "extra == \"app\""
 files = [
-    {file = "time_split_app-1.1.0-py3-none-any.whl", hash = "sha256:661e58de7b3f294ba7c0a63214aff3bd257db23e3620e79326f7dfd6b89b6d04"},
-    {file = "time_split_app-1.1.0.tar.gz", hash = "sha256:7c246263110be3ce1bef27944d93e30e71e4e8b259d02e230689a846b86d23cc"},
+    {file = "time_split_app-2.0.0-py3-none-any.whl", hash = "sha256:69c7e6bba4b4b4d03d6bb08a46d8a0737967348d2768c140f6c125777f91fd46"},
+    {file = "time_split_app-2.0.0.tar.gz", hash = "sha256:74aedd1aab596c5a155ca1621a52332b81f4b9c6db0ba13db0c0f5e7a16d4386"},
 ]
 
 [package.dependencies]
@@ -4918,7 +4918,7 @@ matplotlib = "*"
 pandas = ">=2.0.3"
 rics = ">=6.0.2"
 seaborn = "*"
-streamlit = ">=1.47.1"
+streamlit = ">=1.49.1"
 time-split = {version = ">=1.0.0", extras = ["plotting"]}
 
 [[package]]
