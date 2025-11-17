@@ -1,6 +1,6 @@
 [project]
 name = "time-split"
-version = "1.0.4"
+version = "1.0.4.dev1"
 description = "Time-based k-fold validation splits for heterogeneous data."
 authors = [
     { name = "Richard Sundqvist", email = "richard.sundqvist@live.se" },
