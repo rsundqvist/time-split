@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 from itertools import starmap
-from typing import NamedTuple
+from typing import Any, NamedTuple, TypeGuard
 
 from pandas import Timedelta, Timestamp
 
@@ -15,6 +15,25 @@ class _TimedeltaTuple(NamedTuple):
     start_at: Timedelta
     round_to: Timedelta
     tolerance: Timedelta
+
+
+def is_limits_tuple(arg: Any) -> TypeGuard[LimitsTuple]:
+    """Check if `arg` is a :class:`.LimitsTuple`.
+
+    Args:
+        arg: An argument.
+
+    Returns:
+        Returns ``True`` if `arg` is a :class:`.LimitsTuple`.
+    """
+    if not (isinstance(arg, tuple) and len(arg) == 2):  # noqa: PLR2004
+        return False
+
+    start, end = arg
+    if not (isinstance(start, Timestamp) and isinstance(end, Timestamp)):
+        return False
+
+    return bool(start <= end)
 
 
 def expand_limits(

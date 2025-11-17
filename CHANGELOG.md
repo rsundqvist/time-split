@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed 
+- Updated function `support.format_expanded_limits()`
+  * Accepts arbitrary _original_ iterables
+  * Returns a different message when limits are the same.
+  * Input is now validated.
+
 ### Removed
 - No longer adds a `NullHandler` to package root logger on import.
 

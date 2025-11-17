@@ -4,9 +4,10 @@ from typing import Any, Literal, overload
 from pandas import Timestamp
 from rics.strings import format_seconds as fmt_sec
 
+from .._backend import is_limits_tuple, process_available
 from .._backend._limits import LimitsTuple
 from ..settings import log_split_progress
-from ..types import DatetimeSplitBounds, DatetimeTypes, ExpandLimits
+from ..types import DatetimeIterable, DatetimeSplitBounds, DatetimeTypes, ExpandLimits
 
 
 @overload
@@ -163,10 +164,11 @@ class _PrettyTimestamp:
 
 
 def format_expanded_limits(
-    original: LimitsTuple,
+    original: LimitsTuple | DatetimeIterable,
     *,
     expanded: LimitsTuple | None = None,
-    expand_limits: ExpandLimits,
+    expand_limits: ExpandLimits = "auto",
+    raise_if_same: bool = False,
 ) -> str:
     """Format expanded limits.
 
@@ -174,14 +176,56 @@ def format_expanded_limits(
         original: The original data limits.
         expanded: Expanded data limits. Derived based on `original` and `expanded_limits` if ``None``.
         expand_limits: Limits expansion spec.
+        raise_if_same: If ``True``, raise a :exc:`ValueError` if the `original` and `expanded_limits` are not the same.
+            Otherwise, a different message will be returned instead.
 
     Returns:
         A string.
+
+    Raises:
+        ValueError: If ``raise_on_same`` is ``True`` and ``original == expanded``.
+
+    Examples:
+        Basic usage.
+
+        >>> limits = "2019-05-11", "2019-05-11 22:05:30"
+        >>> string = format_expanded_limits(limits, expand_limits="d<3h")
+        >>> print(string)
+        Available data limits have been expanded (since expand_limits='d<3h'):
+          start: 2019-05-11 00:00:00 -> <no change>
+            end: 2019-05-11 22:05:30 -> 2019-05-12 (+1h 54m 30s)
+
+        A different message is shown when the limits aren't expanded.
+
+        >>> string = format_expanded_limits(limits, expand_limits="d<1h")
+        >>> print(string)
+        Original limits ('2019-05-11', '2019-05-11 22:05:30') were not expanded (since expand_limits='d<1h').
+
+        Set ``raise_if_same=True`` to disable the second message.
+
+    See Also:
+        The :func:`.process_available` and :func:`.expand_limits` functions.
     """
     if expanded is None:
-        from .._backend._limits import expand_limits as expand
+        if is_limits_tuple(original):
+            from .._backend._limits import expand_limits as expand
 
-        expanded = expand(original, spec=expand_limits)
+            expanded = expand(original, spec=expand_limits)
+        else:
+            result = process_available(original, expand_limits=expand_limits)
+            original = result.limits
+            expanded = result.expanded_limits
+
+    if not is_limits_tuple(original):
+        msg = f"Bad {original=}; not a valid limits tuple."
+        raise TypeError(msg)
+
+    if original == expanded:
+        left, right = stringify(original[0]), stringify(original[1])
+        msg = f"Original limits {(left, right)} were not expanded (since {expand_limits=})."
+        if raise_if_same:
+            raise ValueError(msg)
+        return msg
 
     return (
         f"Available data limits have been expanded (since {expand_limits=}):\n"
