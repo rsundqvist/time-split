@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- No longer adds a `NullHandler` to package root logger on import.
+
 ## [1.0.3] - 2025-11-16
 
 ### Added
