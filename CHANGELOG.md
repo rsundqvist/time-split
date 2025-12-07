@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix a crash in `create_explorer_link`.
+
 ## [1.0.5] - 2025-12-06
 
 ### Changed

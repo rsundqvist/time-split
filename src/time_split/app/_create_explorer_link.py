@@ -99,8 +99,8 @@ def _create_query(
         query = {"data": data, **kwargs}
     else:
         splitter = DatetimeIndexSplitter(**kwargs)
-        _, ms = splitter.get_plot_data(data)
-        query["data"] = _get_data_param(*ms.available_metadata.limits)
+        start, end = splitter._materialize_schedule(data).available_metadata.limits
+        query["data"] = _get_data_param(start, end)
 
         if skip_default:
             schedule = kwargs["schedule"]
