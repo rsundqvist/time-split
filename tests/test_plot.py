@@ -56,8 +56,9 @@ def test_show_removed(n_splits):
         bar_labels=False,
         show_removed=True,
     )
+
     xtick_labels = [t.get_text() for t in ax.get_yticklabels()]
-    assert xtick_labels == ["" for _ in range(7 - n_splits)] + [str(n) for n in range(1, n_splits + 1)]
+    assert xtick_labels == ["" for _ in range(8 - n_splits)] + [str(n) for n in range(1, n_splits + 1)]
 
 
 @pytest.mark.parametrize("factory", [pd.Series, pd.Index, list])

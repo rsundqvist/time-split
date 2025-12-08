@@ -1,4 +1,7 @@
 codecov
+x.*
+y.*
+Untitled*.ipynb
 
 # Data
 *.sqlite
