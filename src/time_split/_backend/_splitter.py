@@ -64,16 +64,10 @@ class DatetimeIndexSplitter:
         data_end = ms.available_metadata.expanded_limits[1]
         schedule_end = ms.schedule[-1]
 
-        if isinstance(self.after, int):
-            from_end = data_end - schedule_end
-            print(f"{self.after=} | {from_end=}")
-        else:
+        from_end = data_end - schedule_end
+        if not isinstance(self.after, int):
             after = Timedelta(self.after)
-            from_end = data_end - schedule_end - after
-            print(f"{self.after=} | {from_end=}")
-
-        # if schedule_frequency is not None:
-        #    from_end = from_end.floor(schedule_frequency)
+            from_end -= after
 
         return ms._replace(schedule=ms.schedule + from_end)
 
