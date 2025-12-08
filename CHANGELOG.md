@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### TODO sektioner
 - Allow (added?) snap_to_end for after=<int>
 - Align timedelta schedule to end (instead of start) unless snap_to_end=False
+- - TODO uppdatera figurer i examples/
 
 ### Fixed
 - Fix a crash in `create_explorer_link`.
