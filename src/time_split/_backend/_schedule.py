@@ -2,6 +2,7 @@ from typing import NamedTuple, get_args
 
 from pandas import DatetimeIndex, NaT, Timedelta, Timestamp, date_range
 
+from ..settings import misc as settings
 from ..types import DatetimeIterable, ExpandLimits, Schedule, TimedeltaTypes
 from ._limits import LimitsTuple
 from ._process_available import ProcessAvailableResult, process_available
@@ -46,7 +47,7 @@ def materialize_schedule(
 
 
 def _cron_like(schedule: str) -> bool:
-    # CroniterBadCronError: Exactly 5 or 6 columns has to be specified for iterator expression.
+    # CroniterBadCronError: Exactly 5 or 6 columns have to be specified for iterator expression.
     return len(schedule.split()) > 4 or schedule[0] == "@"  # noqa: PLR2004
 
 
@@ -54,7 +55,11 @@ def _from_timedelta(schedule: TimedeltaTypes, limits: LimitsTuple) -> DatetimeIn
     timedelta = Timedelta(schedule)
     if timedelta <= Timedelta(0):
         raise ValueError(f"unbounded {schedule=} must be greater than zero.")
-    return date_range(*limits, freq=timedelta, inclusive="both")
+
+    if settings.snap_to_end:
+        return date_range(limits[1], limits[0], freq=-timedelta, inclusive="both")[::-1]
+    else:
+        return date_range(limits[0], limits[1], freq=timedelta, inclusive="both")
 
 
 def _handle_cron(expr: str, min_dt: Timestamp, max_dt: Timestamp) -> DatetimeIndex:

@@ -20,21 +20,21 @@ class TestUnitCount:
     def test_rows(self, typ):
         actual = _split(typ, "rows")
         assert actual == [
-            (76, 114),
+            (114, 114),
             (228, 114),
-            (342, 113),
+            (379, 114),
             (493, 114),
-            (607, 113),
+            (645, 113),
         ]
 
     def test_hours(self, typ):
         actual = _split(typ, "hours")
         assert actual == [
-            (48, 72),
+            (72, 72),
             (144, 72),
-            (216, 72),
+            (240, 72),
             (312, 72),
-            (384, 72),
+            (408, 72),
         ]
 
 

@@ -54,19 +54,20 @@ class DatetimeIndexSplitter:
             settings.snap_to_end
             and self.after != "all"
             and isinstance(self.schedule, types)
-            and isinstance(self.after, types)
+            and isinstance(self.after, (types, int))
         ):
             ms = self._snap_to_end(ms)
 
         return ms
 
     def _snap_to_end(self, ms: MaterializedSchedule) -> MaterializedSchedule:
-        schedule_frequency = ms.schedule.freq
-        if schedule_frequency is None:
-            return ms
+        data_end = ms.available_metadata.expanded_limits[1]
+        schedule_end = ms.schedule[-1]
 
-        from_end = ms.available_metadata.expanded_limits[1] - (ms.schedule[-1] + Timedelta(self.after))
-        from_end = from_end.floor(schedule_frequency.base)  # TODO(settings): should this depend on misc.round_limits?
+        from_end = data_end - schedule_end
+        if not isinstance(self.after, int):
+            after = Timedelta(self.after)
+            from_end -= after
 
         return ms._replace(schedule=ms.schedule + from_end)
 

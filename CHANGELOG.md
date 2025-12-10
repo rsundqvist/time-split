@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Implemented `snap_to_end=True` (the default) logic for offset-based `after` argument.
+
 ### Fixed
 - Fix a crash in `create_explorer_link`.
+- Properly align timedelta-schedules to end (instead of start) unless `snap_to_end=False`.
 
 ## [1.0.5] - 2025-12-06
 

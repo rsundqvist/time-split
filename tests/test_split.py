@@ -51,7 +51,7 @@ class TestSnapToEnd:
     "round_limits, snap_to_end, expected",
     [
         (False, False, "2019-05-10 23:55:00"),
-        (False, True, "2019-05-11 23:55:00"),
+        (False, True, "2019-05-12 01:00:00"),
         (True, False, "2019-05-11 00:00:00"),
         (True, True, "2019-05-12 00:00:00"),
     ],
@@ -69,12 +69,27 @@ def test_round_limits_snap_to_end_interaction(monkeypatch, *, round_limits, snap
     assert str(folds[-1].end) == expected
 
 
-@pytest.mark.parametrize("kwargs, expected", *DATA_CASES)
+def foo(arg):
+    from rics.misc import format_kwargs
+
+    return format_kwargs(arg, max_value_length=8) if isinstance(arg, dict) else format_kwargs(dict(expected=arg))
+
+
+@pytest.mark.parametrize("kwargs, expected", *DATA_CASES, ids=foo)
 def test_data_utc(kwargs, expected):
     actual = split(**kwargs, available=SPLIT_DATA.tz_localize("utc"))
 
+    expected = [
+        st.DatetimeSplitBounds(pd.Timestamp(start, tz="utc"), pd.Timestamp(mid, tz="utc"), pd.Timestamp(end, tz="utc"))
+        for start, mid, end in expected
+    ]
+
+    assert actual == expected
+
+    return
+
     for i, (left, right) in enumerate(zip(actual, expected, strict=False)):
-        assert left == st.DatetimeSplitBounds(*(pd.Timestamp(ts, tz="utc") for ts in right)), i
+        assert left == right, i
     assert len(actual) == len(expected)
 
 
@@ -136,18 +151,20 @@ class TestStep:
 
 def test_filter():
     # Base case - this is DATA_CASES[0]
-    actual = split(schedule="68h", before="5d", after="1d", available=SPLIT_DATA)
+    kwargs = st.DatetimeIndexSplitterKwargs(schedule="68h", before="5d", after="1d")
+
+    actual = split(available=SPLIT_DATA, **kwargs)
     expected = [
-        ("2022-01-02 20:00:00", "2022-01-07 20:00:00", "2022-01-08 20:00:00"),
-        ("2022-01-05 16:00:00", "2022-01-10 16:00:00", "2022-01-11 16:00:00"),
-        ("2022-01-08 12:00:00", "2022-01-13 12:00:00", "2022-01-14 12:00:00"),
+        ("2022-01-02 08:00:00", "2022-01-07 08:00:00", "2022-01-08 08:00:00"),
+        ("2022-01-05 04:00:00", "2022-01-10 04:00:00", "2022-01-11 04:00:00"),
+        ("2022-01-08 00:00:00", "2022-01-13 00:00:00", "2022-01-14 00:00:00"),
     ]
 
     for left, right in zip(actual, expected, strict=True):
         assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
 
     # Test with filter
-    kept = "2022-01-10 16:00:00"
+    kept = expected[1][1]
 
     n_calls = 0
 
@@ -156,19 +173,11 @@ def test_filter():
         n_calls += 1
         return str(mid) == kept
 
-    kwargs = st.DatetimeIndexSplitterKwargs(
-        schedule="68h",
-        before="5d",
-        after="1d",
-        filter=func,
-    )
+    kwargs["filter"] = func
 
-    actual = split(
-        **kwargs,
-        available=SPLIT_DATA,
-    )
+    actual = split(**kwargs, available=SPLIT_DATA)
     assert len(actual) == 1
-    assert str(actual[0][1]) == "2022-01-10 16:00:00"
+    assert str(actual[0][1]) == kept
     assert actual[0] == st.DatetimeSplitBounds(*map(pd.Timestamp, expected[1]))
     assert n_calls == 3
 
