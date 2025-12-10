@@ -53,7 +53,7 @@ class DatetimeIndexSplitter:
         if (
             settings.snap_to_end
             and self.after != "all"
-            and isinstance(self.schedule, types)
+            and ms.schedule_type == "timedelta"
             and isinstance(self.after, (types, int))
         ):
             ms = self._snap_to_end(ms)

@@ -1,4 +1,4 @@
-from typing import NamedTuple, get_args
+from typing import Literal, NamedTuple, get_args
 
 from pandas import DatetimeIndex, NaT, Timedelta, Timestamp, date_range
 
@@ -8,6 +8,7 @@ from ._limits import LimitsTuple
 from ._process_available import ProcessAvailableResult, process_available
 
 NO_LIMITS: LimitsTuple = NaT, NaT
+ScheduleType = Literal["cron", "explicit", "timedelta"]
 
 
 class MaterializedSchedule(NamedTuple):
@@ -15,6 +16,7 @@ class MaterializedSchedule(NamedTuple):
 
     schedule: DatetimeIndex
     available_metadata: ProcessAvailableResult
+    schedule_type: ScheduleType
 
 
 def materialize_schedule(
@@ -26,6 +28,7 @@ def materialize_schedule(
             return MaterializedSchedule(
                 DatetimeIndex(schedule),
                 available_metadata=ProcessAvailableResult(None, NO_LIMITS, NO_LIMITS),
+                schedule_type="explicit",
             )
         except TypeError as e:
             raise ValueError("Schedule must be explicit when not bounded by an available range.") from e
@@ -33,17 +36,22 @@ def materialize_schedule(
     available_metadata = process_available(available, expand_limits=expand_limits)
     min_dt, max_dt = available_metadata.expanded_limits
 
+    schedule_type: ScheduleType
     if isinstance(schedule, str) and _cron_like(schedule):
         schedule = _handle_cron(schedule, min_dt, max_dt)
+        schedule_type = "cron"
     elif isinstance(schedule, get_args(TimedeltaTypes)):
         schedule = _from_timedelta(schedule, available_metadata.expanded_limits)
+        schedule_type = "timedelta"
     else:
         if not isinstance(schedule, DatetimeIndex):
             schedule = DatetimeIndex(schedule)
 
         schedule = schedule.tz_localize(min_dt.tz) if schedule.tz is None else schedule.tz_convert(min_dt.tz)
         schedule = schedule[(min_dt <= schedule) & (schedule <= max_dt)]
-    return MaterializedSchedule(schedule, available_metadata=available_metadata)
+        schedule_type = "explicit"
+
+    return MaterializedSchedule(schedule, available_metadata, schedule_type)
 
 
 def _cron_like(schedule: str) -> bool:

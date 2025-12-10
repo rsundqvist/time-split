@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix `snap_to_end=True` applying to CRON and explicit schedule types.
+
 ## [1.1.0] - 2025-12-10
 
 ### Added

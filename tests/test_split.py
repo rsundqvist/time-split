@@ -84,10 +84,6 @@ def test_data_utc(kwargs, expected):
         for start, mid, end in expected
     ]
 
-    assert actual == expected
-
-    return
-
     for i, (left, right) in enumerate(zip(actual, expected, strict=False)):
         assert left == right, i
     assert len(actual) == len(expected)
@@ -186,3 +182,33 @@ def test_filter():
     assert n_calls == 3
     for left, right in zip(actual, expected, strict=True):
         assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
+
+
+@pytest.mark.parametrize(
+    "schedule",
+    [
+        "0 0 * * MON,FRI",
+        ["2022-01-03", "2022-01-07", "2022-01-10", "2022-01-14", "2022-01-17"],
+        pd.DatetimeIndex(["2022-01-03", "2022-01-07", "2022-01-10", "2022-01-14", "2022-01-17"]),
+    ],
+    ids=["cron", "explicit:list", "explicit:DatetimeIndex"],
+)
+def test_does_not_apply_to_cron_or_explicit(schedule):
+    start = "2022-01-01"
+    expected = [
+        (start, "2022-01-03", "2022-01-06"),
+        (start, "2022-01-07", "2022-01-10"),
+        (start, "2022-01-10", "2022-01-13"),
+        (start, "2022-01-14", "2022-01-17"),
+        (start, "2022-01-17", "2022-01-20"),
+    ]
+
+    actual = split(
+        schedule,
+        before="all",
+        after="3d",
+        available=(start, "2022-01-21"),
+    )
+    for left, right in zip(actual, expected, strict=True):
+        assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
+        assert left.mid.day_name() in {"Monday", "Friday"}, f"{left.mid:%Y-%m-%d, %A}"

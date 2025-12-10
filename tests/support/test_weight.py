@@ -4,6 +4,7 @@ import pytest
 
 from time_split import split
 from time_split.support import fold_weight
+from time_split.types import DatetimeSplitCounts
 
 
 def _split(typ, unit):
@@ -19,23 +20,27 @@ def _split(typ, unit):
 class TestUnitCount:
     def test_rows(self, typ):
         actual = _split(typ, "rows")
-        assert actual == [
-            (114, 114),
+        assert _to_list(actual) == [
+            (76, 114),
             (228, 114),
-            (379, 114),
+            (342, 113),
             (493, 114),
-            (645, 113),
+            (607, 113),
         ]
 
     def test_hours(self, typ):
         actual = _split(typ, "hours")
-        assert actual == [
-            (72, 72),
+        assert _to_list(actual) == [
+            (48, 72),
             (144, 72),
-            (240, 72),
+            (216, 72),
             (312, 72),
-            (408, 72),
+            (384, 72),
         ]
+
+
+def _to_list(counts: list[DatetimeSplitCounts]) -> list[tuple[int, int]]:
+    return [(int(c.data), int(c.future_data)) for c in counts]
 
 
 def test_rows_without_available():
