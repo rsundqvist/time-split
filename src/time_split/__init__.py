@@ -9,4 +9,4 @@ __all__ = [
     "split",
 ]
 
-__version__ = "1.1.0.dev1"
+__version__ = "1.1.1"
