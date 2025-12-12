@@ -65,6 +65,7 @@ sphinx-gallery = "~0.20.0"
 pydata-sphinx-theme = "~0.16.1"
 myst-parser = "~4.0.1"
 ipython = "~9.8.0"
+sphinx-llm = "~0.2.1"
 
 [tool.poetry.group.notebooks]
 optional = true

@@ -4760,6 +4760,45 @@ show-api-usage = ["graphviz"]
 show-memory = ["memory-profiler"]
 
 [[package]]
+name = "sphinx-llm"
+version = "0.2.1"
+description = ""
+optional = false
+python-versions = ">=3.9"
+groups = ["docs"]
+files = [
+    {file = "sphinx_llm-0.2.1-py3-none-any.whl", hash = "sha256:77e389a82277bdcddc2fd4a18736f16a973ae18f8eed8cad1068db8070a44140"},
+    {file = "sphinx_llm-0.2.1.tar.gz", hash = "sha256:72aafb400145507774b40af4a0f44bc4e73c6a82576ee67b884ed5998b84f456"},
+]
+
+[package.dependencies]
+sphinx = ">=5"
+sphinx-markdown-builder = ">=0.6.8"
+
+[package.extras]
+gen = ["langchain-ollama (>=0.2.0)"]
+
+[[package]]
+name = "sphinx-markdown-builder"
+version = "0.6.9"
+description = "A Sphinx extension to add markdown generation support."
+optional = false
+python-versions = ">=3.7"
+groups = ["docs"]
+files = [
+    {file = "sphinx_markdown_builder-0.6.9-py3-none-any.whl", hash = "sha256:35b555760c48d4a38fe4b27813cb5ca636bbd22d8ef0742ac6959043f8000840"},
+    {file = "sphinx_markdown_builder-0.6.9.tar.gz", hash = "sha256:e89dc1b9eb837da430c2c230011fad95a3dfab0345ad503a32e35a31d284a722"},
+]
+
+[package.dependencies]
+docutils = "*"
+sphinx = ">=5.1.0"
+tabulate = "*"
+
+[package.extras]
+dev = ["black", "bumpver", "coveralls", "flake8", "isort", "pip-tools", "pylint", "pytest", "pytest-cov", "sphinx (>=9.0.4)", "sphinxcontrib-plantuml", "sphinxcontrib.httpdomain"]
+
+[[package]]
 name = "sphinxcontrib-applehelp"
 version = "2.0.0"
 description = "sphinxcontrib-applehelp is a Sphinx extension which outputs Apple help books"
@@ -4920,6 +4959,21 @@ pdf = ["streamlit-pdf (>=1.0.0)"]
 performance = ["orjson (>=3.5.0)", "uvloop (>=0.15.2) ; sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\""]
 snowflake = ["snowflake-connector-python (>=3.3.0) ; python_version < \"3.12\"", "snowflake-snowpark-python[modin] (>=1.17.0) ; python_version < \"3.12\""]
 sql = ["SQLAlchemy (>=2.0.0)"]
+
+[[package]]
+name = "tabulate"
+version = "0.9.0"
+description = "Pretty-print tabular data"
+optional = false
+python-versions = ">=3.7"
+groups = ["docs"]
+files = [
+    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
+    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
+]
+
+[package.extras]
+widechars = ["wcwidth"]
 
 [[package]]
 name = "tenacity"
@@ -5368,4 +5422,4 @@ plotting = ["matplotlib", "seaborn"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "0dd7cd3183d878d1b5cc5e5ec7402be99ed0d4686b5ab973cc55523fe357884d"
+content-hash = "fdad728dc5c78b934ff76c13f470b9ce99fa58e871f5a543fbd9e7ebfcd0a3e3"
