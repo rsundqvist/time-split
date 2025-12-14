@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-12-14
+
 ### Added
 - Add new `Span` literal `'empty'`; setting for `before='empty'` or `after='empty'` sets start/end to the midpoint.
 
@@ -155,7 +157,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed a few documentation and examples issues.
 
-[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/rsundqvist/time-split/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/rsundqvist/time-split/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/rsundqvist/time-split/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/rsundqvist/time-split/compare/v1.0.4...v1.0.5
