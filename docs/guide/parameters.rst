@@ -36,6 +36,7 @@ otherwise stated.
 
        * pandas :ref:`offset alias <pandas:timeseries.offset_aliases>`
        * Literal `'all'` [#]_
+       * Literal `'empty'`
        * ``int >= 1``
      - Range before/after schedule timestamps.
 

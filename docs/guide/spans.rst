@@ -15,6 +15,10 @@ The `before` and `after` :attr:`~types.Span` arguments determine how much data i
      - Include all data before/after the scheduled time. Similar to
        `sklearn.model_selection.TimeSeriesSplit(max_train_size=None) <https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html>`_
      - :ref:`sphx_glr_auto_examples_cron_schedule_keep_all_before.py`
+   * - String ``'empty'``
+     - Used to discard datasets. Sets the edge equal the the midpoint, e.g. ``after="empty"`` will set ``mid == end``,
+       discarding the `Future data`.
+     - :ref:`sphx_glr_auto_examples_no_future_data.py`
    * - ``int > 0``
      - Include all data within `N` schedule periods from the scheduled time.
      - :ref:`sphx_glr_auto_examples_n_splits_dynamic_before_and_after.py`

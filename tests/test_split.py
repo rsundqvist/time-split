@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from time_split import split
+from time_split import settings, split
 from time_split import types as st
 
 from .conftest import DATA_CASES, NO_DATA_CASES, NO_DATA_SCHEDULE, SPLIT_DATA
@@ -11,7 +11,7 @@ from .conftest import DATA_CASES, NO_DATA_CASES, NO_DATA_SCHEDULE, SPLIT_DATA
 def test_data(kwargs, expected):
     actual = split(**kwargs, available=SPLIT_DATA)
 
-    for i, (left, right) in enumerate(zip(actual, expected, strict=True)):
+    for i, (left, right) in enumerate(zip(actual, expected, strict=False)):
         assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right)), i
     assert len(actual) == len(expected)
 
@@ -19,9 +19,7 @@ def test_data(kwargs, expected):
 class TestSnapToEnd:
     @staticmethod
     def _run(monkeypatch, *, snap_to_end):
-        from time_split.settings import misc as settings
-
-        monkeypatch.setattr(settings, "snap_to_end", snap_to_end)
+        monkeypatch.setattr(settings.misc, "snap_to_end", snap_to_end)
 
         dates = []
         for bounds in split(schedule="3d", before="3d", after="2d", available=SPLIT_DATA):
@@ -57,12 +55,10 @@ class TestSnapToEnd:
     ],
 )
 def test_round_limits_snap_to_end_interaction(monkeypatch, *, round_limits, snap_to_end, expected):
-    from time_split.settings import misc as settings
-
     limits = "2019-04-10 23:55:00", "2019-05-12 01:00:00"
 
-    monkeypatch.setattr(settings, "round_limits", round_limits)
-    monkeypatch.setattr(settings, "snap_to_end", snap_to_end)
+    monkeypatch.setattr(settings.misc, "round_limits", round_limits)
+    monkeypatch.setattr(settings.misc, "snap_to_end", snap_to_end)
 
     folds = split(schedule="7d", before="3d", after="2d", available=limits)
     assert len(folds) == 4
@@ -212,3 +208,35 @@ def test_does_not_apply_to_cron_or_explicit(schedule):
     for left, right in zip(actual, expected, strict=True):
         assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
         assert left.mid.day_name() in {"Monday", "Friday"}, f"{left.mid:%Y-%m-%d, %A}"
+
+
+class TestEmptySpan:
+    def test_before(self):
+        expected = [
+            ("2019-05-01", "2019-05-01", "2019-05-08"),
+            ("2019-05-02", "2019-05-02", "2019-05-09"),
+            ("2019-05-03", "2019-05-03", "2019-05-10"),
+            ("2019-05-04", "2019-05-04", "2019-05-11"),
+        ]
+        for s in expected:
+            assert s[0] == s[1]
+
+        actual = split("1d", available=("2019-05-01", "2019-05-11"), before="empty", after="7d")
+
+        for left, right in zip(actual, expected, strict=True):
+            assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
+
+    def test_after(self):
+        expected = [
+            ("2019-05-01", "2019-05-08", "2019-05-08"),
+            ("2019-05-02", "2019-05-09", "2019-05-09"),
+            ("2019-05-03", "2019-05-10", "2019-05-10"),
+            ("2019-05-04", "2019-05-11", "2019-05-11"),
+        ]
+        for s in expected:
+            assert s[1] == s[2]
+
+        actual = split("1d", available=("2019-05-01", "2019-05-11"), before="7d", after="empty")
+
+        for left, right in zip(actual, expected, strict=True):
+            assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))

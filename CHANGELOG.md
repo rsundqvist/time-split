@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add new `Span` literal `'empty'`; setting for `before='empty'` or `after='empty'` sets start/end to the midpoint.
+
 ## [1.1.1] - 2025-12-10
 
 ### Fixed

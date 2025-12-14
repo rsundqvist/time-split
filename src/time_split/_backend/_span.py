@@ -8,7 +8,7 @@ from ..types import Span
 from ._limits import LimitsTuple
 from ._schedule import NO_LIMITS
 
-StrictSpan: TypeAlias = int | Timedelta | Literal["all"]
+StrictSpan: TypeAlias = int | Timedelta | Literal["all", "empty"]
 SpanArgumentName = Literal["before", "after"]
 FuncType = Callable[[int], Timestamp | None]
 
@@ -48,13 +48,13 @@ def to_strict_span(span: Span, *, name: SpanArgumentName) -> StrictSpan:
         InvalidSpanError: For invalid `span` arguments.
 
     """
-    if span == "all":
-        return "all"
+    if span in {"all", "empty"}:
+        return span
 
     if isinstance(span, (str, timedelta, Timedelta)):
         return _to_timedelta(span, name=name)
 
-    if span is False or isinstance(span, (int, float)):
+    if isinstance(span, (int, float)):
         retval = int(span)
         if retval <= 0:
             raise InvalidSpanError(retval, name=name)
@@ -77,52 +77,76 @@ class OffsetCalculator:
         span = to_strict_span(span, name=name)
         is_before = name == "before"
 
-        self.func: FuncType
+        self._schedule = schedule
+        self._is_before = is_before
+        self._limits: LimitsTuple | None = None if limits == NO_LIMITS else limits
+
+        self._func: FuncType
         if span == "all":
-            if limits == NO_LIMITS:
-                raise InvalidSpanError(
-                    span,
-                    name=name,
-                    reason="requires available data to bound the schedule",
-                )
-            self.func = self._make_all(is_before, limits)
+            self._func = self.get_all
+        elif span == "empty":
+            self._func = self.get_empty
         elif isinstance(span, int):
-            self.func = self._make_int(is_before, span, schedule)
+            self._func = self._make_int(span)
         else:  # Timedelta
-            self.func = self._make_timedelta(is_before, span, schedule)
+            self._func = self._make_timedelta(span)
 
-    @staticmethod
-    def _make_all(is_before: bool, limits: LimitsTuple) -> FuncType:
-        retval = Timestamp(limits[0 if is_before else 1])
+    def get(self, i: int) -> Timestamp | None:
+        """Get get outer bound at index `i`."""
+        rv = self._func(i)
+        if rv is None:
+            return None
 
-        def func(_: int) -> Timestamp | None:
-            return retval
+        mid = self._schedule[i]
 
-        return func
+        if self._limits:
+            min_start, max_end = self._limits
+            if not (min_start <= mid <= max_end):
+                return None  # Snapping to end may shift schedule out of range.
+            if not (min_start <= rv <= max_end):
+                return None
 
-    @staticmethod
-    def _make_int(is_before: bool, offset: int, schedule: DatetimeIndex) -> FuncType:
+        if rv == mid and self._func != self.get_empty:
+            return None
+
+        return rv
+
+    def get_all(self, _: int) -> Timestamp:
+        if self._limits is None:
+            raise InvalidSpanError("all", name=self.name, reason="requires available data to bound the schedule")
+
+        index = 0 if self._is_before else 1
+        return self._limits[index]
+
+    def get_empty(self, i: int) -> Timestamp:
+        return self._schedule[i]
+
+    def _make_int(self, offset: int) -> FuncType:
         def func(i: int) -> Timestamp | None:
-            i = i - offset if is_before else i + offset
-            if 0 <= i < len(schedule):
-                return schedule[i]
+            i = i - offset if self._is_before else i + offset
+            if 0 <= i < len(self._schedule):
+                return self._schedule[i]
             else:
                 return None
 
+        func.__name__ = f"get_int({offset})"
         return func
 
-    @staticmethod
-    def _make_timedelta(is_before: bool, offset: Timedelta, schedule: DatetimeIndex) -> FuncType:
-        if is_before:
-            schedule = schedule - offset
+    def _make_timedelta(self, offset: Timedelta) -> FuncType:
+        if self._is_before:
+            schedule = self._schedule - offset
         else:
-            schedule = schedule + offset
+            schedule = self._schedule + offset
 
-        def func(i: int) -> Timestamp | None:
+        def func(i: int) -> Timestamp:
             return schedule[i]
 
+        func.__name__ = f"get_timedelta('{offset}')"
         return func
 
-    def __call__(self, i: int) -> Timestamp | None:
-        """Get start/end timestamp."""
-        return self.func(i)
+    @property
+    def name(self) -> SpanArgumentName:
+        return "before" if self._is_before else "after"
+
+    def __str__(self) -> str:
+        return f"{type(self).__name__}({self.name}={self._func.__name__})"

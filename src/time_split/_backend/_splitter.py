@@ -52,7 +52,7 @@ class DatetimeIndexSplitter:
         types = get_args(TimedeltaTypes)
         if (
             settings.snap_to_end
-            and self.after != "all"
+            and self.after not in {"all", "empty"}
             and ms.schedule_type == "timedelta"
             and isinstance(self.after, (types, int))
         ):
@@ -72,23 +72,19 @@ class DatetimeIndexSplitter:
         return ms._replace(schedule=ms.schedule + from_end)
 
     def _make_bounds_list(self, ms: MaterializedSchedule) -> DatetimeSplits:
-        get_start = OffsetCalculator(
-            self.before,
-            ms.schedule,
-            ms.available_metadata.expanded_limits,
-            name="before",
-        )
-        get_end = OffsetCalculator(self.after, ms.schedule, ms.available_metadata.expanded_limits, name="after")
-
-        min_start, max_end = ms.available_metadata.expanded_limits
+        oc_start = OffsetCalculator(self.before, ms.schedule, ms.available_metadata.expanded_limits, name="before")
+        oc_end = OffsetCalculator(self.after, ms.schedule, ms.available_metadata.expanded_limits, name="after")
 
         retval = []
         for i, mid in enumerate(ms.schedule):
-            start, end = get_start(i), get_end(i)
-            if start is None or start < min_start or start >= mid:
+            start = oc_start.get(i)
+            if start is None:
                 continue
-            if end is None or end > max_end or end <= mid:
+
+            end = oc_end.get(i)
+            if end is None:
                 continue
+
             retval.append(DatetimeSplitBounds(start, mid, end))
 
         if not retval:

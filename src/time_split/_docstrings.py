@@ -13,7 +13,7 @@ def docs(__func: Callable[P, T], /) -> Callable[P, T]:
     offset = "pandas :ref:`offset alias <pandas:timeseries.offset_aliases>`"
     span = (
         f"Range {{}} `schedule` timestamps. Either a {offset}, an integer (`schedule`-based offsets), "
-        f"or `'all'` (requires `available` data)."
+        f"or `'all'` (requires `available` data). Pass `'empty'` to disable."
     )
     docstrings = {
         "schedule": f"A :attr:`~time_split.types.DatetimeIterable`, {offset}, or `cron <https://pypi.org/project/croniter/>`_ expression.",

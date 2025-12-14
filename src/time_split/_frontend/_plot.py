@@ -1,4 +1,5 @@
 from collections.abc import Sized
+from contextlib import suppress
 from dataclasses import asdict, dataclass, replace
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -211,8 +212,8 @@ def _plot_splits(ax: "Axes", splits: DatetimeSplits, *, removed: set[DatetimeSpl
             if fold_no == 1:
                 blue_label, red_label = settings.DATA_LABEL, settings.FUTURE_DATA_LABEL
 
-        ax.barh(i, mid - start, left=start, color="b", label=blue_label, **kwargs)
-        ax.barh(i, stop - mid, left=mid, color="r", label=red_label, **kwargs)
+        ax.barh(i, mid - start, left=start, color="b", label=None if mid == start else blue_label, **kwargs)
+        ax.barh(i, stop - mid, left=mid, color="r", label=None if mid == stop else red_label, **kwargs)
         xtick.append(mid)
 
     ax.set_xticks(xtick)
@@ -264,6 +265,9 @@ def _add_bar_labels(
         )
 
     for bar, label in zip(ax.containers, labels, strict=True):
+        with suppress(Exception):
+            if bar.datavalues.tolist() == [0]:  # type: ignore[attr-defined]
+                continue  # Zero-width bar.
         ax.bar_label(bar, labels=[label], **kwargs)  # type: ignore[arg-type]
 
 

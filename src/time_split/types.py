@@ -18,7 +18,7 @@ TimedeltaTypes: _t.TypeAlias = str | _pd.Timedelta | _dt.timedelta | _np.timedel
 
 Schedule: _t.TypeAlias = _pd.DatetimeIndex | DatetimeIterable | TimedeltaTypes
 """User schedule type."""
-Span = int | _t.Literal["all"] | TimedeltaTypes
+Span = int | _t.Literal["all", "empty"] | TimedeltaTypes
 """User span type. Used to determine limits from the timestamps given by a :attr:`Schedule`."""
 ExpandLimits = bool | _t.Literal["auto"] | str
 """Limits flexibility spec for ``floor/ceil``. Pass ``False`` to disable."""
