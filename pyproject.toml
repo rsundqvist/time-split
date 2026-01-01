@@ -87,7 +87,7 @@ dask = { version = "~2025.10.0", extras = ["dataframe"] }
 [tool.poetry.group.devops.dependencies]
 invoke = "~2.2.1"
 mypy = "~1.19.0"
-ruff = "~0.14.8"
+ruff = "~0.14.10"
 
 safety = "~3.7.0"
 codespell = "~2.4.1"
