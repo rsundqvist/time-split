@@ -27,6 +27,13 @@ for tm in type_modules:
 def callback(_app, _env, node, _contnode):  # noqa
     reftarget = node.get("reftarget")
 
+    if reftarget == "dict[str":
+        # TODO(2025-01-17): Fix <unknown>:1: WARNING: py:class reference target not found: dict[str [ref.class]
+        # Error on
+        #   DatasetConfig.aggregations: dict[str, str] = field(default_factory)
+        # Not sure what causes it. Dataclass type hints seem broken, but didn't warn before.
+        raise ValueError("fix this!")
+
     if reftarget == "polars.dataframe.frame.DataFrame":
         # https://github.com/pola-rs/polars/issues/7027
         ans_hax = reference(
