@@ -6,52 +6,22 @@ from datetime import datetime, timezone
 if True:  # E402 hack
     os.environ["SPHINX_BUILD"] = "true"
 
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
 import shutil
 from importlib import import_module, metadata
 
-import time_split
 from docutils.nodes import Text, reference
+from rics._internal_support import make_toc_tree_titles_shorter, myst_parser_markdown_doc_refs
 from rics._internal_support.changelog import split_changelog
 
-type_modules = (
-    "time_split.integration.pandas",
-)
+import time_split
+
+myst_parser_markdown_doc_refs.patch()
+make_toc_tree_titles_shorter.patch()
+
+type_modules = ("time_split.integration.pandas",)
 
 for tm in type_modules:
     import_module(tm)
-
-
-def monkeypatch_autosummary_toc() -> None:
-    from sphinx.addnodes import toctree
-    from sphinx.ext.autosummary import Autosummary, autosummary_toc
-
-    original = Autosummary.run
-
-    def make_toc_tree_titles_shorter(self: Autosummary):
-        # tocnode['entries'] = [(".".join(docn.partition("/")[-1].split(".")[-2:]), docn) for docn in docnames]
-        toc: toctree
-        nodes = original(self)
-
-        for node in nodes:
-            if not isinstance(node, autosummary_toc):
-                continue
-
-            for toc in node.children:
-                entries = toc["entries"]
-
-                for i, (title, ref) in enumerate(entries):
-                    if title is None and ref.count(".") >= 2:
-                        title = ".".join(ref.rsplit(".", 2)[-2:])
-                        entries[i] = (title, ref)
-
-        return nodes
-
-    Autosummary.run = make_toc_tree_titles_shorter
 
 
 def callback(_app, _env, node, _contnode):  # noqa
@@ -59,7 +29,9 @@ def callback(_app, _env, node, _contnode):  # noqa
 
     if reftarget == "polars.dataframe.frame.DataFrame":
         # https://github.com/pola-rs/polars/issues/7027
-        ans_hax = reference(refuri="https://docs.pola.rs/py-polars/html/reference/dataframe/index.html", reftitle=reftarget)
+        ans_hax = reference(
+            refuri="https://docs.pola.rs/py-polars/html/reference/dataframe/index.html", reftitle=reftarget
+        )
         ans_hax.children.append(Text(reftarget.rpartition(".")[-1]))
         return ans_hax
 
@@ -74,14 +46,6 @@ def callback(_app, _env, node, _contnode):  # noqa
 
 def setup(app):  # noqa
     app.connect("missing-reference", callback)  # Fixes linking of typevars
-    monkeypatch_autosummary_toc()
-
-
-# If extensions (or modules to document with autodoc) are in another
-# directory, add these directories to sys.path here. If the directory is
-# relative to the documentation root, use os.path.abspath to make it
-# absolute, like shown here.
-#
 
 
 # -- Project information -------------------------------------------------------
@@ -109,7 +73,6 @@ id_translation_docs = f"https://id-translation.readthedocs.io/en/{'latest' if 'd
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autodoc.typehints",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
@@ -129,7 +92,9 @@ set_type_checking_flag = True  # Enable 'expensive' imports for sphinx_autodoc_t
 nbsphinx_allow_errors = True  # Continue through Jupyter errors
 # autodoc_typehints = "description" # Sphinx-native method. Not as good as sphinx_autodoc_typehints
 add_module_names = False  # Remove namespaces from class/method signatures
-myst_heading_anchors = 3  # https://myst-parser.readthedocs.io/en/v4.0.1/syntax/optional.html#auto-generated-header-anchors
+myst_heading_anchors = (
+    3  # https://myst-parser.readthedocs.io/en/v4.0.1/syntax/optional.html#auto-generated-header-anchors
+)
 
 suppress_warnings = [
     "autosectionlabel.*",  # https://github.com/sphinx-doc/sphinx/issues/7697
@@ -248,9 +213,7 @@ nitpick_ignore = [
     ("py:class", "Axes"),
     ("py:class", "sklearn.model_selection._split.BaseCrossValidator"),
 ]
-# nitpick_ignore_regex = [
-#     ("py:obj", r".*\.Any"),
-# ]
+nitpick_ignore_regex = []
 
 # -- Autodoc configuration -----------------------------------------------------
 autodoc_typehints = "signature"

@@ -1,3 +1,4 @@
+import os
 from collections.abc import Sized
 from contextlib import suppress
 from dataclasses import asdict, dataclass, replace
@@ -27,11 +28,8 @@ from ._split import split
 from ._to_string import _PrettyTimestamp
 from ._weight import fold_weight
 
-if TYPE_CHECKING:
-    try:
-        from matplotlib.pyplot import Axes  # type: ignore[attr-defined]
-    except ModuleNotFoundError:
-        Axes = Any  # type: ignore[misc, assignment]
+if TYPE_CHECKING or os.environ.get("SPHINX_BUILD") is True:
+    from matplotlib.axes import Axes  #  noqa: TC002
 
 Rows = Literal["rows"]
 COUNT_ROWS: Literal["rows"] = "rows"

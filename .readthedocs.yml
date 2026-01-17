@@ -4,7 +4,7 @@ build:
   os: ubuntu-22.04
   tools:
     # 3.13 breaks pathlib.Path docs; see https://github.com/sphinx-doc/sphinx/issues/13178
-    python: "3.12"
+    python: "3.14"
   apt_packages:
     - tree
   jobs:
