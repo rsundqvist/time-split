@@ -4,6 +4,7 @@ from typing import Literal, TypeAlias
 
 from pandas import DatetimeIndex, Timedelta, Timestamp
 
+from .._compat import make_timedelta
 from ..types import Span
 from ._limits import LimitsTuple
 from ._schedule import NO_LIMITS
@@ -27,7 +28,7 @@ class InvalidSpanError(ValueError):
 
 
 def _to_timedelta(span: str | timedelta | Timedelta, *, name: SpanArgumentName) -> Timedelta:
-    retval = Timedelta(span)
+    retval = make_timedelta(span)
     if retval <= Timedelta(0):
         raise InvalidSpanError(span, name=name)
     return retval

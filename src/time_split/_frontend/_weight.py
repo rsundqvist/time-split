@@ -2,6 +2,7 @@ from typing import Literal
 
 from pandas import DatetimeIndex, Timedelta
 
+from .._compat import fix_pandas4_warning
 from .._support import handle_dask
 from ..types import DatetimeIterable, DatetimeSplitCounts, DatetimeSplits
 
@@ -35,7 +36,7 @@ def fold_weight(
 
 
 def _from_unit(unit: str, splits: DatetimeSplits) -> list[DatetimeSplitCounts]:
-    resolution = Timedelta(1, unit=unit)
+    resolution = Timedelta(1, unit=fix_pandas4_warning(unit))
     return [
         DatetimeSplitCounts(
             round((fold.mid - fold.start) / resolution),

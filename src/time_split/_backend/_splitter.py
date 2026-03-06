@@ -1,9 +1,9 @@
 from dataclasses import asdict, dataclass
 from typing import cast, get_args
 
-from pandas import Timedelta
 from rics.misc import format_kwargs, get_by_full_name
 
+from .._compat import make_timedelta
 from ..settings import misc as settings
 from ..types import (
     DatetimeIndexSplitterKwargs,
@@ -66,7 +66,7 @@ class DatetimeIndexSplitter:
 
         from_end = data_end - schedule_end
         if not isinstance(self.after, int):
-            after = Timedelta(self.after)
+            after = make_timedelta(self.after)
             from_end -= after
 
         return ms._replace(schedule=ms.schedule + from_end)

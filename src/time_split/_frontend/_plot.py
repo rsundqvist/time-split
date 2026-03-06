@@ -12,6 +12,7 @@ from rics.strings import format_seconds as fmt_sec
 from .._backend import DatetimeIndexSplitter
 from .._backend._datetime_index_like import DatetimeIndexLike
 from .._backend._limits import LimitsTuple
+from .._compat import fix_pandas4_warning, make_timedelta
 from .._docstrings import docs
 from .._support import handle_dask
 from ..settings import plot as settings
@@ -231,7 +232,7 @@ def _plot_row_counts(ax: "Axes", row_count_bin: str | pd.Series, row_counts: pd.
         pretty = fmt_sec(diff(row_counts.index).min() / timedelta64(1, "s"))
     else:
         row_counts = row_counts.sort_index()
-        pretty = fmt_sec(pd.Timedelta(row_count_bin).total_seconds())
+        pretty = fmt_sec(make_timedelta(row_count_bin).total_seconds())
 
     row_counts = row_counts * (max(ax.get_yticks()) / row_counts.max())  # Normalize to fold number yaxis
     ax.fill_between(
@@ -354,7 +355,7 @@ def _compute_row_counts(
         a_type = get_public_module(type(available), resolve_reexport=True, include_name=True)
         raise TypeError(f"type(available)={a_type} must have one of `floor` and `dt` to use {row_count_bin=}")
 
-    return handle_dask(index_like.floor(row_count_bin).value_counts())
+    return handle_dask(index_like.floor(fix_pandas4_warning(row_count_bin)).value_counts())
 
 
 def _make_title(available: Any | None, split_kwargs: dict[str, Any]) -> str:

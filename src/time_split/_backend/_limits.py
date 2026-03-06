@@ -4,6 +4,7 @@ from typing import Any, NamedTuple, TypeGuard
 
 from pandas import Timedelta, Timestamp
 
+from .._compat import fix_pandas4_warning, make_timedelta
 from ..settings import auto_expand_limits, misc
 from ..types import ExpandLimits, TimedeltaTypes
 
@@ -159,19 +160,20 @@ def _levels_from_settings() -> list[_TimedeltaTuple]:
 
 def _make_level(
     start_at: TimedeltaTypes | None,
-    round_to: TimedeltaTypes,
+    round_to: str | Timedelta,
     tolerance: TimedeltaTypes,
 ) -> _TimedeltaTuple:
-    start_at = Timedelta(start_at)  # Will be NaT if None, making all ifs False.
+    start_at = make_timedelta(start_at)  # Will be NaT if None, making all ifs False.
     if start_at <= Timedelta(0):
         raise ValueError(f"Bad {start_at=}; must be non-negative.")
 
-    try:
-        round_to = Timedelta(1, unit=round_to)
-    except ValueError as e:
-        raise ValueError(f"Got {round_to=}, which is not a valid frequency.") from e
+    if isinstance(round_to, str):
+        try:
+            round_to = Timedelta(1, unit=fix_pandas4_warning(round_to))
+        except ValueError as e:
+            raise ValueError(f"Got {round_to=}, which is not a valid frequency.") from e
 
-    tolerance = Timedelta(tolerance)
+    tolerance = make_timedelta(tolerance)
     if tolerance <= Timedelta(0):
         raise ValueError(f"Bad {tolerance=}; must be non-negative.")
 

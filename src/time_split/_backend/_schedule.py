@@ -2,6 +2,7 @@ from typing import Literal, NamedTuple, get_args
 
 from pandas import DatetimeIndex, NaT, Timedelta, Timestamp, date_range
 
+from .._compat import make_timedelta
 from ..settings import misc as settings
 from ..types import DatetimeIterable, ExpandLimits, Schedule, TimedeltaTypes
 from ._limits import LimitsTuple
@@ -60,7 +61,7 @@ def _cron_like(schedule: str) -> bool:
 
 
 def _from_timedelta(schedule: TimedeltaTypes, limits: LimitsTuple) -> DatetimeIndex:
-    timedelta = Timedelta(schedule)
+    timedelta = make_timedelta(schedule)
     if timedelta <= Timedelta(0):
         raise ValueError(f"unbounded {schedule=} must be greater than zero.")
 

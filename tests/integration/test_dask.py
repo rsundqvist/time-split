@@ -7,7 +7,7 @@ from time_split.support import process_available
 
 @pytest.mark.parametrize("kind", ["index", "series"])
 def test_dask(kind):
-    df = timeseries(end="2000-04", freq="17 min", partition_freq="7d", dtypes={"x": int})
+    df = timeseries(end="2000-04", freq="17 min", partition_freq="7D", dtypes={"x": int})
 
     if kind == "index":
         available = df.index
