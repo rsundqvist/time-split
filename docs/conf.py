@@ -10,6 +10,7 @@ import shutil
 from importlib import import_module, metadata
 
 from docutils.nodes import Text, reference
+from pandas import __version__ as pandas_version
 from rics._internal_support import make_toc_tree_titles_shorter, myst_parser_markdown_doc_refs
 from rics._internal_support.changelog import split_changelog
 
@@ -26,13 +27,6 @@ for tm in type_modules:
 
 def callback(_app, _env, node, _contnode):  # noqa
     reftarget = node.get("reftarget")
-
-    if reftarget == "dict[str":
-        # TODO(2025-01-17): Fix <unknown>:1: WARNING: py:class reference target not found: dict[str [ref.class]
-        # Error on
-        #   DatasetConfig.aggregations: dict[str, str] = field(default_factory)
-        # Not sure what causes it. Dataclass type hints seem broken, but didn't warn before.
-        raise ValueError("fix this!")
 
     if reftarget == "polars.dataframe.frame.DataFrame":
         # https://github.com/pola-rs/polars/issues/7027
@@ -219,6 +213,7 @@ nitpick_ignore = [
     # Third party
     ("py:class", "Axes"),
     ("py:class", "sklearn.model_selection._split.BaseCrossValidator"),
+    ("py:class", "dict[str"),  # TODO(sphinx): https://github.com/sphinx-doc/sphinx/issues/10893
 ]
 nitpick_ignore_regex = []
 
@@ -234,9 +229,9 @@ autodoc_default_options = {
 # -- Intersphinx configuration -------------------------------------------------
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
+    "pandas": (f"https://pandas.pydata.org/pandas-docs/version/{pandas_version}/", None),
     # "polars": ("https://docs.pola.rs/py-polars/html/reference/", None),  # https://github.com/pola-rs/polars/issues/7027
-    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "seaborn": ("https://seaborn.pydata.org/", None),

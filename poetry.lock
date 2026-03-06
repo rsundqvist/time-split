@@ -1512,49 +1512,16 @@ test = ["flaky", "ipyparallel", "pre-commit", "pytest (>=7.0,<10)", "pytest-asyn
 
 [[package]]
 name = "ipython"
-version = "9.9.0"
-description = "IPython: Productive Interactive Computing"
-optional = false
-python-versions = ">=3.11"
-groups = ["docs", "notebooks"]
-markers = "python_version >= \"3.12\""
-files = [
-    {file = "ipython-9.9.0-py3-none-any.whl", hash = "sha256:b457fe9165df2b84e8ec909a97abcf2ed88f565970efba16b1f7229c283d252b"},
-    {file = "ipython-9.9.0.tar.gz", hash = "sha256:48fbed1b2de5e2c7177eefa144aba7fcb82dac514f09b57e2ac9da34ddb54220"},
-]
-
-[package.dependencies]
-colorama = {version = ">=0.4.4", markers = "sys_platform == \"win32\""}
-decorator = ">=4.3.2"
-ipython-pygments-lexers = ">=1.0.0"
-jedi = ">=0.18.1"
-matplotlib-inline = ">=0.1.5"
-pexpect = {version = ">4.3", markers = "sys_platform != \"win32\" and sys_platform != \"emscripten\""}
-prompt_toolkit = ">=3.0.41,<3.1.0"
-pygments = ">=2.11.0"
-stack_data = ">=0.6.0"
-traitlets = ">=5.13.0"
-
-[package.extras]
-all = ["argcomplete (>=3.0)", "ipython[doc,matplotlib,terminal,test,test-extra]"]
-black = ["black"]
-doc = ["docrepr", "exceptiongroup", "intersphinx_registry", "ipykernel", "ipython[matplotlib,test]", "setuptools (>=70.0)", "sphinx (>=8.0)", "sphinx-rtd-theme (>=0.1.8)", "sphinx_toml (==0.0.4)", "typing_extensions"]
-matplotlib = ["matplotlib (>3.9)"]
-test = ["packaging (>=20.1.0)", "pytest (>=7.0.0)", "pytest-asyncio (>=1.0.0)", "setuptools (>=61.2)", "testpath (>=0.2)"]
-test-extra = ["curio", "ipykernel (>6.30)", "ipython[matplotlib]", "ipython[test]", "jupyter_ai", "nbclient", "nbformat", "numpy (>=1.27)", "pandas (>2.1)", "trio (>=0.1.0)"]
-
-[[package]]
-name = "ipython"
 version = "9.10.0"
 description = "IPython: Productive Interactive Computing"
 optional = false
 python-versions = ">=3.11"
-groups = ["notebooks"]
-markers = "python_version == \"3.11\""
+groups = ["docs", "notebooks"]
 files = [
     {file = "ipython-9.10.0-py3-none-any.whl", hash = "sha256:c6ab68cc23bba8c7e18e9b932797014cc61ea7fd6f19de180ab9ba73e65ee58d"},
     {file = "ipython-9.10.0.tar.gz", hash = "sha256:cd9e656be97618a0676d058134cd44e6dc7012c0e5cb36a9ce96a8c904adaf77"},
 ]
+markers = {docs = "python_version >= \"3.12\""}
 
 [package.dependencies]
 colorama = {version = ">=0.4.4", markers = "sys_platform == \"win32\""}
@@ -4854,15 +4821,15 @@ show-memory = ["memory-profiler"]
 
 [[package]]
 name = "sphinx-llm"
-version = "0.2.1"
+version = "0.3.0"
 description = ""
 optional = false
 python-versions = ">=3.9"
 groups = ["docs"]
 markers = "python_version >= \"3.12\""
 files = [
-    {file = "sphinx_llm-0.2.1-py3-none-any.whl", hash = "sha256:77e389a82277bdcddc2fd4a18736f16a973ae18f8eed8cad1068db8070a44140"},
-    {file = "sphinx_llm-0.2.1.tar.gz", hash = "sha256:72aafb400145507774b40af4a0f44bc4e73c6a82576ee67b884ed5998b84f456"},
+    {file = "sphinx_llm-0.3.0-py3-none-any.whl", hash = "sha256:4e89d7978d4bc8f755fe89e24e2c0e3a90e60fa6b8740119c9b4a9fd274dff9e"},
+    {file = "sphinx_llm-0.3.0.tar.gz", hash = "sha256:a994676ee914a5b0415d6607aec9578eb004fc61aaa2b13d27dc8a6729c97791"},
 ]
 
 [package.dependencies]
@@ -5529,4 +5496,4 @@ plotting = ["matplotlib", "seaborn"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "27797af219556ed578f91d724ade44aa8bbe3645e4bc713aad2dee6094da6aed"
+content-hash = "1f8ba6bc48e0bb8c76121d20ee838b64ce64efbb3d2b35c6bbdd69e69c3421f3"
