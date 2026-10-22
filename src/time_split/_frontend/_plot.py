@@ -169,7 +169,7 @@ def plot(
     ax.set_title(_make_title(available, split_kwargs))
 
     if plot_data.available is None:
-        ax.legend(loc=("lower" if splitter.step > 0 else "upper") + " right")
+        ax.legend(loc="lower right" if splitter.step > 0 else "upper right")
         return ax
 
     _plot_limits(ax, plot_data.available.expanded_limits)
@@ -178,7 +178,7 @@ def plot(
         assert isinstance(row_count_bin, (str, pd.Series))  # noqa: S101
         _plot_row_counts(ax, row_count_bin, plot_data.row_counts)
 
-    ax.legend(loc=("lower" if splitter.step > 0 else "upper") + " right")
+    ax.legend(loc="lower right" if splitter.step > 0 else "upper right")
 
     return ax
 

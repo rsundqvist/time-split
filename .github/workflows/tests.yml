@@ -9,13 +9,12 @@ on:
         default: "info"
   push:
     branches:
-     - master
-     - ci/*
+      - master
+      - ci/*
   pull_request:
     branches:
 
 env:
-  POETRY_VERSION: 2.2.1
   POLARS_SKIP_CPU_CHECK: true
 
 jobs:
@@ -23,17 +22,18 @@ jobs:
     name: Linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+
+      - name: Set up Python 3.11 with uv
+        uses: astral-sh/setup-uv@v10.0.1
         with:
-          python-version: 3.11
+          python-version: '3.11'
+
+      - name: Install the project
+        run: uv sync --locked --all-extras
 
       - name: Linting
-        run: |
-          pip install poetry==$POETRY_VERSION poetry-plugin-export
-          poetry install --only=main,devops
-          poetry run inv lint
+        run: uv run inv lint
 
   tests:
     needs: linting
@@ -45,36 +45,33 @@ jobs:
       matrix:
         os: [ 'Ubuntu', 'MacOS', 'Windows' ]
         python-version: [ '3.11', '3.12', '3.13', '3.14' ]
-        experimental: [false]
+        experimental: [ false ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - name: Set up Python ${{ matrix.python-version }} with uv
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install system deps
-        shell: bash
-        run: |
-          pip install nox
-          pip install poetry==$POETRY_VERSION poetry-plugin-export
+      - name: Install the project
+        run: uv sync --locked --all-extras
 
       - name: Run mypy with nox
         shell: bash
-        run: nox --force-color -s mypy-${{ matrix.python-version }}
+        run: uv run nox --force-color -s mypy-${{ matrix.python-version }}
 
       - name: Run tests with nox
         shell: bash
-        run: nox --force-color -s tests-${{ matrix.python-version }}
+        run: uv run nox --force-color -s tests-${{ matrix.python-version }}
 
-      - name: Run safety check
+      - name: Run audit
         if: matrix.python-version == '3.11' && matrix.os == 'Ubuntu'
         shell: bash
-        run: nox --force-color -s safety
+        run: uv run nox --force-color -s audit
 
       - name: Upload coverage data
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-data-${{ matrix.python-version }}+${{ matrix.os }}
           path: ".coverage.*"
@@ -85,31 +82,27 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+      - name: Set up Python 3.14 with uv
+        uses: astral-sh/setup-uv@v10.0.1
         with:
-          python-version: 3.11
+          python-version: '3.14'
 
-      - name: Install system deps
-        shell: bash
-        run: |
-          pip install nox
-          pip install poetry==$POETRY_VERSION poetry-plugin-export
+      - name: Install the project
+        run: uv sync --locked --all-extras
 
       - name: Download coverage data
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: coverage-data-*
           merge-multiple: true
 
       - name: Create coverage report
         shell: bash
-        run: |
-          nox --force-color --session=coverage -- --fmt xml
+        run: uv run nox --force-color --session=coverage -- --fmt xml
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v5.5.2
+        uses: codecov/codecov-action@v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

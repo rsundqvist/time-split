@@ -5,7 +5,8 @@ description = "Time-based k-fold validation splits for heterogeneous data."
 authors = [
     { name = "Richard Sundqvist", email = "richard.sundqvist@live.se" },
 ]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE.md"]  # uv_build only ships license files listed here.
 readme = "README.md"
 keywords = ["hyper", "parameter", "optimization", "cross", "validation", "time", "temporal", "heterogenous", "data"]
 classifiers = [
@@ -15,7 +16,6 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Typing :: Typed",
     "Programming Language :: Python :: 3",
@@ -46,53 +46,53 @@ documentation = "https://time-split"
 [project.entry-points."rics.cli"]
 time-split = "time_split.cli:main"
 
-[tool.poetry.requires-plugins]
-poetry-plugin-export = ">=1.8"
+[dependency-groups]
+manual-extras = [
+    # Extras that must be available for docs + tests go here. Doc/test-only deps go in their respective groups.
+    "croniter~=6.2.4",
+    "pyarrow~=26.0.0",
+    "polars[pandas]~=2.0.0",
+]
+docs = [
+    # duplicate object warnings for sphinx>=4
+    # description: https://github.com/astropy/astropy/issues/11723
+    # https://github.com/astropy/astropy/pull/12270
+    "sphinx~=9.1.0 ; python_version >= '3.12'",
+    "sphinx-gallery~=0.22.1 ; python_version >= '3.12'",
+    "pydata-sphinx-theme~=0.23.0 ; python_version >= '3.12'",
+    "myst-parser~=5.1.0 ; python_version >= '3.12'", # https://github.com/executablebooks/MyST-Parser/issues/749
+    "nbsphinx~=0.9.8 ; python_version >= '3.12'",
+    "ipython~=9.17.1 ; python_version >= '3.12'",
+    "sphinx-llm~=1.0.0 ; python_version >= '3.12'", # 1.1.0 warns "unknown node type" on nbsphinx nodes, failing -W
+]
+notebooks = [
+    "jupyterlab~=4.6.4",
+    "ipywidgets",
+    "jupyterlab-execute-time",
+    "tqdm",
+]
+test = [
+    "pytest~=9.1.1",
+    "xdoctest~=1.3.2",
+    "coverage~=7.16.2",
+    "pytest-cov~=7.1.0",
+    "scikit-learn~=1.9.1",
+    "dask[dataframe]~=2026.8.0",
+]
+devops = [
+    "nox~=2026.8.17",
+    "invoke~=3.0.3",
+    "mypy~=2.4.0",
+    "ruff~=0.17.1",
+    "codespell~=2.4.3",
+    "bump2version==1.0.1",
+]
+types = [
+    "types-croniter",
+]
 
-[tool.poetry.group.manual-extras.dependencies]
-# Extras that must be available for docs + tests go here. Doc/test-only deps go in their respective groups.
-croniter = "~6.0.0"
-pyarrow = "~22.0.0"
-polars = { version = "~1.35.2", extras = ["pandas"] }
-
-[tool.poetry.group.docs]
-[tool.poetry.group.docs.dependencies]
-# duplicate object warnings for sphinx>=4
-# description: https://github.com/astropy/astropy/issues/11723
-# https://github.com/astropy/astropy/pull/12270
-sphinx = { version = "~9.1.0", python = ">=3.12" }
-sphinx-gallery = { version = "~0.20.0", python = ">=3.12" }
-pydata-sphinx-theme = { version = "~0.16.1", python = ">=3.12" }
-myst-parser = { version = "~5.0.0", python = ">=3.12" } # https://github.com/executablebooks/MyST-Parser/issues/749
-nbsphinx = { version = "~0.9.8", python = ">=3.12" }
-ipython = { version = "~9.10.0", python = ">=3.12" }
-sphinx-llm = { version = "~0.3.0", python = ">=3.12" }
-
-[tool.poetry.group.notebooks]
-optional = true
-[tool.poetry.group.notebooks.dependencies]
-jupyterlab = "~4.5.2"
-ipywidgets = "*"
-jupyterlab-execute-time = "*"
-tqdm = "*"
-
-[tool.poetry.group.test.dependencies]
-pytest = "~9.0.2"
-xdoctest = "~1.3.0"
-coverage = "~7.13.1"
-pytest-cov = "~7.0.0"
-
-scikit-learn = "~1.8.0"
-dask = { version = "~2026.1.1", extras = ["dataframe"] }
-
-[tool.poetry.group.devops.dependencies]
-invoke = "~2.2.1"
-mypy = "~1.19.0"
-ruff = "~0.14.13"
-
-safety = "~3.7.0"
-codespell = "~2.4.1"
-bump2version = "==1.0.1"
+[tool.uv]
+default-groups = ["manual-extras", "docs", "test", "devops", "types"]  # Not notebooks (opt-in).
 
 [tool.ruff]
 line-length = 120
@@ -188,5 +188,5 @@ log_file_level = 10
 log_file = "pytest.log"
 
 [build-system]
-requires = ["poetry-core>=1.0.8"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"

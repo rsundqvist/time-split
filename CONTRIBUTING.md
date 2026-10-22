@@ -14,11 +14,10 @@ which demonstrates the (desired) usage.
 ## Getting started
 Follow these steps to begin local development.
 
-1. **Installing [Poetry](https://python-poetry.org/docs/)**
+1. **Installing [uv](https://docs.astral.sh/uv/getting-started/installation/)**
    
-   See [poetry.lock](https://github.com/rsundqvist/time-split/blob/master/poetry.lock) for the version used.
    ```bash
-   curl -sSL https://install.python-poetry.org/ | python -
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
 2. **Installing the project**
@@ -28,7 +27,7 @@ Follow these steps to begin local development.
    ```bash
    git clone --recurse-submodules git@github.com:rsundqvist/time-split.git
    cd time-split
-   poetry install --all-extras
+   uv sync --all-extras
    ```
    
    Generating documentation has a few dependencies which may need to be installed

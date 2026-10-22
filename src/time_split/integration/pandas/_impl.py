@@ -78,4 +78,4 @@ class _Indexer(Generic[PandasT]):
             return data[time.between(left, right, inclusive="left")]
         else:
             # Index slicing is a lot faster than boolean masks (empirically, seems to be a factor ~10).
-            return data[left : right - Timestamp.resolution]  # type: ignore[misc]
+            return data[left : right - Timestamp.resolution]
