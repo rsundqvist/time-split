@@ -229,7 +229,7 @@ autodoc_default_options = {
 # -- Intersphinx configuration -------------------------------------------------
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "pandas": (f"https://pandas.pydata.org/pandas-docs/version/{pandas_version}/", None),
+    "pandas": (f"https://pandas.pydata.org/pandas-docs/version/{'.'.join(pandas_version.split('.')[:2])}/", None),
     # "polars": ("https://docs.pola.rs/py-polars/html/reference/", None),  # https://github.com/pola-rs/polars/issues/7027
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),

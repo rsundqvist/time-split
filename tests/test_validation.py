@@ -55,3 +55,9 @@ def test_schedule_not_sorted():
     with pytest.raises(ValueError, match="sorted") as e:
         split(schedule)
     assert f"{schedule=}" in str(e.value)  # List repr is valid regex; can't put it in match=... as-is
+
+
+@pytest.mark.parametrize("schedule", ["", "   ", "\t"])
+def test_empty_schedule(schedule):
+    with pytest.raises(ValueError, match="Schedule"):
+        split(schedule, available=SPLIT_DATA)

@@ -165,7 +165,7 @@ def _make_level(
 ) -> _TimedeltaTuple:
     start_at = make_timedelta(start_at)  # Will be NaT if None, making all ifs False.
     if start_at <= Timedelta(0):
-        raise ValueError(f"Bad {start_at=}; must be non-negative.")
+        raise ValueError(f"Bad {start_at=}; must be positive.")
 
     if isinstance(round_to, str):
         try:
@@ -175,7 +175,7 @@ def _make_level(
 
     tolerance = make_timedelta(tolerance)
     if tolerance <= Timedelta(0):
-        raise ValueError(f"Bad {tolerance=}; must be non-negative.")
+        raise ValueError(f"Bad {tolerance=}; must be positive.")
 
     if start_at < round_to:
         raise ValueError(f"{start_at=} < {round_to=}")

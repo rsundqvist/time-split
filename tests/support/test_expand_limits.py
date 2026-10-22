@@ -112,7 +112,7 @@ class TestErrors:
         ],
     )
     def test_negative(self, start_at, tolerance):
-        with pytest.raises(ValueError, match="non-negative"):
+        with pytest.raises(ValueError, match="must be positive"):
             expand_limits(self.limits, spec=(start_at, "d", tolerance))
 
     @pytest.mark.parametrize(

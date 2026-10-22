@@ -1,8 +1,9 @@
 import pytest
+from dask.callbacks import Callback
 from dask.datasets import timeseries
 
 from time_split import plot, split
-from time_split.support import process_available
+from time_split.support import fold_weight, process_available
 
 
 @pytest.mark.parametrize("kind", ["index", "series"])
@@ -50,3 +51,47 @@ def test_series_is_preserved():
 
     actual = process_available(available, expand_limits=False).available_as_index
     assert isinstance(actual, Series)
+
+
+class TestComputeOnce:
+    @pytest.mark.xfail(strict=True)
+    def test_the_test(self):
+        available = self._available()
+
+        with ComputeOnce():
+            self._split(available)
+            self._split(available)
+
+    def test_split(self):
+        available = self._available()
+
+        with ComputeOnce():
+            splits = self._split(available)
+
+        assert len(splits) == 9
+
+    def test_fold_weight(self):
+        available = self._available()
+        splits = self._split(available)
+
+        with ComputeOnce():
+            fold_weight(splits, unit="rows", available=available)
+
+    @staticmethod
+    def _available():
+        return timeseries(end="2000-04", freq="17 min", partition_freq="7D", dtypes={"x": int}).index
+
+    @staticmethod
+    def _split(available):
+        return split("7d", before="all", after="30 days", available=available)
+
+
+class ComputeOnce(Callback):
+    def __init__(self):
+        super().__init__(self._check)
+        self._called = False
+
+    def _check(self, _dsk):
+        if self._called:
+            raise AssertionError("called more than once")
+        self._called = True

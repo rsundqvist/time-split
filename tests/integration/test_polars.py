@@ -49,3 +49,8 @@ def test_polars(df, caplog):
 def test_bad_time(df):
     with pytest.raises(TypeError, match="'ints'"):
         list(split_polars(df, schedule="1d", time_column="ints", log_progress=False))
+
+
+def test_empty(df):
+    with pytest.raises(ValueError, match="Not enough data"):
+        list(split_polars(df.clear(), schedule="1d", time_column="timestamp"))

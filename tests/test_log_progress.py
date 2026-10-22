@@ -57,3 +57,10 @@ def test_metrics(caplog):
         fold_metrics = metrics.pop(key)
         assert fold_metrics == record.metrics
         assert expected_in_message[key] in record.getMessage()
+
+
+def test_metrics_formatter_hides_range_index():
+    from time_split.support import default_metrics_formatter
+
+    df = pd.DataFrame({"rmse": [0.1, 0.2]})
+    assert default_metrics_formatter("End.", df) == f"End. Fold metrics:\n{df.to_string(index=False)}"

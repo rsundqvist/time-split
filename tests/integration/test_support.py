@@ -1,5 +1,6 @@
 import logging
 import sys
+from typing import Any
 
 import pandas as pd
 import pytest
@@ -20,7 +21,7 @@ def test_handle_log_progress_arg(arg, name, caplog):
 
 
 def test_logger_adapter(caplog):
-    # Custom adapter class until https://github.com/python/cpython/pull/107292
+    # merge_extra only exists on 3.13+; https://github.com/python/cpython/pull/107292
 
     logger = logging.getLogger("test-logger-adapter")
     extra = {"foo": "bar"}
@@ -32,6 +33,35 @@ def test_logger_adapter(caplog):
     _run(arg, "test-logger-adapter", caplog)
     for record in caplog.records:
         assert record.foo == "bar"
+
+
+@pytest.mark.parametrize("extra", [None, {"foo": "bar"}])
+def test_plain_logger_adapter_keeps_progress_extras(extra, caplog):
+    # No merge_extra; progress extras (n, start, mid, end, seconds) must survive anyway.
+    logger = logging.getLogger("test-plain-logger-adapter")
+
+    _run(logging.LoggerAdapter(logger, extra=extra), "test-plain-logger-adapter", caplog)
+    for record in caplog.records:
+        assert record.n_splits == 3
+        if extra:
+            assert record.foo == "bar"
+
+
+def test_custom_logger_adapter_process_is_kept(caplog):
+    class PrefixAdapter(logging.LoggerAdapter[Any]):
+        def process(self, msg, kwargs):
+            msg, kwargs = super().process(msg, kwargs)
+            kwargs["extra"] = {**kwargs["extra"], "custom": True}
+            return f"[prefix] {msg}", kwargs
+
+    logger = logging.getLogger("test-custom-logger-adapter")
+
+    _run(PrefixAdapter(logger, extra={"foo": "bar"}), "test-custom-logger-adapter", caplog)
+    for record in caplog.records:
+        assert record.getMessage().startswith("[prefix] ")
+        assert record.custom is True
+        assert record.foo == "bar"
+        assert record.n_splits == 3
 
 
 def _run(arg, name, caplog):

@@ -54,14 +54,10 @@ def _from_data(available: DatetimeIterable, splits: DatetimeSplits) -> list[Date
     else:
         time = DatetimeIndex(available).to_series()  # Coerce everything else.
 
-    retval = []
-    for fold in splits:
-        data = time.between(fold.start, fold.mid, inclusive="left").sum()
-        future_data = time.between(fold.mid, fold.end, inclusive="left").sum()
-
-        data = handle_dask(data)
-        future_data = handle_dask(future_data)
-
-        retval.append(DatetimeSplitCounts(data, future_data=future_data))
-
-    return retval
+    counts = [
+        time.between(a, b, inclusive="left").sum()
+        for fold in splits
+        for a, b in ((fold.start, fold.mid), (fold.mid, fold.end))
+    ]
+    computed = handle_dask(*counts)
+    return [DatetimeSplitCounts(d, future_data=fd) for d, fd in zip(computed[::2], computed[1::2], strict=True)]

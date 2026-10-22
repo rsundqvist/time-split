@@ -56,4 +56,4 @@ def process_available(available: DatetimeIterable, *, expand_limits: ExpandLimit
 
 
 def _compute_data_limits(available: DatetimeIndexLike) -> LimitsTuple:
-    return handle_dask(available.min()), handle_dask(available.max())
+    return handle_dask(available.min(), available.max())

@@ -240,3 +240,13 @@ class TestEmptySpan:
 
         for left, right in zip(actual, expected, strict=True):
             assert left == st.DatetimeSplitBounds(*map(pd.Timestamp, right))
+
+
+def test_compound_span_is_not_deprecated():
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        actual = split("1d", before="1d12h", available=SPLIT_DATA)
+
+    assert actual == split("1d", before="36h", available=SPLIT_DATA)

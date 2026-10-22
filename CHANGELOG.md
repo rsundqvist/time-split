@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Switch to `uv` (including build backend).
+- Compute Dask data limits and `fold_weight(unit='rows')` counts in a single pass.
+
+### Fixed
+- Fix `pandas >= 3.0.0` warnings for compound or spaced day durations (e.g. `'1d12h'`, `'7 d'`).
+- Fix `split_pandas` for data with an unsorted `DatetimeIndex`.
+- Fix `split_pandas` and `split_polars` crashing on empty data.
+- Fix `log_split_progress` dropping per-call extras or ignoring a custom `process()` of a `LoggerAdapter`.
+- Fix `default_metrics_formatter` printing a `RangeIndex` for `DataFrame` metrics.
+- Raise a `ValueError` (instead of an `IndexError`) for blank schedule strings.
 
 ## [1.2.1] - 2026-03-06
 

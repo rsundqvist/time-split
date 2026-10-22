@@ -93,9 +93,9 @@ def log_split_progress(
     """
     logger = logging.getLogger(logger) if isinstance(logger, str) else logger
 
-    if isinstance(logger, logging.LoggerAdapter) and not hasattr(logger, "merge_extra"):
-        # Backport of https://github.com/python/cpython/pull/107292
-        logger = _MergingLoggerAdapter(logger.logger, logger.extra)
+    if isinstance(logger, logging.LoggerAdapter) and not getattr(logger, "merge_extra", False):
+        # Stock adapters drop per-call extras (https://github.com/python/cpython/pull/107292); wrap to merge them.
+        logger = _MergingLoggerAdapter(logger)
 
     return _ProgressTracker(
         splits,
@@ -218,7 +218,7 @@ def default_metrics_formatter(end_message: str, metrics: dict[Any, Any] | pd.Ser
 
     if isinstance(metrics, (pd.Series, pd.DataFrame)):
         if isinstance(metrics, pd.DataFrame):
-            with_index = not isinstance(metrics, pd.RangeIndex)
+            with_index = not isinstance(metrics.index, pd.RangeIndex)
         else:
             with_index = True
         return f"{end_message} Fold metrics:\n{metrics.round(3).to_string(index=with_index)}"
@@ -229,10 +229,17 @@ def default_metrics_formatter(end_message: str, metrics: dict[Any, Any] | pd.Ser
 
 
 class _MergingLoggerAdapter(logging.LoggerAdapter[Any]):
-    # TODO(3.13): Use merge_extra=True init arg
+    def __init__(self, adapter: logging.LoggerAdapter[Any]) -> None:
+        super().__init__(adapter.logger, adapter.extra)
+        self._adapter = adapter
+
     def process(self, msg: Any, kwargs: MutableMapping[str, Any]) -> tuple[Any, MutableMapping[str, Any]]:
         """See https://github.com/python/cpython/pull/107292."""
-        kwargs["extra"] = {**self.extra, **kwargs["extra"]} if "extra" in kwargs and self.extra else self.extra
+        call_extra = kwargs.get("extra") or {}
+        # Let the wrapped adapter (possibly a user subclass) transform msg/kwargs first.
+        msg, kwargs = self._adapter.process(msg, kwargs)
+        adapter_extra = kwargs.get("extra") or {}
+        kwargs["extra"] = {**adapter_extra, **call_extra}
         return msg, kwargs
 
 

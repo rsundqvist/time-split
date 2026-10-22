@@ -76,3 +76,21 @@ def test_series_is_preserved():
 
     actual = process_available(available, expand_limits=False).available_as_index
     assert isinstance(actual, pd.Series)
+
+
+@pytest.mark.parametrize("typ", [pd.Series, pd.DataFrame])
+def test_unsorted_index(typ):
+    index = pd.date_range("2022", "2022-1-10", freq="h")
+    data = typ(range(len(index)), index=index)
+    shuffled = data.sample(frac=1, random_state=1999)
+
+    for expected, actual in zip(split_pandas(data, schedule="1d"), split_pandas(shuffled, schedule="1d"), strict=True):
+        assert expected.bounds == actual.bounds
+        assert actual.data.sort_index().equals(expected.data)
+        assert actual.future_data.sort_index().equals(expected.future_data)
+
+
+def test_empty():
+    data = pd.Series(dtype=float, index=pd.DatetimeIndex([]))
+    with pytest.raises(ValueError, match="Not enough data"):
+        list(split_pandas(data, schedule="1d"))

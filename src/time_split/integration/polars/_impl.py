@@ -54,7 +54,7 @@ class _Indexer:
     def as_available(self, data: DataFrame) -> Series:
         time = self._get_time(data)
 
-        if isinstance(time[0], date):
+        if time.is_empty() or isinstance(time[0], date):
             return time
 
         msg = f"Elements of data[{self.time_column!r}] element are {tname(time[0])}, expected datetime-like."

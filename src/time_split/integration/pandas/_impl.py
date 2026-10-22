@@ -2,7 +2,7 @@ from collections.abc import Hashable, Iterable
 from datetime import date, datetime
 from typing import Generic, TypeVar, Unpack
 
-from pandas import DataFrame, DatetimeIndex, Series, Timestamp
+from pandas import DataFrame, DatetimeIndex, Index, Series, Timestamp
 from rics.misc import tname
 
 from ..._docstrings import docs
@@ -60,6 +60,9 @@ class _Indexer(Generic[PandasT]):
     def as_available(self, data: PandasT) -> Series | DatetimeIndex:
         time = self._get_time(data)
 
+        if time.empty:
+            return time
+
         first = time.iloc[0] if hasattr(time, "iloc") else time[0]
         if isinstance(first, date):
             return time
@@ -74,8 +77,12 @@ class _Indexer(Generic[PandasT]):
     def select(self, data: PandasT, left: datetime, right: datetime) -> PandasT:
         """Select data based on the given bounds."""
         time = self._get_time(data)
-        if isinstance(time, Series):
-            return data[time.between(left, right, inclusive="left")]
-        else:
-            # Index slicing is a lot faster than boolean masks (empirically, seems to be a factor ~10).
-            return data[left : right - Timestamp.resolution]
+
+        if isinstance(time, Index):
+            if time.is_monotonic_increasing:
+                # Index slicing is a lot faster than boolean masks (empirically, seems to be a factor ~10).
+                return data[left : right - Timestamp.resolution]
+
+            time = time.to_series()
+
+        return data[time.between(left, right, inclusive="left")]

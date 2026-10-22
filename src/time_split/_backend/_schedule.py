@@ -34,6 +34,9 @@ def materialize_schedule(
         except TypeError as e:
             raise ValueError("Schedule must be explicit when not bounded by an available range.") from e
 
+    if isinstance(schedule, str) and not schedule.strip():
+        raise ValueError(f"Schedule must not be blank: {schedule=}")
+
     available_metadata = process_available(available, expand_limits=expand_limits)
     min_dt, max_dt = available_metadata.expanded_limits
 
