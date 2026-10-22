@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-10-22
+
 ### Changed
 - Switch to `uv` (including build backend).
 - Compute Dask data limits and `fold_weight(unit='rows')` counts in a single pass.
@@ -174,7 +176,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed a few documentation and examples issues.
 
-[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/rsundqvist/time-split/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/rsundqvist/time-split/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/rsundqvist/time-split/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/rsundqvist/time-split/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/rsundqvist/time-split/compare/v1.1.0...v1.1.1
