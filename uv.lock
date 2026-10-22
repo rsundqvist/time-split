@@ -3954,7 +3954,7 @@ wheels = [
 
 [[package]]
 name = "time-split"
-version = "1.2.2"
+version = "1.2.2.dev1"
 source = { editable = "." }
 default-groups = ["devops", "docs", "manual-extras", "test", "types"]
 dependencies = [
